@@ -312,9 +312,9 @@
           <g id="plan-content"></g>
         </svg>
         <div class="legend" id="legend-plan-sol" style="right:auto; left:10px; bottom:10px;">
-          <div class="cap">Irradiancia en piso, W/m²</div>
+          <div class="cap">Irradiancia en piso, W/m² (escala realzada)</div>
           <div class="bar"></div>
-          <div class="labels"><span>0</span><span>500</span><span>1000+</span></div>
+          <div class="labels"><span>0</span><span>rebote</span><span>haz directo</span></div>
         </div>
         <div class="legend" id="legend-plan-wind" style="display:none; right:auto; left:10px; bottom:10px;">
           <div class="cap">Alcance de ventilación (estimación cualitativa)</div>
@@ -1191,19 +1191,23 @@ function drawHeatmapCanvas(grid){
   const ctx = canvas.getContext('2d');
   ctx.imageSmoothingEnabled = false;
   const isWind = grid.mode==='wind';
-  // En sol, el piso usa la MISMA escala física (0–1000 W/m²) que los muros: mismo color, mismo significado
-  // en toda la app. En viento no hay una unidad física de "alcance", así que esa sí se normaliza al máximo actual.
+  // En sol, el piso sigue en la MISMA escala física (0–1000 W/m²) que los muros — el número de fondo
+  // no cambia — pero el haz directo (cientos de W/m²) y el primer rebote (unos pocos W/m²) difieren en
+  // dos órdenes de magnitud, y en una escala lineal el rebote se ve todo igual de apagado. Por eso el
+  // COLOR (no el dato) se pinta con una curva perceptual (t^0.42): realza justo la parte baja donde vive
+  // el rebote, sin mover casi nada la parte alta donde ya está el haz directo.
   const scaleMax = isWind ? Math.max(grid.maxVal*0.55, 0.001) : 1000;
+  const GAMMA = isWind ? 0.5 : 0.2;
   for (let iz=0; iz<grid.nz; iz++){
     const rowFromTop = grid.nz-1-iz; // z máxima (norte) arriba de la imagen
     for (let ix=0; ix<grid.nx; ix++){
       const val = grid.data[iz*grid.nx+ix];
-      const tv = Math.min(1, val/scaleMax);
-      const alpha = isWind ? Math.pow(tv,0.5) : Math.pow(tv,0.35); // solo controla opacidad/legibilidad, no el color
-      if (alpha<0.04) continue; // tesela vacía: se deja transparente
-      const hex = isWind ? windColorRamp(Math.pow(tv,0.5)) : colorRamp(val, 0, 1000);
+      const tLinear = Math.min(1, val/scaleMax);
+      const t = Math.pow(tLinear, GAMMA); // misma curva para color y opacidad: un solo valor, dos usos
+      if (t<0.05) continue; // tesela vacía: se deja transparente
+      const hex = isWind ? windColorRamp(t) : colorRamp(t, 0, 1);
       const r=(hex>>16)&255, g=(hex>>8)&255, b=hex&255;
-      ctx.fillStyle = `rgba(${r},${g},${b},${Math.min(1,0.25+alpha*0.9).toFixed(3)})`;
+      ctx.fillStyle = `rgba(${r},${g},${b},${Math.min(1,0.22+t*0.85).toFixed(3)})`;
       ctx.fillRect(ix*TILE+GAP/2, rowFromTop*TILE+GAP/2, TILE-GAP, TILE-GAP);
     }
   }
