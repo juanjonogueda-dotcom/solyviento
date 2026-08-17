@@ -92,6 +92,7 @@
     display:flex; align-items:center; justify-content:center; gap:6px; transition:all .15s ease;
   }
   .mode-btn:hover{ border-color:var(--border-strong); background:var(--surface-2); }
+  .mode-btn.active{ background:var(--accent); border-color:var(--accent); color:#fff; }
   .mode-btn#mode-sol.active{ background:var(--sun); border-color:var(--sun); color:#fff; }
   .mode-btn#mode-wind.active{ background:var(--wind); border-color:var(--wind); color:#fff; }
   .mode-settings{ display:none; }
@@ -203,11 +204,32 @@
 
     <div class="block">
       <div class="block-head"><span class="block-num">1</span><span class="block-title">Sitio y hora</span></div>
-      <div class="row2">
-        <div class="field"><label>Latitud (°)</label><input type="number" id="lat" value="19.4326" step="0.0001"></div>
-        <div class="field"><label>Longitud (°)</label><input type="number" id="lon" value="-99.1332" step="0.0001"></div>
+      <div class="mode-toggle" id="site-mode-toggle">
+        <button type="button" class="mode-btn active" id="site-mode-city" data-site-mode="city">🏙 Ciudad</button>
+        <button type="button" class="mode-btn" id="site-mode-coords" data-site-mode="coords">📍 Coordenadas</button>
       </div>
-      <div class="field"><label>Huso horario (UTC)</label><input type="number" id="tz" value="-6" step="1"></div>
+      <div class="mode-settings visible" id="site-city-panel">
+        <div class="field">
+          <select id="ciudad">
+            <option value="19.4326,-99.1332,-6" selected>Ciudad de México</option>
+            <option value="20.6597,-103.3496,-6">Guadalajara</option>
+            <option value="25.6866,-100.3161,-6">Monterrey</option>
+            <option value="21.1619,-86.8515,-5">Cancún</option>
+            <option value="20.9674,-89.5926,-6">Mérida</option>
+            <option value="32.5149,-117.0382,-8">Tijuana</option>
+            <option value="4.7110,-74.0721,-5">Bogotá</option>
+            <option value="40.4168,-3.7038,1">Madrid</option>
+            <option value="-34.6037,-58.3816,-3">Buenos Aires</option>
+          </select>
+        </div>
+      </div>
+      <div class="mode-settings" id="site-coords-panel">
+        <div class="row2">
+          <div class="field"><label>Latitud (°)</label><input type="number" id="lat" value="19.4326" step="0.0001"></div>
+          <div class="field"><label>Longitud (°)</label><input type="number" id="lon" value="-99.1332" step="0.0001"></div>
+        </div>
+        <div class="field"><label>Huso horario (UTC)</label><input type="number" id="tz" value="-6" step="1"></div>
+      </div>
       <div class="field"><label>Fecha</label><input type="date" id="fecha"></div>
       <div class="field">
         <label>Hora local</label>
@@ -233,6 +255,8 @@
         <div class="block-note">Colorea cada muro por la radiación que recibe a la hora seleccionada — misma escala física (W/m²) en 3D, en el piso y en la lista de resultados. El patrón sobre el piso no es decorativo: el haz directo usa la irradiancia real de Meinel proyectada al plano horizontal, y la luz difusa que entra por cada vano se calcula con la fórmula de transferencia radiativa punto-a-área (coseno en el vano, coseno en el piso, 1/d²).</div>
       </div>
       <div class="mode-settings" id="settings-wind">
+        <button type="button" class="vbtn" id="wind-fetch-btn" style="width:100%; margin-bottom:9px; justify-content:center;">📡 Usar viento real de este sitio</button>
+        <div class="block-note" id="wind-fetch-status" style="margin-top:-4px;">Trae viento y temperatura actuales del sitio (Open-Meteo), según la ciudad de arriba.</div>
         <div class="row2">
           <div class="field"><label>Velocidad viento (m/s)</label><input type="number" id="wind-speed" value="2.0" step="0.1" min="0"></div>
           <div class="field"><label>Dirección <span style="font-weight:400;color:var(--text-faint);">de donde viene</span></label><input type="number" id="wind-dir" value="45" step="1" min="0" max="359"></div>
@@ -284,7 +308,7 @@
             <clipPath id="plan-clip" clipPathUnits="userSpaceOnUse"><polygon id="plan-clip-poly" points=""></polygon></clipPath>
           </defs>
           <rect x="-500" y="-500" width="1000" height="1000" fill="url(#gridpat)"></rect>
-          <image id="plan-heatmap-img" x="0" y="0" width="0" height="0" style="display:none" preserveAspectRatio="none" image-rendering="optimizeQuality"></image>
+          <image id="plan-heatmap-img" x="0" y="0" width="0" height="0" style="display:none; image-rendering:pixelated;" preserveAspectRatio="none" image-rendering="pixelated"></image>
           <g id="plan-content"></g>
         </svg>
         <div class="legend" id="legend-plan-sol" style="right:auto; left:10px; bottom:10px;">
@@ -1013,25 +1037,8 @@ function collectActiveOpenings(){
   return out;
 }
 
-/* Suaviza la cuadrícula (promedio de caja 3x3) para eliminar el aspecto "pixeloso"
-   de los bordes de sombra sin perder la forma general del patrón. */
-function smoothGrid(data, nx, nz){
-  const out = new Float32Array(nx*nz);
-  for (let iz=0; iz<nz; iz++){
-    for (let ix=0; ix<nx; ix++){
-      let sum=0, n=0;
-      for (let dz=-1; dz<=1; dz++){
-        const jz = iz+dz; if (jz<0||jz>=nz) continue;
-        for (let dx=-1; dx<=1; dx++){
-          const jx = ix+dx; if (jx<0||jx>=nx) continue;
-          sum += data[jz*nx+jx]; n++;
-        }
-      }
-      out[iz*nx+ix] = sum/n;
-    }
-  }
-  return out;
-}
+// Mosaico deliberado: pocas teselas grandes y nítidas — más fácil de leer que un gradiente fino.
+const MOSAIC_TILES = 15;
 
 function computeFloorHeatmap(){
   const bb = buildingBBox();
@@ -1041,9 +1048,8 @@ function computeFloorHeatmap(){
   const openings = collectActiveOpenings();
   if (openings.length===0) return { bb, nx:2, nz:2, data:new Float32Array(4), maxVal:0, mode:currentMode };
 
-  const maxDim = 90;
-  const nx = Math.max(14, Math.round(maxDim * (w/Math.max(w,h))));
-  const nz = Math.max(14, Math.round(maxDim * (h/Math.max(w,h))));
+  const nx = Math.max(6, Math.round(MOSAIC_TILES * (w/Math.max(w,h))));
+  const nz = Math.max(6, Math.round(MOSAIC_TILES * (h/Math.max(w,h))));
   const occluders = wallMeshes.map(wm=>({ a:wm.seg.a, b:wm.seg.b, vIndex:wm.seg.vIndex }));
   const isWind = currentMode==='wind';
   const sunDx = Math.sin(toRad(lastSunAz)), sunDz = Math.cos(toRad(lastSunAz));
@@ -1118,32 +1124,34 @@ function computeFloorHeatmap(){
       if (val>maxVal) maxVal = val;
     }
   }
-  data = smoothGrid(data, nx, nz);
   return { bb, nx, nz, data, maxVal, mode:currentMode };
 }
 
+// Dibuja el mosaico: una tesela cuadrada y sólida por celda, con un pequeño hueco entre ellas.
+// Nada de gradiente ni difuminado — cada tesela es un valor que se puede leer directamente.
 function drawHeatmapCanvas(grid){
+  const TILE = 20, GAP = 3;
   const canvas = document.createElement('canvas');
-  canvas.width = grid.nx; canvas.height = grid.nz;
+  canvas.width = grid.nx*TILE; canvas.height = grid.nz*TILE;
   const ctx = canvas.getContext('2d');
-  const img = ctx.createImageData(grid.nx, grid.nz);
+  ctx.imageSmoothingEnabled = false;
   const isWind = grid.mode==='wind';
   // En sol, el piso usa la MISMA escala física (0–1000 W/m²) que los muros: mismo color, mismo significado
   // en toda la app. En viento no hay una unidad física de "alcance", así que esa sí se normaliza al máximo actual.
   const scaleMax = isWind ? Math.max(grid.maxVal*0.55, 0.001) : 1000;
   for (let iz=0; iz<grid.nz; iz++){
+    const rowFromTop = grid.nz-1-iz; // z máxima (norte) arriba de la imagen
     for (let ix=0; ix<grid.nx; ix++){
       const val = grid.data[iz*grid.nx+ix];
       const tv = Math.min(1, val/scaleMax);
       const alpha = isWind ? Math.pow(tv,0.5) : Math.pow(tv,0.35); // solo controla opacidad/legibilidad, no el color
+      if (alpha<0.04) continue; // tesela vacía: se deja transparente
       const hex = isWind ? windColorRamp(Math.pow(tv,0.5)) : colorRamp(val, 0, 1000);
-      const rowFromTop = grid.nz-1-iz; // z máxima (norte) arriba de la imagen
-      const p = (rowFromTop*grid.nx+ix)*4;
-      img.data[p] = (hex>>16)&255; img.data[p+1] = (hex>>8)&255; img.data[p+2] = hex&255;
-      img.data[p+3] = alpha<0.02 ? 0 : Math.round(255*Math.min(1, 0.18+alpha*1.05));
+      const r=(hex>>16)&255, g=(hex>>8)&255, b=hex&255;
+      ctx.fillStyle = `rgba(${r},${g},${b},${Math.min(1,0.25+alpha*0.9).toFixed(3)})`;
+      ctx.fillRect(ix*TILE+GAP/2, rowFromTop*TILE+GAP/2, TILE-GAP, TILE-GAP);
     }
   }
-  ctx.putImageData(img,0,0);
   return canvas;
 }
 
@@ -1179,8 +1187,8 @@ function updateFloorHeatmapVisuals(){
   if (floorMesh){
     const tex = new THREE.CanvasTexture(canvas);
     tex.flipY = true;
-    tex.minFilter = THREE.LinearFilter;
-    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.NearestFilter;
+    tex.magFilter = THREE.NearestFilter;
     tex.needsUpdate = true;
     floorMesh.material.map = tex;
     floorMesh.material.color.setHex(0xffffff);
@@ -1390,6 +1398,47 @@ sunIds.forEach(id=> document.getElementById(id).addEventListener('input', recomp
 windIds.forEach(id=> document.getElementById(id).addEventListener('input', updateWind));
 document.getElementById('fecha').addEventListener('input', recomputeSun);
 
+/* --- Sitio: alternar entre "Ciudad" (un menú, sin escribir números) y "Coordenadas" (control fino) --- */
+['city','coords'].forEach(m=>{
+  document.getElementById('site-mode-'+m).addEventListener('click', ()=>{
+    ['city','coords'].forEach(mm=> document.getElementById('site-mode-'+mm).classList.toggle('active', mm===m));
+    document.getElementById('site-city-panel').classList.toggle('visible', m==='city');
+    document.getElementById('site-coords-panel').classList.toggle('visible', m==='coords');
+  });
+});
+function applyCiudad(){
+  const [lat,lon,tz] = document.getElementById('ciudad').value.split(',').map(Number);
+  document.getElementById('lat').value = lat;
+  document.getElementById('lon').value = lon;
+  document.getElementById('tz').value = tz;
+  recomputeSun();
+  fetchSiteWind();
+}
+document.getElementById('ciudad').addEventListener('change', applyCiudad);
+
+/* --- Viento real del sitio, según sus coordenadas (Open-Meteo, sin llave de acceso) --- */
+async function fetchSiteWind(){
+  const status = document.getElementById('wind-fetch-status');
+  const lat = getNum('lat'), lon = getNum('lon');
+  status.textContent = 'Consultando viento real del sitio…';
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m,wind_direction_10m&wind_speed_unit=ms`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const json = await res.json();
+    const c = json.current;
+    if (!c || !isFinite(c.wind_speed_10m)) throw new Error('sin datos');
+    document.getElementById('wind-speed').value = c.wind_speed_10m.toFixed(1);
+    document.getElementById('wind-dir').value = Math.round(c.wind_direction_10m);
+    document.getElementById('t-ext').value = c.temperature_2m.toFixed(1);
+    status.textContent = `Viento real ahora: ${c.wind_speed_10m.toFixed(1)} m/s desde el ${cardinal(c.wind_direction_10m)} · ${c.temperature_2m.toFixed(1)}°C exterior — Open-Meteo.`;
+    updateWind();
+  } catch(err){
+    status.textContent = 'No se pudo consultar el viento real de este sitio (sin conexión o servicio no disponible) — ajusta los valores manualmente.';
+  }
+}
+document.getElementById('wind-fetch-btn').addEventListener('click', fetchSiteWind);
+
 document.getElementById('animar').addEventListener('change', function(){
   if (this.checked){
     animTimer = setInterval(()=>{
@@ -1415,6 +1464,7 @@ document.getElementById('animar').addEventListener('change', function(){
   initScene();
   recomputeAll();
   resetExteriorCamera();
+  fetchSiteWind(); // trae el viento real del sitio por defecto, apenas se abre la página
 })();
 </script>
 
