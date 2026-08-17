@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asoleamiento y viento — estudio interactivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F5F7;
+    --surface:#FFFFFF;
+    --surface-2:#F0F2F5;
+    --text:#161A20;
+    --text-soft:#5B6472;
+    --text-faint:#9399A6;
+    --border:#E4E7EC;
+    --border-strong:#D3D8E1;
+    --sun:#EF9B0F;
+    --sun-deep:#D2560B;
+    --wind:#2F8FE0;
+    --wind-deep:#155F9E;
+    --accent:#3D4EC4;
+    --sel:#EF9B0F;
+    --radius-sm:6px;
+    --radius-md:10px;
+    --radius-lg:16px;
+    --shadow-sm: 0 1px 2px rgba(20,24,32,.06), 0 1px 1px rgba(20,24,32,.04);
+    --shadow-md: 0 8px 24px rgba(20,24,32,.10);
+    --mode-accent: var(--sun);
+    --mode-accent-deep: var(--sun-deep);
+  }
+  body.mode-wind{ --mode-accent: var(--wind); --mode-accent-deep: var(--wind-deep); }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--text); font-family:'Manrope', sans-serif; font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3{ font-family:'Manrope', sans-serif; }
+
+  .title-block{
+    background:var(--surface); color:var(--text); padding:14px 22px;
+    display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;
+    border-bottom:1px solid var(--border); position:relative;
+  }
+  .title-block::before{
+    content:""; position:absolute; left:0; right:0; top:0; height:3px;
+    background:linear-gradient(90deg, var(--sun), var(--sun-deep)); transition:background .35s ease;
+  }
+  body.mode-wind .title-block::before{ background:linear-gradient(90deg, var(--wind), var(--wind-deep)); }
+  .title-block h1{ margin:0; font-weight:800; font-size: clamp(18px, 2.4vw, 22px); letter-spacing:-0.01em; display:flex; align-items:center; gap:8px; }
+  .title-block .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-faint); margin-bottom:3px; font-weight:600; }
+  .title-block .meta{ text-align:right; font-size:11px; color:var(--text-soft); line-height:1.5; max-width:320px; }
+  .mode-pill{
+    display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:700; padding:3px 9px 3px 7px;
+    border-radius:999px; background:var(--mode-accent); color:#fff; text-transform:uppercase; letter-spacing:0.04em;
+    transition:background .35s ease;
+  }
+
+  .app{ display:grid; grid-template-columns: 320px 1fr; min-height: calc(100vh - 60px); }
+  @media (max-width:980px){ .app{ grid-template-columns: 1fr; } }
+
+  .panel{ background:var(--surface); border-right:1px solid var(--border); padding:14px 14px 34px; max-height: calc(100vh - 60px); overflow-y:auto; }
+  @media (max-width:980px){ .panel{ max-height:none; border-right:none; border-bottom:1px solid var(--border);} }
+
+  .block{ margin-bottom:14px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 12px 13px; }
+  .block-head{ display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  .block-num{
+    font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:10px; color:#fff; background:var(--text);
+    width:18px; height:18px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+  }
+  .block-title{ font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:0.02em; }
+  .block-note{ font-size:11px; color:var(--text-faint); margin: 2px 0 9px; line-height:1.5; }
+
+  .field{ margin-bottom:8px; }
+  .field label{ display:block; font-size:10.5px; font-weight:700; margin-bottom:3px; color:var(--text-soft); }
+  .field input, .field select{
+    width:100%; font-family:'IBM Plex Mono', monospace; font-size:12px; padding:6px 8px;
+    border:1px solid var(--border-strong); border-radius:var(--radius-sm); background:#fff; color:var(--text);
+  }
+  .field input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+  .row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; }
+
+  input[type=range]{ accent-color:var(--mode-accent); width:100%; }
+  .hora-display{ font-family:'IBM Plex Mono', monospace; font-weight:700; color:var(--mode-accent-deep); font-size:15px; text-align:center; margin-top:3px; transition:color .35s ease; }
+  .check-row{ display:flex; align-items:center; gap:6px; margin:7px 0 2px; }
+  .check-row label{ font-size:11px; font-weight:600; margin:0; color:var(--text-soft); }
+
+  .mode-toggle{ display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:9px; background:var(--surface-2); border-radius:var(--radius-md); }
+  .mode-btn{
+    font-family:'Manrope', sans-serif; font-weight:700; font-size:12px; padding:9px 6px;
+    border:1px solid var(--border-strong); border-radius:var(--radius-sm); background:#fff; color:var(--text-soft); cursor:pointer; text-align:center;
+    display:flex; align-items:center; justify-content:center; gap:6px; transition:all .15s ease;
+  }
+  .mode-btn:hover{ border-color:var(--border-strong); background:var(--surface-2); }
+  .mode-btn#mode-sol.active{ background:var(--sun); border-color:var(--sun); color:#fff; }
+  .mode-btn#mode-wind.active{ background:var(--wind); border-color:var(--wind); color:#fff; }
+  .mode-settings{ display:none; }
+  .mode-settings.visible{ display:block; }
+
+  .wall-row{ border:1px solid var(--border-strong); border-radius:var(--radius-sm); background:#fff; padding:8px 9px 9px; margin-bottom:7px; }
+  .wall-row-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
+  .wall-row-head .wname{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:11.5px; color:var(--accent); }
+  .wall-row-head .wlen{ font-weight:400; color:var(--text-faint); }
+  .icon-btn{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:700; border:1px solid var(--border-strong);
+    background:#fff; color:var(--text-soft); border-radius:var(--radius-sm); padding:3px 7px; cursor:pointer; line-height:1.6;
+  }
+  .icon-btn:hover{ background:var(--surface-2); }
+  .icon-btn.danger{ color:#B4432E; }
+  .op-row{ display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:5px; align-items:end; margin-top:5px; padding-top:6px; border-top:1px dashed var(--border-strong); }
+  .op-row .field{ margin-bottom:0; }
+  .op-row .field label{ font-size:9px; }
+  .op-row input{ font-size:11px; padding:5px 5px; }
+  .op-row .icon-btn{ padding:5px 7px; align-self:stretch; }
+  .no-openings{ font-size:10.5px; color:var(--text-faint); font-style:italic; }
+
+  .plan-hint{ font-size:10.5px; color:var(--text-soft); font-weight:600; margin-top:2px; }
+
+  /* ---- columna derecha ---- */
+  .right{ display:flex; flex-direction:column; }
+  .views{ display:grid; grid-template-columns: 1.3fr 1fr; gap:12px; padding:12px 12px 0; flex: 0 0 min(56vh, 540px); }
+  @media (max-width:760px){ .views{ grid-template-columns:1fr; flex-basis:auto; } .view-box{ height:44vh; } }
+
+  .view-box{ position:relative; background:#E4EEF3; min-height:260px; border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-sm); border:1px solid var(--border); }
+  .view-box canvas, .view-box svg{ display:block; width:100%; height:100%; }
+  .view-label{
+    position:absolute; top:10px; left:10px; font-family:'IBM Plex Mono', monospace; font-size:9.5px; font-weight:700;
+    letter-spacing:0.07em; text-transform:uppercase; background:rgba(255,255,255,0.9); backdrop-filter:blur(4px); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:4px 8px; color:var(--text-soft); z-index:5; pointer-events:none;
+  }
+  .view-controls{ position:absolute; top:10px; right:10px; display:flex; flex-direction:column; gap:5px; z-index:5; }
+  .view-controls.row{ flex-direction:row; top:auto; bottom:10px; right:10px; }
+  .vbtn{
+    font-family:'Manrope', sans-serif; font-size:10.5px; font-weight:700; background:rgba(255,255,255,0.94);
+    backdrop-filter:blur(4px); border:1px solid var(--border); border-radius:999px; padding:6px 11px; cursor:pointer; color:var(--text); white-space:nowrap;
+    box-shadow:var(--shadow-sm); transition:all .15s ease;
+  }
+  .vbtn:hover{ background:#fff; border-color:var(--border-strong); }
+  .vbtn.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  .vbtn.on-wind.active{ background:var(--wind); border-color:var(--wind); }
+  .compass-note{
+    position:absolute; left:10px; bottom:10px; background:rgba(255,255,255,0.92); border:1px solid var(--border); border-radius:999px;
+    padding:4px 9px; font-size:9.5px; color:var(--text-soft); font-weight:700; z-index:5; pointer-events:none;
+  }
+  .legend{
+    position:absolute; right:10px; bottom:10px; background:rgba(255,255,255,0.94); border:1px solid var(--border); border-radius:var(--radius-md);
+    padding:6px 9px; font-family:'IBM Plex Mono', monospace; font-size:8.5px; z-index:5; pointer-events:none; box-shadow:var(--shadow-sm);
+  }
+  .legend .bar{ width:112px; height:7px; margin:4px 0; border-radius:4px; background:linear-gradient(90deg, rgb(31,76,115), rgb(46,139,180), rgb(90,168,90), rgb(230,180,40), rgb(156,43,33)); }
+  .legend .labels{ display:flex; justify-content:space-between; color:var(--text-soft); font-weight:600; }
+  .legend .cap{ color:var(--text-faint); margin-bottom:2px; font-weight:600; text-transform:uppercase; letter-spacing:0.03em; }
+
+  #plan-svg{ touch-action:none; cursor:crosshair; }
+  #plan-svg.mode-move{ cursor:default; }
+  .plan-vertex{ fill:var(--accent); stroke:#fff; cursor:grab; }
+  .plan-vertex.selected{ fill:var(--sel); }
+  .plan-wall-hit{ stroke:transparent; fill:none; cursor:pointer; }
+  .plan-wall{ stroke:#7C8574; fill:none; stroke-linecap:square; }
+  .plan-wall.selected{ stroke:var(--sel); }
+  .plan-opening-line{ stroke:var(--wind); stroke-linecap:butt; opacity:0.9; cursor:grab; }
+  .plan-opening-line.selected{ stroke:var(--sel); }
+  .plan-opening-hit{ stroke:transparent; fill:none; cursor:grab; }
+  .plan-opening-handle{ fill:#fff; stroke:var(--wind); stroke-width:0.035; cursor:grab; }
+  .plan-opening-handle.selected{ fill:var(--sel); stroke:var(--sel); }
+
+  /* ---- resultados ---- */
+  .results{ padding:14px 16px 30px; }
+  .stat-row{ display:flex; flex-wrap:wrap; gap:9px; margin-bottom:13px; }
+  .stat{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:9px 12px; min-width:110px; flex:1 1 110px; box-shadow:var(--shadow-sm); cursor:help; }
+  .stat .k{ font-size:9.5px; text-transform:uppercase; letter-spacing:0.03em; color:var(--text-faint); font-weight:700; }
+  .stat .v{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:15px; color:var(--text); margin-top:3px; }
+  .stat.hl{ border-color:var(--mode-accent); }
+  .stat.hl .v{ color:var(--mode-accent-deep); }
+
+  .wall-result-list{ display:flex; flex-direction:column; gap:5px; }
+  .wall-result-row{
+    display:flex; align-items:center; gap:9px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:7px 11px; font-family:'IBM Plex Mono', monospace; font-size:11px; box-shadow:var(--shadow-sm);
+  }
+  .wall-result-row .swatch{ width:11px; height:11px; border-radius:3px; flex:0 0 auto; border:1px solid rgba(0,0,0,0.12); }
+  .wall-result-row .name{ font-weight:700; color:var(--text); min-width:54px; }
+  .wall-result-row .tag{ color:var(--text-faint); font-size:9.5px; }
+  .wall-result-row .val{ margin-left:auto; font-weight:700; }
+
+  footer{ padding: 4px 16px 30px; font-size:10.5px; color:var(--text-faint); line-height:1.6; max-width: 860px; }
+  footer b{ color:var(--text-soft); }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <div>
+    <div class="eyebrow">Planta libre · interactiva</div>
+    <h1>Asoleamiento y viento <span class="mode-pill" id="mode-pill">☀ Sol</span></h1>
+  </div>
+  <div class="meta">Dibuja tus muros en la planta (derecha)<br>Posición solar NOAA/Meeus · Radiación de cielo despejado (Meinel) · Ventilación ASHRAE</div>
+</div>
+
+<div class="app">
+
+  <!-- ============ PANEL ============ -->
+  <div class="panel">
+
+    <div class="block">
+      <div class="block-head"><span class="block-num">1</span><span class="block-title">Sitio y hora</span></div>
+      <div class="row2">
+        <div class="field"><label>Latitud (°)</label><input type="number" id="lat" value="19.4326" step="0.0001"></div>
+        <div class="field"><label>Longitud (°)</label><input type="number" id="lon" value="-99.1332" step="0.0001"></div>
+      </div>
+      <div class="field"><label>Huso horario (UTC)</label><input type="number" id="tz" value="-6" step="1"></div>
+      <div class="field"><label>Fecha</label><input type="date" id="fecha"></div>
+      <div class="field">
+        <label>Hora local</label>
+        <input type="range" id="hora" min="0" max="24" step="0.1" value="12">
+        <div class="hora-display" id="hora-display">12:00</div>
+      </div>
+      <div class="check-row"><input type="checkbox" id="animar"><label for="animar">Animar recorrido del día</label></div>
+    </div>
+
+    <div class="block">
+      <div class="block-head"><span class="block-num">2</span><span class="block-title">Muros y vanos</span></div>
+      <div class="block-note">Dibuja y mueve los muros directamente en la vista de <b>Planta</b> →. En cada vano, el ancho que ves aquí es exactamente el ancho de la línea azul que aparece sobre el muro.</div>
+      <div id="wallsList"></div>
+    </div>
+
+    <div class="block">
+      <div class="block-head"><span class="block-num">3</span><span class="block-title">Modo de representación</span></div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="mode-sol">☀ Asoleamiento</button>
+        <button class="mode-btn" id="mode-wind">💨 Viento</button>
+      </div>
+      <div class="mode-settings visible" id="settings-sol">
+        <div class="block-note">Colorea cada muro por la radiación que recibe a la hora seleccionada — misma escala física (W/m²) en 3D, en el piso y en la lista de resultados. El patrón sobre el piso no es decorativo: el haz directo usa la irradiancia real de Meinel proyectada al plano horizontal, y la luz difusa que entra por cada vano se calcula con la fórmula de transferencia radiativa punto-a-área (coseno en el vano, coseno en el piso, 1/d²).</div>
+      </div>
+      <div class="mode-settings" id="settings-wind">
+        <div class="row2">
+          <div class="field"><label>Velocidad viento (m/s)</label><input type="number" id="wind-speed" value="2.0" step="0.1" min="0"></div>
+          <div class="field"><label>Dirección <span style="font-weight:400;color:var(--text-faint);">de donde viene</span></label><input type="number" id="wind-dir" value="45" step="1" min="0" max="359"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>T° exterior (°C)</label><input type="number" id="t-ext" value="22" step="0.5"></div>
+          <div class="field"><label>T° interior (°C)</label><input type="number" id="t-int" value="24" step="0.5"></div>
+        </div>
+        <div class="block-note">Cada vano se clasifica <b>barlovento</b> (recibe el viento) o <b>sotavento</b> (lo extrae) según la orientación de su muro. El efecto chimenea usa el vano más bajo y el más alto de toda la planta.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ COLUMNA DERECHA ============ -->
+  <div class="right">
+    <div class="views">
+      <div class="view-box" id="view-3d">
+        <div class="view-label">3D</div>
+        <div class="compass-note">↑ rojo = Norte</div>
+        <div class="view-controls">
+          <button class="vbtn" id="toggle-view">Vista: Exterior</button>
+          <button class="vbtn" id="toggle-path">Trayectoria solar</button>
+          <button class="vbtn" id="reset-cam">Reencuadrar</button>
+        </div>
+        <div class="legend" id="legend-sol">
+          <div class="cap">Radiación, W/m²</div>
+          <div class="bar"></div>
+          <div class="labels"><span>0</span><span>500</span><span>1000+</span></div>
+        </div>
+      </div>
+      <div class="view-box" id="view-plan">
+        <div class="view-label">Planta</div>
+        <div class="compass-note" style="left:auto; right:10px; bottom:10px;">↑ Norte</div>
+        <div class="view-controls">
+          <button class="vbtn active" id="plan-mode-move" data-mode="move">Mover</button>
+          <button class="vbtn" id="plan-mode-wall" data-mode="wall">+ Muro</button>
+          <button class="vbtn" id="plan-mode-opening" data-mode="opening">+ Vano</button>
+        </div>
+        <div class="view-controls row">
+          <button class="vbtn" id="plan-close" style="display:none;">Cerrar planta</button>
+          <button class="vbtn" id="plan-delete" style="display:none;">🗑 Eliminar</button>
+        </div>
+        <svg id="plan-svg" class="mode-move" viewBox="-8 -6 16 12" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <pattern id="gridpat" width="1" height="1" patternUnits="userSpaceOnUse">
+              <path d="M 1 0 L 0 0 0 1" fill="none" stroke="#c9cdc2" stroke-width="0.015"/>
+            </pattern>
+            <clipPath id="plan-clip" clipPathUnits="userSpaceOnUse"><polygon id="plan-clip-poly" points=""></polygon></clipPath>
+          </defs>
+          <rect x="-500" y="-500" width="1000" height="1000" fill="url(#gridpat)"></rect>
+          <image id="plan-heatmap-img" x="0" y="0" width="0" height="0" style="display:none" preserveAspectRatio="none" image-rendering="optimizeQuality"></image>
+          <g id="plan-content"></g>
+        </svg>
+        <div class="legend" id="legend-plan-sol" style="right:auto; left:10px; bottom:10px;">
+          <div class="cap">Irradiancia en piso, W/m²</div>
+          <div class="bar"></div>
+          <div class="labels"><span>0</span><span>500</span><span>1000+</span></div>
+        </div>
+        <div class="legend" id="legend-plan-wind" style="display:none; right:auto; left:10px; bottom:10px;">
+          <div class="cap">Alcance de ventilación (estimación cualitativa)</div>
+          <div class="bar" style="background:linear-gradient(90deg, rgb(233,238,232), rgb(178,214,225), rgb(70,150,180), rgb(18,70,95));"></div>
+          <div class="labels"><span>0</span><span>media</span><span>alta</span></div>
+        </div>
+        <div class="plan-hint" style="position:absolute; left:10px; right:118px; top:10px; z-index:5; background:rgba(255,255,255,0.92); padding:5px 8px; border-radius:8px; pointer-events:none;" id="plan-hint">Arrastra los puntos para mover muros. Usa «+ Muro» para dibujar y «+ Vano» para agregar ventanas.</div>
+      </div>
+    </div>
+
+    <div class="results">
+      <div id="results-sol">
+        <div class="stat-row">
+          <div class="stat" title="Hora solar verdadera: corrige la hora del reloj por la ecuación del tiempo y tu longitud."><div class="k">Hora solar</div><div class="v" id="r-hora-solar">—</div></div>
+          <div class="stat" title="Ángulo del sol sobre el horizonte. 0° = amanece/anochece, 90° = sol al cenit."><div class="k">Elevación</div><div class="v" id="r-elevacion">—</div></div>
+          <div class="stat" title="Dirección del sol medida desde el Norte, en sentido horario."><div class="k">Azimut</div><div class="v" id="r-azimut">—</div></div>
+        </div>
+        <div class="wall-result-list" id="wall-result-list"></div>
+      </div>
+      <div id="results-wind" style="display:none;">
+        <div class="stat-row">
+          <div class="stat" title="Aire movido por la diferencia de presión del viento entre el lado barlovento y el sotavento."><div class="k">Caudal por viento</div><div class="v" id="r-q-wind">—</div></div>
+          <div class="stat" title="Aire movido por diferencia de temperatura y altura entre el vano más bajo y el más alto."><div class="k">Caudal por chimenea</div><div class="v" id="r-q-stack">—</div></div>
+          <div class="stat hl" title="Ambos efectos combinados en cuadratura (raíz de la suma de cuadrados)."><div class="k">Caudal combinado</div><div class="v" id="r-q-total">—</div></div>
+          <div class="stat" title="Renovaciones de aire por hora: caudal combinado dividido entre el volumen del espacio."><div class="k">Equivalente</div><div class="v" id="r-ach">—</div></div>
+        </div>
+        <div class="wall-result-list" id="wind-wall-list"></div>
+      </div>
+    </div>
+
+    <footer>
+      <b>Metodología:</b> posición solar — algoritmo NOAA/Meeus. Radiación en muros — cielo despejado de Meinel, componente difusa y reflejada isotrópica; no incluye nubosidad real. Radiación en piso — mismo modelo de Meinel: el haz directo se traza vano por vano (sin atenuar con la distancia, como corresponde a un haz colimado) y la componente difusa usa la ecuación de transferencia radiativa punto-a-área (radiancia del vano × coseno emisor × coseno receptor / d²), con una transmitancia de vidrio de 0.82. Viento — efecto chimenea y viento cruzado de ASHRAE Fundamentals (Cd=0.6, Cv=0.55) combinados en cuadratura, a partir de los vanos de tu planta; el patrón de alcance en piso es una estimación cualitativa, no un campo de velocidades (no hay CFD). Herramienta de estudio conceptual, no de proyecto ejecutivo.
+    </footer>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+/* =========================================================
+   FÍSICA
+   ========================================================= */
+const SOLAR_CONST = 1353;
+const ALBEDO = 0.2;
+const TAU_GLASS = 0.82; // transmitancia típica de un vidrio claro (fracción que atraviesa el vano)
+function toRad(d){ return d*Math.PI/180; }
+function toDeg(r){ return r*180/Math.PI; }
+function dayOfYear(y,m,d){
+  const isLeap = (y%4===0 && y%100!==0) || y%400===0;
+  const dim=[31,isLeap?29:28,31,30,31,30,31,31,30,31,30,31];
+  let doy=d; for(let i=0;i<m-1;i++) doy+=dim[i];
+  return {doy, totalDays: isLeap?366:365};
+}
+function solarPosition(lat, lon, utcOffset, y,m,d, hourDecimal){
+  const {doy, totalDays} = dayOfYear(y,m,d);
+  const gamma = (2*Math.PI/totalDays)*(doy-1+(hourDecimal-12)/24);
+  const eqtime = 229.18*(0.000075+0.001868*Math.cos(gamma)-0.032077*Math.sin(gamma)-0.014615*Math.cos(2*gamma)-0.040849*Math.sin(2*gamma));
+  const decl = 0.006918-0.399912*Math.cos(gamma)+0.070257*Math.sin(gamma)-0.006758*Math.cos(2*gamma)+0.000907*Math.sin(2*gamma)-0.002697*Math.cos(3*gamma)+0.00148*Math.sin(3*gamma);
+  const time_offset = eqtime+4*lon-60*utcOffset;
+  const tst = hourDecimal*60+time_offset;
+  const ha = toRad((tst/4)-180);
+  const latR = toRad(lat);
+  const cosZenith = Math.sin(latR)*Math.sin(decl)+Math.cos(latR)*Math.cos(decl)*Math.cos(ha);
+  const zenith = Math.acos(Math.max(-1,Math.min(1,cosZenith)));
+  const elevation = Math.PI/2-zenith;
+  const cosEl = Math.cos(elevation) || 1e-6;
+  const sinAz = -Math.sin(ha)*Math.cos(decl)/cosEl;
+  const cosAz = (Math.sin(decl)-Math.sin(latR)*Math.sin(elevation))/(Math.cos(latR)*cosEl);
+  let az = toDeg(Math.atan2(sinAz,cosAz));
+  if (az<0) az+=360;
+  const trueSolarHour = (((hourDecimal*60+time_offset)/60)%24+24)%24;
+  return {elevation, elevationDeg: toDeg(elevation), azimuthDeg: az, declinationDeg: toDeg(decl), trueSolarHour};
+}
+function meinelDNI(elevationRad){
+  if (elevationRad<=0) return 0;
+  const AM = 1/Math.sin(elevationRad);
+  return SOLAR_CONST*Math.pow(0.7, Math.pow(AM,0.678));
+}
+function wallIrradiance(elevationRad, azimuthDeg, wallAzimuthDeg){
+  if (elevationRad<=0) return {direct:0, diffuse:0, reflected:0, total:0, ghi:0};
+  const IDN = meinelDNI(elevationRad);
+  const diffH = 0.1*IDN;
+  const ghi = IDN*Math.sin(elevationRad)+diffH;
+  const dAz = toRad(wallAzimuthDeg - azimuthDeg);
+  const cosAOI = Math.cos(elevationRad)*Math.cos(dAz);
+  const direct = Math.max(0, IDN*cosAOI);
+  const diffuse = diffH*0.5;
+  const reflected = ghi*ALBEDO*0.5;
+  return {direct, diffuse, reflected, total: direct+diffuse+reflected, ghi};
+}
+function ventStack(Cd, A, H, TinC, ToutC){
+  const Ti = TinC+273.15, To=ToutC+273.15;
+  const dT = Ti-To;
+  if (A<=0 || H<=0) return 0;
+  const val = 2*9.81*H*Math.abs(dT)/Ti;
+  return Cd*A*Math.sqrt(Math.max(0,val));
+}
+function ventWind(Cv, A, V){ return Cv*A*V; }
+function cardinal(azDeg){
+  const dirs = ['N','NE','E','SE','S','SO','O','NO'];
+  const idx = Math.round(((azDeg%360)/45))%8;
+  return dirs[idx];
+}
+function decimalToHHMM(hDecimal){
+  let h = Math.floor(hDecimal); let m = Math.round((hDecimal-h)*60);
+  if(m===60){m=0;h+=1;}
+  h = ((h%24)+24)%24;
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+}
+function colorRamp(value, min, max){
+  const t = Math.max(0, Math.min(1, (value-min)/(max-min)));
+  const stops = [[0.0,[31,76,115]],[0.25,[46,139,180]],[0.5,[90,168,90]],[0.75,[230,180,40]],[1.0,[156,43,33]]];
+  for (let i=0;i<stops.length-1;i++){
+    const t0=stops[i][0], c0=stops[i][1], t1=stops[i+1][0], c1=stops[i+1][1];
+    if (t>=t0 && t<=t1){
+      const f=(t-t0)/(t1-t0);
+      const r=Math.round(c0[0]+f*(c1[0]-c0[0])), g=Math.round(c0[1]+f*(c1[1]-c0[1])), b=Math.round(c0[2]+f*(c1[2]-c0[2]));
+      return (r<<16)|(g<<8)|b;
+    }
+  }
+  return 0x9C2B21;
+}
+function getNum(id){ const v = parseFloat(document.getElementById(id).value); return isFinite(v)?v:0; }
+function colorToCss(hex){ return '#'+hex.toString(16).padStart(6,'0'); }
+
+/* Resuelve la geometría real (recortada) de un vano dentro de su muro.
+   Un único punto de verdad usado por la planta, el volumen 3D y el mapa de calor,
+   para que "lo que ves" sea siempre "lo que hay". */
+function resolveOpening(op, wallLength, wallHeight){
+  let cx = -wallLength/2 + op.pos*wallLength;
+  const w = Math.min(op.w, wallLength*0.9);
+  cx = Math.max(-wallLength/2+w/2+0.03, Math.min(wallLength/2-w/2-0.03, cx));
+  const y0 = Math.max(0.02, op.sill), y1 = Math.min(op.sill+op.h, wallHeight-0.02);
+  const valid = w>0.05 && (y1-y0)>0.05;
+  return { cx, halfWidth:w/2, width:w, y0, y1, height:Math.max(0,y1-y0), valid };
+}
+
+/* =========================================================
+   ESTADO — PLANTA (vértices con las propiedades de SU muro saliente)
+   ========================================================= */
+let vertices = [
+  {x:-5, z:3,  height:6, thickness:15, openings:[{pos:0.5,w:1.5,h:1.2,sill:0.9}]},
+  {x:5,  z:3,  height:6, thickness:15, openings:[]},
+  {x:5,  z:-3, height:6, thickness:15, openings:[{pos:0.5,w:1.5,h:1.2,sill:0.9}]},
+  {x:-5, z:-3, height:6, thickness:15, openings:[]}
+];
+let closedLoop = true;
+let currentMode = 'sol';
+let interiorView = false;
+let planMode = 'move';
+let selected = null; // {type:'vertex'|'wall'|'opening', vIndex, opIndex}
+let dragState = null;
+
+function segmentCount(){ return closedLoop ? vertices.length : Math.max(0, vertices.length-1); }
+function getSegments(){
+  const n = vertices.length, segs = [];
+  const count = segmentCount();
+  for(let i=0;i<count;i++){
+    const a = vertices[i], b = vertices[(i+1)%n];
+    segs.push({ vIndex:i, a, b, length: Math.hypot(b.x-a.x, b.z-a.z) });
+  }
+  return segs;
+}
+function polygonWindingSign(){
+  const n = vertices.length; if (n<3) return -1;
+  let area=0;
+  for(let i=0;i<n;i++){ const a=vertices[i], b=vertices[(i+1)%n]; area += a.x*b.z - b.x*a.z; }
+  return area<=0 ? -1 : 1; // -1: usar normal=(-dz,dx); 1: normal=(dz,-dx)
+}
+function segAzimuth(seg, windSign){
+  const len = seg.length || 1e-6;
+  const dirX = (seg.b.x-seg.a.x)/len, dirZ = (seg.b.z-seg.a.z)/len;
+  const nx = windSign<0 ? -dirZ : dirZ;
+  const nz = windSign<0 ? dirX : -dirX;
+  let az = toDeg(Math.atan2(nx, nz));
+  if (az<0) az += 360;
+  return { az, nx, nz };
+}
+
+/* =========================================================
+   PANEL — LISTA DE MUROS (medidas finas)
+   ========================================================= */
+function renderWallsPanel(){
+  const list = document.getElementById('wallsList');
+  const segs = getSegments();
+  if (segs.length===0){
+    list.innerHTML = '<div class="no-openings">Sin muros — dibuja en la Planta con «+ Muro».</div>';
+    return;
+  }
+  list.innerHTML = segs.map((seg,i)=>{
+    const w = seg.a;
+    const openingsHtml = w.openings.length ? w.openings.map((op,oi)=>`
+      <div class="op-row" data-v-idx="${seg.vIndex}" data-op-idx="${oi}">
+        <div class="field"><label>Ancho</label><input type="number" step="0.1" min="0" value="${op.w.toFixed(2)}" data-field="openW"></div>
+        <div class="field"><label>Alto</label><input type="number" step="0.1" min="0" value="${op.h.toFixed(2)}" data-field="openH"></div>
+        <div class="field"><label>Antepecho</label><input type="number" step="0.1" min="0" value="${op.sill.toFixed(2)}" data-field="openSill"></div>
+        <button class="icon-btn danger" data-action="remove-opening" data-v-idx="${seg.vIndex}" data-op-idx="${oi}" title="Quitar vano">×</button>
+      </div>`).join('') : '<div class="no-openings">Sin vanos.</div>';
+    return `
+    <div class="wall-row" data-v-idx="${seg.vIndex}">
+      <div class="wall-row-head">
+        <span class="wname">Muro ${i+1} <span class="wlen">· ${seg.length.toFixed(2)} m</span></span>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Alto (m)</label><input type="number" step="0.1" min="0.5" value="${w.height}" data-field="height" data-v-idx="${seg.vIndex}"></div>
+        <div class="field"><label>Espesor (cm)</label><input type="number" step="1" min="1" value="${w.thickness}" data-field="thickness" data-v-idx="${seg.vIndex}"></div>
+      </div>
+      ${openingsHtml}
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('wallsList').addEventListener('input', (e)=>{
+  const t = e.target; const field = t.dataset.field; if (!field) return;
+  const vIdx = +t.dataset.vIdx; const v = vertices[vIdx]; if (!v) return;
+  const val = parseFloat(t.value);
+  if (field==='height') v.height = isFinite(val) ? Math.max(0.5,val) : v.height;
+  else if (field==='thickness') v.thickness = isFinite(val) ? Math.max(1,val) : v.thickness;
+  else if (field==='openW' || field==='openH' || field==='openSill'){
+    const oi = +t.dataset.opIdx; const op = v.openings[oi]; if (!op) return;
+    const key = field==='openW' ? 'w' : (field==='openH' ? 'h' : 'sill');
+    op[key] = isFinite(val) ? Math.max(0,val) : op[key];
+  }
+  renderPlan();
+  recomputeAll();
+});
+document.getElementById('wallsList').addEventListener('click', (e)=>{
+  if (e.target.dataset.action==='remove-opening'){
+    const vIdx = +e.target.dataset.vIdx, oi = +e.target.dataset.opIdx;
+    vertices[vIdx].openings.splice(oi,1);
+    renderWallsPanel(); renderPlan(); recomputeAll();
+  }
+});
+
+/* =========================================================
+   VISTA EN PLANTA — SVG INTERACTIVO
+   ========================================================= */
+const planSvg = document.getElementById('plan-svg');
+const planContent = document.getElementById('plan-content');
+const NS = 'http://www.w3.org/2000/svg';
+
+function fitPlanViewBox(){
+  if (vertices.length===0){ planSvg.setAttribute('viewBox','-8 -6 16 12'); return; }
+  let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
+  vertices.forEach(v=>{ minX=Math.min(minX,v.x); maxX=Math.max(maxX,v.x); minZ=Math.min(minZ,v.z); maxZ=Math.max(maxZ,v.z); });
+  const spanX = Math.max(maxX-minX, 3), spanZ = Math.max(maxZ-minZ, 3);
+  const pad = Math.max(spanX,spanZ)*0.28 + 1.2;
+  minX-=pad; maxX+=pad; minZ-=pad; maxZ+=pad;
+  const w = maxX-minX, h = maxZ-minZ;
+  planSvg.setAttribute('viewBox', `${minX} ${-maxZ} ${w} ${h}`);
+}
+
+function screenToPlan(evt){
+  const pt = planSvg.createSVGPoint();
+  pt.x = evt.clientX; pt.y = evt.clientY;
+  const svgP = pt.matrixTransform(planSvg.getScreenCTM().inverse());
+  return { x: svgP.x, z: -svgP.y };
+}
+
+function svgEl(tag, attrs){
+  const el = document.createElementNS(NS, tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+
+function renderPlan(){
+  while (planContent.firstChild) planContent.removeChild(planContent.firstChild);
+  const segs = getSegments();
+  const wind = polygonWindingSign();
+
+  segs.forEach((seg,i)=>{
+    const isSel = selected && selected.type==='wall' && selected.vIndex===seg.vIndex;
+    const hit = svgEl('line', { x1:seg.a.x, y1:-seg.a.z, x2:seg.b.x, y2:-seg.b.z, 'stroke-width':Math.max(seg.a.thickness/100,0.3)+0.5, class:'plan-wall-hit' });
+    hit.dataset.vIdx = seg.vIndex;
+    hit.addEventListener('pointerdown', (e)=> onWallPointerDown(e, seg.vIndex));
+    planContent.appendChild(hit);
+
+    const line = svgEl('line', { x1:seg.a.x, y1:-seg.a.z, x2:seg.b.x, y2:-seg.b.z, 'stroke-width':Math.max(seg.a.thickness/100,0.08), class:'plan-wall'+(isSel?' selected':'') });
+    line.style.pointerEvents = 'none';
+    planContent.appendChild(line);
+
+    // vanos: la línea que ves mide exactamente lo que dice "Ancho" en el panel.
+    seg.a.openings.forEach((op,oi)=>{
+      const r = resolveOpening(op, seg.length, seg.a.height);
+      const isOpSel = selected && selected.type==='opening' && selected.vIndex===seg.vIndex && selected.opIndex===oi;
+      if (r.valid){
+        const t0 = (r.cx - r.halfWidth + seg.length/2)/seg.length;
+        const t1 = (r.cx + r.halfWidth + seg.length/2)/seg.length;
+        const x0 = seg.a.x + (seg.b.x-seg.a.x)*t0, z0 = seg.a.z + (seg.b.z-seg.a.z)*t0;
+        const x1 = seg.a.x + (seg.b.x-seg.a.x)*t1, z1 = seg.a.z + (seg.b.z-seg.a.z)*t1;
+        const hitLine = svgEl('line', { x1:x0, y1:-z0, x2:x1, y2:-z1, 'stroke-width':Math.max(seg.a.thickness/100,0.3)+0.35, class:'plan-opening-hit' });
+        hitLine.dataset.vIdx = seg.vIndex; hitLine.dataset.opIdx = oi;
+        hitLine.addEventListener('pointerdown', (e)=> onOpeningPointerDown(e, seg.vIndex, oi));
+        planContent.appendChild(hitLine);
+
+        const visLine = svgEl('line', { x1:x0, y1:-z0, x2:x1, y2:-z1, 'stroke-width':Math.max(seg.a.thickness/100*0.75,0.09), class:'plan-opening-line'+(isOpSel?' selected':'') });
+        visLine.style.pointerEvents = 'none';
+        planContent.appendChild(visLine);
+      }
+      const cx = seg.a.x + (seg.b.x-seg.a.x)*op.pos;
+      const cz = seg.a.z + (seg.b.z-seg.a.z)*op.pos;
+      const handle = svgEl('circle', { cx:cx, cy:-cz, r:0.09, class:'plan-opening-handle'+(isOpSel?' selected':'') });
+      handle.dataset.vIdx = seg.vIndex; handle.dataset.opIdx = oi;
+      handle.addEventListener('pointerdown', (e)=> onOpeningPointerDown(e, seg.vIndex, oi));
+      planContent.appendChild(handle);
+    });
+  });
+
+  vertices.forEach((v,i)=>{
+    const isSel = selected && selected.type==='vertex' && selected.vIndex===i;
+    const c = svgEl('circle', { cx:v.x, cy:-v.z, r:0.16, class:'plan-vertex'+(isSel?' selected':''), 'stroke-width':0.05 });
+    c.dataset.vIdx = i;
+    c.addEventListener('pointerdown', (e)=> onVertexPointerDown(e, i));
+    planContent.appendChild(c);
+  });
+
+  document.getElementById('plan-close').style.display = (planMode==='wall' && !closedLoop && vertices.length>=3) ? '' : 'none';
+  document.getElementById('plan-delete').style.display = selected ? '' : 'none';
+}
+
+/* --- interacción: click en vacío para dibujar --- */
+planSvg.addEventListener('pointerdown', (e)=>{
+  if (e.target !== planSvg && e.target.tagName !== 'rect') return; // solo fondo
+  const p = screenToPlan(e);
+  if (planMode==='wall'){
+    if (vertices.length>=3 && !closedLoop){
+      const first = vertices[0];
+      if (Math.hypot(p.x-first.x, p.z-first.z) < 0.5){ closedLoop = true; endPlanEdit(); return; }
+    }
+    const last = vertices.length ? vertices[vertices.length-1] : null;
+    if (last && closedLoop) closedLoop = false; // reabre para seguir extendiendo
+    vertices.push({ x:p.x, z:p.z, height: last?last.height:6, thickness: last?last.thickness:15, openings:[] });
+    endPlanEdit();
+  } else if (planMode==='opening'){
+    const hitSeg = findClosestSegment(p, 0.6);
+    if (hitSeg){
+      const t = projectOnSegment(p, hitSeg);
+      hitSeg.a.openings.push({ pos:t, w:1.0, h:1.2, sill:0.9 });
+      endPlanEdit();
+    }
+  } else {
+    selected = null;
+    renderPlan();
+  }
+});
+
+function findClosestSegment(p, maxDist){
+  const segs = getSegments();
+  let best=null, bestD=Infinity;
+  segs.forEach(seg=>{
+    const t = projectOnSegment(p, seg);
+    const px = seg.a.x + (seg.b.x-seg.a.x)*t, pz = seg.a.z + (seg.b.z-seg.a.z)*t;
+    const d = Math.hypot(p.x-px, p.z-pz);
+    if (d<bestD){ bestD=d; best=seg; }
+  });
+  return (best && bestD<=maxDist) ? best : null;
+}
+function projectOnSegment(p, seg){
+  const dx=seg.b.x-seg.a.x, dz=seg.b.z-seg.a.z;
+  const len2 = dx*dx+dz*dz || 1e-9;
+  let t = ((p.x-seg.a.x)*dx + (p.z-seg.a.z)*dz)/len2;
+  return Math.max(0.06, Math.min(0.94, t));
+}
+
+function beginDrag(e, type, vIndex, opIndex){
+  e.stopPropagation();
+  selected = (type==='opening') ? { type, vIndex, opIndex } : { type, vIndex };
+  dragState = { type, vIndex, opIndex, pointerId: e.pointerId };
+  planSvg.setPointerCapture(e.pointerId);
+  renderPlan();
+}
+function onVertexPointerDown(e, idx){
+  if (planMode==='wall' || planMode==='opening'){ e.stopPropagation(); return; }
+  beginDrag(e, 'vertex', idx);
+}
+function onWallPointerDown(e, vIndex){
+  e.stopPropagation();
+  if (planMode==='opening'){
+    const seg = getSegments().find(s=>s.vIndex===vIndex);
+    const p = screenToPlan(e);
+    const t = projectOnSegment(p, seg);
+    seg.a.openings.push({ pos:t, w:1.0, h:1.2, sill:0.9 });
+    endPlanEdit();
+    return;
+  }
+  if (planMode==='wall') return;
+  selected = { type:'wall', vIndex };
+  renderPlan();
+}
+function onOpeningPointerDown(e, vIndex, opIndex){
+  if (planMode==='wall'){ e.stopPropagation(); return; }
+  beginDrag(e, 'opening', vIndex, opIndex);
+}
+
+planSvg.addEventListener('pointermove', (e)=>{
+  if (!dragState) return;
+  const p = screenToPlan(e);
+  if (dragState.type==='vertex'){
+    const v = vertices[dragState.vIndex];
+    v.x = Math.round(p.x*20)/20; v.z = Math.round(p.z*20)/20;
+  } else if (dragState.type==='opening'){
+    const seg = getSegments().find(s=>s.vIndex===dragState.vIndex);
+    if (seg){
+      const t = projectOnSegment(p, seg);
+      seg.a.openings[dragState.opIndex].pos = t;
+    }
+  }
+  renderPlan();
+  scheduleRecompute();
+});
+planSvg.addEventListener('pointerup', (e)=>{
+  if (dragState){ dragState=null; endPlanEdit(); }
+});
+planSvg.addEventListener('pointercancel', ()=>{ dragState=null; });
+
+function endPlanEdit(){
+  renderWallsPanel();
+  renderPlan();
+  fitPlanViewBox();
+  recomputeAll();
+}
+
+function deleteSelected(){
+  if (!selected) return;
+  if (selected.type==='vertex'){
+    if (vertices.length<=2){ vertices=[]; closedLoop=false; }
+    else { vertices.splice(selected.vIndex,1); if (closedLoop && vertices.length<3) closedLoop=false; }
+  } else if (selected.type==='wall'){
+    vertices.splice(selected.vIndex,1);
+    if (closedLoop && vertices.length<3) closedLoop=false;
+  } else if (selected.type==='opening'){
+    vertices[selected.vIndex].openings.splice(selected.opIndex,1);
+  }
+  selected = null;
+  endPlanEdit();
+}
+document.getElementById('plan-delete').addEventListener('click', deleteSelected);
+document.getElementById('plan-close').addEventListener('click', ()=>{ closedLoop=true; endPlanEdit(); });
+document.addEventListener('keydown', (e)=>{
+  if ((e.key==='Delete' || e.key==='Backspace') && selected){
+    const tag = document.activeElement.tagName;
+    if (tag==='INPUT' || tag==='SELECT' || tag==='TEXTAREA') return;
+    e.preventDefault();
+    deleteSelected();
+  }
+});
+
+const planModeHints = {
+  move: 'Arrastra los puntos para mover muros, o el círculo azul para reposicionar un vano. Clic para seleccionar + Eliminar.',
+  wall: 'Clic para agregar puntos y extender la planta. Clic cerca del primer punto (o «Cerrar planta») para cerrar el volumen.',
+  opening: 'Clic sobre un muro para agregar un vano ahí mismo.'
+};
+['move','wall','opening'].forEach(m=>{
+  document.getElementById('plan-mode-'+m).addEventListener('click', ()=>{
+    planMode = m;
+    ['move','wall','opening'].forEach(mm=> document.getElementById('plan-mode-'+mm).classList.toggle('active', mm===m));
+    planSvg.classList.toggle('mode-move', m==='move');
+    document.getElementById('plan-hint').textContent = planModeHints[m];
+    selected = null;
+    renderPlan();
+  });
+});
+
+/* =========================================================
+   ESCENA 3D
+   ========================================================= */
+let scene, camera3d, renderer3d, controls3d;
+let buildingGroup;
+let sunLight, sunGizmo, sunPathLine=null, northArrow, windArrowHelper=null;
+let showPath = false;
+let animTimer = null;
+let wallMeshes = [];
+let rafScheduled = false;
+let floorMesh = null;
+let lastSunAz = 0, lastSunElevation = -1, lastSunVisible = false;
+let lastWindFromVec = { x:0, z:1 };
+
+/* --- geometría 2D auxiliar para el heatmap de piso (línea de vista / oclusión) --- */
+function segmentsIntersect(px,py,qx,qy, ax,ay,bx,by){
+  const d1x=qx-px, d1y=qy-py, d2x=bx-ax, d2y=by-ay;
+  const denom = d1x*d2y - d1y*d2x;
+  if (Math.abs(denom)<1e-9) return false;
+  const t = ((ax-px)*d2y - (ay-py)*d2x)/denom;
+  const u = ((ax-px)*d1y - (ay-py)*d1x)/denom;
+  return t>0.002 && t<0.998 && u>0.002 && u<0.998;
+}
+function raySegmentParam(px,py,dx,dy, ax,ay,bx,by){
+  const ex=bx-ax, ey=by-ay;
+  const denom = dx*ey - dy*ex;
+  if (Math.abs(denom)<1e-9) return Infinity;
+  const t = ((ax-px)*ey - (ay-py)*ex)/denom;
+  const u = ((ax-px)*dy - (ay-py)*dx)/denom;
+  if (t>0.001 && u>=-0.02 && u<=1.02) return t;
+  return Infinity;
+}
+
+function scheduleRecompute(){
+  if (rafScheduled) return;
+  rafScheduled = true;
+  requestAnimationFrame(()=>{ rafScheduled=false; recomputeAll(); });
+}
+
+function initScene(){
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xE4EEF3);
+  scene.fog = new THREE.Fog(0xE4EEF3, 45, 160);
+
+  const el3d = document.getElementById('view-3d');
+  camera3d = new THREE.PerspectiveCamera(45, el3d.clientWidth/el3d.clientHeight, 0.1, 500);
+  camera3d.position.set(16,13,16);
+  renderer3d = new THREE.WebGLRenderer({antialias:true});
+  renderer3d.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer3d.setSize(el3d.clientWidth, el3d.clientHeight);
+  renderer3d.shadowMap.enabled = true;
+  renderer3d.shadowMap.type = THREE.PCFSoftShadowMap;
+  el3d.appendChild(renderer3d.domElement);
+
+  controls3d = new THREE.OrbitControls(camera3d, renderer3d.domElement);
+  controls3d.target.set(0,2.5,0);
+  controls3d.enableDamping = true;
+  controls3d.dampingFactor = 0.08;
+  controls3d.maxPolarAngle = Math.PI*0.49;
+
+  const groundGeo = new THREE.PlaneGeometry(240,240);
+  const groundMat = new THREE.MeshStandardMaterial({color:0xE1E6D8});
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI/2; ground.receiveShadow = true;
+  scene.add(ground);
+
+  const grid = new THREE.GridHelper(240, 48, 0xa7ac99, 0xd2d6c8);
+  scene.add(grid);
+
+  northArrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), new THREE.Vector3(0,0.05,0), 8, 0x9C2B21, 1.4, 0.8);
+  scene.add(northArrow);
+
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x445544, 0.6);
+  scene.add(hemi);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.24));
+
+  sunLight = new THREE.DirectionalLight(0xffffff, 1.3);
+  sunLight.castShadow = true;
+  sunLight.shadow.mapSize.set(2048,2048);
+  sunLight.shadow.camera.left=-22; sunLight.shadow.camera.right=22;
+  sunLight.shadow.camera.top=22; sunLight.shadow.camera.bottom=-22;
+  sunLight.shadow.camera.near=1; sunLight.shadow.camera.far=100;
+  sunLight.shadow.bias = -0.0015;
+  scene.add(sunLight); scene.add(sunLight.target);
+
+  sunGizmo = new THREE.Mesh(new THREE.SphereGeometry(0.4,16,16), new THREE.MeshBasicMaterial({color:0xffe08a}));
+  scene.add(sunGizmo);
+
+  windArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,1.2,0), 6, 0x2F8FE0, 1.3, 0.7);
+  windArrowHelper.visible = false;
+  scene.add(windArrowHelper);
+
+  buildingGroup = new THREE.Group();
+  scene.add(buildingGroup);
+
+  window.addEventListener('resize', onResize);
+  animateLoop();
+}
+
+function onResize(){
+  const el3d = document.getElementById('view-3d');
+  camera3d.aspect = el3d.clientWidth/el3d.clientHeight;
+  camera3d.updateProjectionMatrix();
+  renderer3d.setSize(el3d.clientWidth, el3d.clientHeight);
+}
+function animateLoop(){
+  requestAnimationFrame(animateLoop);
+  controls3d.update();
+  renderer3d.render(scene, camera3d);
+}
+
+function buildWallShape(length, height, openings){
+  const shape = new THREE.Shape();
+  shape.moveTo(-length/2, 0); shape.lineTo(length/2, 0); shape.lineTo(length/2, height); shape.lineTo(-length/2, height); shape.lineTo(-length/2, 0);
+  openings.forEach(op=>{
+    const r = resolveOpening(op, length, height);
+    if (!r.valid) return;
+    const x0=r.cx-r.halfWidth, x1=r.cx+r.halfWidth;
+    const hole = new THREE.Path();
+    hole.moveTo(x0,r.y0); hole.lineTo(x1,r.y0); hole.lineTo(x1,r.y1); hole.lineTo(x0,r.y1); hole.lineTo(x0,r.y0);
+    shape.holes.push(hole);
+  });
+  return shape;
+}
+
+function rebuildBuilding(){
+  while(buildingGroup.children.length) buildingGroup.remove(buildingGroup.children[0]);
+  wallMeshes = [];
+  const segs = getSegments();
+  const windSign = polygonWindingSign();
+  const wallColor = 0xEDE9DC;
+
+  segs.forEach(seg=>{
+    const w = seg.a;
+    const length = seg.length;
+    if (length<0.05) return;
+    const midX = (seg.a.x+seg.b.x)/2, midZ = (seg.a.z+seg.b.z)/2;
+    const {az, nx, nz} = segAzimuth(seg, windSign);
+    const thicknessM = Math.max(0.02, w.thickness/100);
+
+    const shape = buildWallShape(length, w.height, w.openings);
+    const geo = new THREE.ExtrudeGeometry(shape, {depth: thicknessM, bevelEnabled:false});
+    geo.translate(0,0,-thicknessM/2);
+    const wallMat = new THREE.MeshStandardMaterial({color:wallColor, roughness:0.92});
+    const wallMesh = new THREE.Mesh(geo, wallMat);
+    wallMesh.position.set(midX,0,midZ);
+    wallMesh.rotation.y = toRad(az);
+    wallMesh.castShadow = true; wallMesh.receiveShadow = true;
+    buildingGroup.add(wallMesh);
+
+    const heatMat = new THREE.MeshBasicMaterial({color:0x1F4C73, transparent:true, opacity:0.85, side:THREE.FrontSide, depthWrite:false});
+    const heatMesh = new THREE.Mesh(new THREE.PlaneGeometry(length, w.height), heatMat);
+    heatMesh.position.set(midX + nx*(thicknessM/2+0.02), w.height/2, midZ + nz*(thicknessM/2+0.02));
+    heatMesh.rotation.y = toRad(az);
+    heatMesh.visible = (currentMode==='sol');
+    buildingGroup.add(heatMesh);
+
+    const resolvedOpenings = [];
+    const along = { x:(seg.b.x-seg.a.x)/length, z:(seg.b.z-seg.a.z)/length };
+    w.openings.forEach(op=>{
+      const r = resolveOpening(op, length, w.height);
+      if (!r.valid) return;
+      const wx = midX + along.x*r.cx, wz = midZ + along.z*r.cx;
+      const winMat = new THREE.MeshStandardMaterial({color:0x2F8FE0, transparent:true, opacity:0.4, side:THREE.DoubleSide, roughness:0.15});
+      const win = new THREE.Mesh(new THREE.PlaneGeometry(r.width, r.height), winMat);
+      win.position.set(wx, (r.y0+r.y1)/2, wz);
+      win.rotation.y = toRad(az);
+      buildingGroup.add(win);
+      resolvedOpenings.push({ cx:r.cx, halfWidth:r.halfWidth, width:r.width, x:wx, z:wz, area:r.width*r.height, centerY:(r.y0+r.y1)/2 });
+    });
+
+    wallMeshes.push({ seg, wallMesh, heatMesh, midX, midZ, azimuth:az, normal:{x:nx,z:nz}, along, length, height:w.height, openings:w.openings, resolvedOpenings, currentIrradiance:0, currentDirect:0, windward:false });
+  });
+
+  floorMesh = null;
+  if (closedLoop && segs.length>=3){
+    const shape = new THREE.Shape();
+    segs.forEach((s,i)=>{ if (i===0) shape.moveTo(s.a.x, -s.a.z); else shape.lineTo(s.a.x, -s.a.z); });
+    shape.closePath();
+    const floorGeo = new THREE.ShapeGeometry(shape);
+    floorGeo.rotateX(-Math.PI/2);
+    const floorMat = new THREE.MeshStandardMaterial({color:0xDDD8C6, roughness:0.95, side:THREE.DoubleSide});
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.position.y = -0.015; floor.receiveShadow = true;
+    buildingGroup.add(floor);
+    floorMesh = floor;
+  }
+
+  applyCameraFraming();
+}
+
+function boundsAndCentroid(){
+  let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity,maxH=3;
+  vertices.forEach(v=>{ minX=Math.min(minX,v.x); maxX=Math.max(maxX,v.x); minZ=Math.min(minZ,v.z); maxZ=Math.max(maxZ,v.z); maxH=Math.max(maxH,v.height); });
+  if (!isFinite(minX)) return { cx:0, cz:0, maxH:3, spanX:6, spanZ:6 };
+  return { cx:(minX+maxX)/2, cz:(minZ+maxZ)/2, maxH, spanX:maxX-minX, spanZ:maxZ-minZ };
+}
+
+function applyCameraFraming(){
+  const b = boundsAndCentroid();
+  if (!interiorView){
+    controls3d.target.set(b.cx, b.maxH*0.42, b.cz);
+  } else {
+    let target = wallMeshes[0], maxArea=-1;
+    wallMeshes.forEach(wm=>{ const area = wm.openings.reduce((a,o)=>a+o.w*o.h,0); if (area>maxArea){ maxArea=area; target=wm; } });
+    if (target){
+      const eyeH = Math.min(1.7, Math.max(1.2, b.maxH*0.3));
+      const camX = b.cx - target.normal.x*Math.max(1.0, Math.min(b.spanX,b.spanZ)*0.28);
+      const camZ = b.cz - target.normal.z*Math.max(1.0, Math.min(b.spanX,b.spanZ)*0.28);
+      camera3d.position.set(camX, eyeH, camZ);
+      controls3d.target.set(target.midX - target.normal.x*0.4, eyeH, target.midZ - target.normal.z*0.4);
+    }
+  }
+}
+
+function resetExteriorCamera(){
+  const b = boundsAndCentroid();
+  const dist = Math.max(b.spanX,b.spanZ,6)*1.15 + 6;
+  camera3d.position.set(b.cx+dist*0.7, b.maxH*1.5+5, b.cz+dist*0.7);
+  controls3d.target.set(b.cx, b.maxH*0.42, b.cz);
+}
+
+/* =========================================================
+   HEATMAP DE PISO — cómo entra la radiación/el viento por cada vano
+   ========================================================= */
+function windColorRamp(t){
+  t = Math.max(0,Math.min(1,t));
+  const stops = [[0,[233,238,232]], [0.35,[178,214,225]], [0.7,[70,150,180]], [1,[18,70,95]]];
+  for (let i=0;i<stops.length-1;i++){
+    const [t0,c0]=stops[i], [t1,c1]=stops[i+1];
+    if (t>=t0 && t<=t1){
+      const f=(t-t0)/(t1-t0);
+      const r=Math.round(c0[0]+f*(c1[0]-c0[0])), g=Math.round(c0[1]+f*(c1[1]-c0[1])), b=Math.round(c0[2]+f*(c1[2]-c0[2]));
+      return (r<<16)|(g<<8)|b;
+    }
+  }
+  return 0x12465F;
+}
+
+function buildingBBox(){
+  let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
+  vertices.forEach(v=>{ minX=Math.min(minX,v.x); maxX=Math.max(maxX,v.x); minZ=Math.min(minZ,v.z); maxZ=Math.max(maxZ,v.z); });
+  if (!isFinite(minX)) return null;
+  return { minX, maxX, minZ, maxZ };
+}
+
+// Recolecta todos los vanos activos con posición mundial, resueltos ya en rebuildBuilding()
+function collectActiveOpenings(){
+  const out = [];
+  wallMeshes.forEach(wm=>{
+    wm.resolvedOpenings.forEach(op=>{
+      out.push({ x:op.x, z:op.z, cx:op.cx, halfWidth:op.halfWidth, width:op.width, area:op.area, centerY:op.centerY,
+                 ownVIndex:wm.seg.vIndex, normal:wm.normal, wm });
+    });
+  });
+  return out;
+}
+
+/* Suaviza la cuadrícula (promedio de caja 3x3) para eliminar el aspecto "pixeloso"
+   de los bordes de sombra sin perder la forma general del patrón. */
+function smoothGrid(data, nx, nz){
+  const out = new Float32Array(nx*nz);
+  for (let iz=0; iz<nz; iz++){
+    for (let ix=0; ix<nx; ix++){
+      let sum=0, n=0;
+      for (let dz=-1; dz<=1; dz++){
+        const jz = iz+dz; if (jz<0||jz>=nz) continue;
+        for (let dx=-1; dx<=1; dx++){
+          const jx = ix+dx; if (jx<0||jx>=nx) continue;
+          sum += data[jz*nx+jx]; n++;
+        }
+      }
+      out[iz*nx+ix] = sum/n;
+    }
+  }
+  return out;
+}
+
+function computeFloorHeatmap(){
+  const bb = buildingBBox();
+  if (!bb || wallMeshes.length===0) return null;
+  const w = bb.maxX-bb.minX, h = bb.maxZ-bb.minZ;
+  if (w<=0.05 || h<=0.05) return null;
+  const openings = collectActiveOpenings();
+  if (openings.length===0) return { bb, nx:2, nz:2, data:new Float32Array(4), maxVal:0, mode:currentMode };
+
+  const maxDim = 90;
+  const nx = Math.max(14, Math.round(maxDim * (w/Math.max(w,h))));
+  const nz = Math.max(14, Math.round(maxDim * (h/Math.max(w,h))));
+  const occluders = wallMeshes.map(wm=>({ a:wm.seg.a, b:wm.seg.b, vIndex:wm.seg.vIndex }));
+  const isWind = currentMode==='wind';
+  const sunDx = Math.sin(toRad(lastSunAz)), sunDz = Math.cos(toRad(lastSunAz));
+
+  let data = new Float32Array(nx*nz);
+  let maxVal = 1e-6;
+
+  for (let iz=0; iz<nz; iz++){
+    const pz = bb.minZ + (iz+0.5)/nz*h;
+    for (let ix=0; ix<nx; ix++){
+      const px = bb.minX + (ix+0.5)/nx*w;
+      let val = 0;
+      for (let k=0;k<openings.length;k++){
+        const op = openings[k];
+        if (isWind && !op.wm.windward) continue;
+        const toOpX = op.x-px, toOpZ = op.z-pz;
+        const d = Math.hypot(toOpX,toOpZ) || 1e-6;
+        const facing = (toOpX*op.normal.x + toOpZ*op.normal.z)/d;
+        if (facing <= 0.02) continue;
+        let blocked = false;
+        for (let j=0;j<occluders.length;j++){
+          const oc = occluders[j];
+          if (oc.vIndex===op.ownVIndex) continue;
+          if (segmentsIntersect(px,pz, op.x,op.z, oc.a.x,oc.a.z, oc.b.x,oc.b.z)){ blocked=true; break; }
+        }
+        if (blocked) continue;
+
+        if (!isWind){
+          // Componente difusa+reflejada: transferencia radiativa punto-a-área real (no un factor inventado).
+          // El vano se trata como una fuente lambertiana de radiancia L = E_incidente·τ/π, y lo que llega
+          // al punto del piso sigue la ley del coseno en ambos extremos entre la fuente y d² (forma estándar
+          // de cálculo de iluminación punto-a-superficie, la misma que usan los métodos de "punto por punto" en luz natural).
+          const diffRefl = Math.max(0, op.wm.currentIrradiance - op.wm.currentDirect);
+          if (diffRefl > 0.05){
+            const winH = op.centerY;
+            const d3sq = d*d + winH*winH;
+            const d3 = Math.sqrt(d3sq) || 1e-6;
+            const cosEmit = facing*d/d3;      // ángulo entre el vano y la línea al punto
+            const cosReceive = winH/d3;       // ángulo entre el piso (normal vertical) y esa misma línea
+            if (cosEmit>0 && cosReceive>0){
+              const L = (diffRefl*TAU_GLASS)/Math.PI; // radiancia saliente del vano, W/(m²·sr)
+              val += (L*op.area*cosEmit*cosReceive)/d3sq;
+            }
+          }
+
+          // Haz directo: solo si el rayo desde P hacia el sol sale exactamente por este vano.
+          // Un haz colimado no se atenúa con la distancia interior — por eso no lleva factor de distancia,
+          // solo la irradiancia horizontal real (Meinel) transmitida por el vidrio.
+          if (op.wm.currentDirect>1 && lastSunVisible){
+            let minT=Infinity, hitV=null, hitX=0, hitZ=0;
+            for (let j=0;j<occluders.length;j++){
+              const oc = occluders[j];
+              const t = raySegmentParam(px,pz, sunDx,sunDz, oc.a.x,oc.a.z, oc.b.x,oc.b.z);
+              if (t<minT){ minT=t; hitV=oc.vIndex; hitX=px+sunDx*t; hitZ=pz+sunDz*t; }
+            }
+            if (hitV===op.ownVIndex){
+              const rel = (hitX-op.wm.seg.a.x)*op.wm.along.x + (hitZ-op.wm.seg.a.z)*op.wm.along.z;
+              const localX = rel - op.wm.length/2;
+              if (Math.abs(localX-op.cx) <= op.halfWidth){
+                val += meinelDNI(lastSunElevation)*Math.sin(lastSunElevation)*TAU_GLASS;
+              }
+            }
+          }
+        } else {
+          const windDx = -lastWindFromVec.x, windDz = -lastWindFromVec.z; // hacia adentro del volumen
+          const flowAlign = Math.max(0, (toOpX*windDx + toOpZ*windDz)/d);
+          const distFactor = 1/(1+0.05*d*d);
+          val += facing * flowAlign * distFactor * (op.width*1.4+0.3);
+        }
+      }
+      data[iz*nx+ix] = val;
+      if (val>maxVal) maxVal = val;
+    }
+  }
+  data = smoothGrid(data, nx, nz);
+  return { bb, nx, nz, data, maxVal, mode:currentMode };
+}
+
+function drawHeatmapCanvas(grid){
+  const canvas = document.createElement('canvas');
+  canvas.width = grid.nx; canvas.height = grid.nz;
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(grid.nx, grid.nz);
+  const isWind = grid.mode==='wind';
+  // En sol, el piso usa la MISMA escala física (0–1000 W/m²) que los muros: mismo color, mismo significado
+  // en toda la app. En viento no hay una unidad física de "alcance", así que esa sí se normaliza al máximo actual.
+  const scaleMax = isWind ? Math.max(grid.maxVal*0.55, 0.001) : 1000;
+  for (let iz=0; iz<grid.nz; iz++){
+    for (let ix=0; ix<grid.nx; ix++){
+      const val = grid.data[iz*grid.nx+ix];
+      const tv = Math.min(1, val/scaleMax);
+      const alpha = isWind ? Math.pow(tv,0.5) : Math.pow(tv,0.35); // solo controla opacidad/legibilidad, no el color
+      const hex = isWind ? windColorRamp(Math.pow(tv,0.5)) : colorRamp(val, 0, 1000);
+      const rowFromTop = grid.nz-1-iz; // z máxima (norte) arriba de la imagen
+      const p = (rowFromTop*grid.nx+ix)*4;
+      img.data[p] = (hex>>16)&255; img.data[p+1] = (hex>>8)&255; img.data[p+2] = hex&255;
+      img.data[p+3] = alpha<0.02 ? 0 : Math.round(255*Math.min(1, 0.18+alpha*1.05));
+    }
+  }
+  ctx.putImageData(img,0,0);
+  return canvas;
+}
+
+function updateFloorHeatmapVisuals(){
+  const grid = computeFloorHeatmap();
+  const svgImg = document.getElementById('plan-heatmap-img');
+  const clipPoly = document.getElementById('plan-clip-poly');
+
+  if (!grid){
+    svgImg.style.display = 'none';
+    if (floorMesh) floorMesh.material.map = null, floorMesh.material.needsUpdate = true;
+    return;
+  }
+  const canvas = drawHeatmapCanvas(grid);
+  const dataUrl = canvas.toDataURL();
+
+  svgImg.setAttributeNS('http://www.w3.org/1999/xlink','href', dataUrl);
+  svgImg.setAttribute('href', dataUrl);
+  svgImg.setAttribute('x', grid.bb.minX);
+  svgImg.setAttribute('y', -grid.bb.maxZ);
+  svgImg.setAttribute('width', grid.bb.maxX-grid.bb.minX);
+  svgImg.setAttribute('height', grid.bb.maxZ-grid.bb.minZ);
+  svgImg.style.display = '';
+
+  if (closedLoop && vertices.length>=3){
+    const pts = vertices.map(v=> (v.x)+','+(-v.z)).join(' ');
+    clipPoly.setAttribute('points', pts);
+    svgImg.setAttribute('clip-path', 'url(#plan-clip)');
+  } else {
+    svgImg.removeAttribute('clip-path');
+  }
+
+  if (floorMesh){
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.flipY = true;
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.needsUpdate = true;
+    floorMesh.material.map = tex;
+    floorMesh.material.color.setHex(0xffffff);
+    floorMesh.material.needsUpdate = true;
+  }
+}
+
+/* =========================================================
+   SOL Y RESULTADOS
+   ========================================================= */
+function updateSunPath(){
+  if (sunPathLine){ scene.remove(sunPathLine); sunPathLine.geometry.dispose(); sunPathLine=null; }
+  if (!showPath) return;
+  const lat=getNum('lat'), lon=getNum('lon'), tz=getNum('tz');
+  const fechaVal = document.getElementById('fecha').value;
+  if (!fechaVal) return;
+  const parts = fechaVal.split('-').map(Number);
+  const Y=parts[0], M=parts[1], D=parts[2];
+  const pts=[];
+  for(let hh=0; hh<=24; hh+=0.25){
+    const sp = solarPosition(lat,lon,tz,Y,M,D,hh);
+    if (sp.elevation>0){
+      const dist=28;
+      const x=dist*Math.cos(sp.elevation)*Math.sin(toRad(sp.azimuthDeg));
+      const z=dist*Math.cos(sp.elevation)*Math.cos(toRad(sp.azimuthDeg));
+      const y=dist*Math.sin(sp.elevation);
+      pts.push(new THREE.Vector3(x,y,z));
+    }
+  }
+  if (pts.length>1){
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    const mat = new THREE.LineBasicMaterial({color:0xEF9B0F, linewidth:2});
+    sunPathLine = new THREE.Line(geo,mat);
+    scene.add(sunPathLine);
+  }
+}
+
+function recomputeSun(){
+  const lat=getNum('lat'), lon=getNum('lon'), tz=getNum('tz');
+  const fechaVal = document.getElementById('fecha').value;
+  if (!fechaVal) return;
+  const parts = fechaVal.split('-').map(Number);
+  const Y=parts[0], M=parts[1], D=parts[2];
+  const hourDecimal = getNum('hora');
+  document.getElementById('hora-display').textContent = decimalToHHMM(hourDecimal);
+
+  const sp = solarPosition(lat, lon, tz, Y, M, D, hourDecimal);
+  const dist = 28;
+  const elR = sp.elevation, azR = toRad(sp.azimuthDeg);
+  const x = dist*Math.cos(elR)*Math.sin(azR), z = dist*Math.cos(elR)*Math.cos(azR), y = dist*Math.sin(elR);
+  const visible = sp.elevation>0;
+  lastSunAz = sp.azimuthDeg; lastSunElevation = elR; lastSunVisible = visible;
+
+  sunGizmo.visible = visible;
+  if (visible) sunGizmo.position.set(x,y,z);
+  sunLight.visible = visible;
+  if (visible){
+    sunLight.position.set(x,y,z);
+    const b = boundsAndCentroid();
+    sunLight.target.position.set(b.cx, b.maxH*0.4, b.cz);
+    sunLight.target.updateMatrixWorld();
+    sunLight.intensity = 1.3;
+  }
+
+  document.getElementById('r-hora-solar').textContent = decimalToHHMM(sp.trueSolarHour);
+  document.getElementById('r-elevacion').textContent = sp.elevationDeg.toFixed(1)+'°';
+  document.getElementById('r-azimut').textContent = sp.azimuthDeg.toFixed(1)+'° ('+cardinal(sp.azimuthDeg)+')';
+
+  const wallResults = wallMeshes.map((wm,i)=>{
+    const irr = wallIrradiance(elR, sp.azimuthDeg, wm.azimuth);
+    const col = colorRamp(irr.total,0,1000);
+    wm.heatMesh.material.color.setHex(col);
+    wm.currentIrradiance = irr.total;
+    wm.currentDirect = irr.direct;
+    return { idx:i, azimuth:wm.azimuth, total:irr.total, color:col };
+  });
+  const list = document.getElementById('wall-result-list');
+  list.innerHTML = wallResults.map(r=>`
+    <div class="wall-result-row">
+      <span class="swatch" style="background:${colorToCss(r.color)}"></span>
+      <span class="name">Muro ${r.idx+1}</span>
+      <span class="tag">${r.azimuth.toFixed(0)}° (${cardinal(r.azimuth)})</span>
+      <span class="val">${r.total.toFixed(0)} W/m²</span>
+    </div>`).join('') || '<div class="no-openings">Dibuja al menos un muro en la planta.</div>';
+
+  updateSunPath();
+  if (currentMode==='sol') updateFloorHeatmapVisuals();
+}
+
+function updateWind(){
+  const V = getNum('wind-speed'), windDir = getNum('wind-dir');
+  const Tout = getNum('t-ext'), Tin = getNum('t-int');
+  const fromVec = { x: Math.sin(toRad(windDir)), z: Math.cos(toRad(windDir)) };
+  lastWindFromVec = fromVec;
+
+  windArrowHelper.visible = (currentMode==='wind');
+  if (currentMode==='wind'){
+    const b = boundsAndCentroid();
+    const dist = Math.max(b.spanX,b.spanZ,6)*0.9;
+    // se coloca del lado de donde sopla el viento (barlovento) y apunta hacia el volumen
+    windArrowHelper.position.set(b.cx+fromVec.x*dist, b.maxH*0.6, b.cz+fromVec.z*dist);
+    windArrowHelper.setDirection(new THREE.Vector3(-fromVec.x,0,-fromVec.z));
+  }
+
+  let windwardArea=0, leewardArea=0;
+  const openingCenters = [];
+  const windTags = [];
+  wallMeshes.forEach((wm,wi)=>{
+    const dot = Math.sin(toRad(wm.azimuth))*fromVec.x + Math.cos(toRad(wm.azimuth))*fromVec.z;
+    const windward = dot>0.05;
+    wm.windward = windward;
+    let wallHasActive=false;
+    wm.openings.forEach(op=>{
+      const r = resolveOpening(op, wm.length, wm.height);
+      if (r.valid){
+        if (windward) windwardArea+=r.width*r.height; else leewardArea+=r.width*r.height;
+        openingCenters.push({height:(r.y0+r.y1)/2, area:r.width*r.height});
+        wallHasActive = true;
+      }
+    });
+    if (wallHasActive) windTags.push({ idx:wi, windward });
+  });
+
+  const Aeff = Math.min(windwardArea, leewardArea);
+  const Qwind = (Aeff>0) ? ventWind(0.55, Aeff, V) : 0;
+  let Qstack = 0;
+  if (openingCenters.length>=2){
+    let lowest=openingCenters[0], highest=openingCenters[0];
+    openingCenters.forEach(o=>{ if(o.height<lowest.height) lowest=o; if(o.height>highest.height) highest=o; });
+    const Hvent = highest.height-lowest.height;
+    if (Hvent>0.05) Qstack = ventStack(0.6, Math.min(lowest.area,highest.area), Hvent, Tin, Tout);
+  }
+  const Qtotal = Math.sqrt(Qstack*Qstack + Qwind*Qwind);
+  document.getElementById('r-q-wind').textContent = (Qwind*3600).toFixed(0)+' m³/h';
+  document.getElementById('r-q-stack').textContent = (Qstack*3600).toFixed(0)+' m³/h';
+  document.getElementById('r-q-total').textContent = (Qtotal*3600).toFixed(0)+' m³/h';
+
+  let area=0;
+  const segs = getSegments();
+  segs.forEach(s=>{ area += s.a.x*s.b.z - s.b.x*s.a.z; });
+  area = Math.abs(area)/2;
+  const avgH = wallMeshes.length ? wallMeshes.reduce((a,wm)=>a+wm.height,0)/wallMeshes.length : 0;
+  const vol = area*avgH;
+  const ach = vol>0 ? (Qtotal*3600)/vol : 0;
+  document.getElementById('r-ach').textContent = ach.toFixed(1)+' cambios/h';
+
+  const list = document.getElementById('wind-wall-list');
+  list.innerHTML = windTags.length ? windTags.map(t=>`
+    <div class="wall-result-row">
+      <span class="swatch" style="background:${t.windward?'#2F8FE0':'#9AA79E'}"></span>
+      <span class="name">Muro ${t.idx+1}</span>
+      <span class="tag">${t.windward?'barlovento (recibe viento)':'sotavento (extrae)'}</span>
+    </div>`).join('') : '<div class="no-openings">No hay vanos activos — agrega ventanas en la planta.</div>';
+
+  updateFloorHeatmapVisuals();
+}
+
+function recomputeAll(){
+  rebuildBuilding();
+  recomputeSun();
+  updateWind();
+}
+
+/* =========================================================
+   MODO Y VISTA
+   ========================================================= */
+function setMode(mode){
+  currentMode = mode;
+  document.body.classList.toggle('mode-wind', mode==='wind');
+  document.getElementById('mode-sol').classList.toggle('active', mode==='sol');
+  document.getElementById('mode-wind').classList.toggle('active', mode==='wind');
+  document.getElementById('settings-sol').classList.toggle('visible', mode==='sol');
+  document.getElementById('settings-wind').classList.toggle('visible', mode==='wind');
+  document.getElementById('results-sol').style.display = mode==='sol' ? '' : 'none';
+  document.getElementById('results-wind').style.display = mode==='wind' ? '' : 'none';
+  document.getElementById('legend-sol').style.display = mode==='sol' ? '' : 'none';
+  document.getElementById('legend-plan-sol').style.display = mode==='sol' ? '' : 'none';
+  document.getElementById('legend-plan-wind').style.display = mode==='wind' ? '' : 'none';
+  document.getElementById('mode-pill').textContent = mode==='sol' ? '☀ Sol' : '💨 Viento';
+  wallMeshes.forEach(wm=> wm.heatMesh.visible = (mode==='sol'));
+  updateWind();
+}
+document.getElementById('mode-sol').addEventListener('click', ()=>setMode('sol'));
+document.getElementById('mode-wind').addEventListener('click', ()=>setMode('wind'));
+
+document.getElementById('toggle-view').addEventListener('click', function(){
+  interiorView = !interiorView;
+  this.classList.toggle('active', interiorView);
+  this.textContent = 'Vista: '+(interiorView?'Interior':'Exterior');
+  applyCameraFraming();
+});
+document.getElementById('toggle-path').addEventListener('click', function(){
+  this.classList.toggle('active');
+  showPath = this.classList.contains('active');
+  updateSunPath();
+});
+document.getElementById('reset-cam').addEventListener('click', function(){
+  interiorView = false;
+  document.getElementById('toggle-view').classList.remove('active');
+  document.getElementById('toggle-view').textContent = 'Vista: Exterior';
+  resetExteriorCamera();
+});
+
+const sunIds = ['lat','lon','tz','hora'];
+const windIds = ['wind-speed','wind-dir','t-ext','t-int'];
+sunIds.forEach(id=> document.getElementById(id).addEventListener('input', recomputeSun));
+windIds.forEach(id=> document.getElementById(id).addEventListener('input', updateWind));
+document.getElementById('fecha').addEventListener('input', recomputeSun);
+
+document.getElementById('animar').addEventListener('change', function(){
+  if (this.checked){
+    animTimer = setInterval(()=>{
+      const slider = document.getElementById('hora');
+      let v = parseFloat(slider.value) + 0.15;
+      if (v>24) v -= 24;
+      slider.value = v;
+      recomputeSun();
+    }, 90);
+  } else { clearInterval(animTimer); }
+});
+
+/* =========================================================
+   INICIO
+   ========================================================= */
+(function init(){
+  const today = new Date();
+  document.getElementById('fecha').value = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+
+  renderWallsPanel();
+  fitPlanViewBox();
+  renderPlan();
+  initScene();
+  recomputeAll();
+  resetExteriorCamera();
+})();
+</script>
+
+</body>
+</html>
