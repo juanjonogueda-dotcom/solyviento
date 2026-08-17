@@ -252,7 +252,7 @@
         <button class="mode-btn" id="mode-wind">💨 Viento</button>
       </div>
       <div class="mode-settings visible" id="settings-sol">
-        <div class="block-note">Colorea cada muro por la radiación que recibe a la hora seleccionada — misma escala física (W/m²) en 3D, en el piso y en la lista de resultados. El mosaico del piso suma tres pasos reales: el haz directo del sol (irradiancia de Meinel proyectada al plano horizontal), la luz difusa que entra en línea recta por cada vano, y un primer rebote — esa misma luz vuelve a pegar en la cara interior de cada muro y ese muro se convierte en una fuente secundaria que ilumina el resto del piso (por eso mover un vano o agrandar un muro cambia visiblemente cómo se reparte la luz, no solo su brillo).</div>
+        <div class="block-note">Colorea cada muro por la radiación que recibe a la hora seleccionada — mismo dominio físico (0–1000+ W/m²) en el piso, solo que ahí el color se realza para que el rebote (unos pocos W/m²) no se vea igual de apagado que el haz directo (cientos de W/m²): son dos órdenes de magnitud de diferencia. Es un cálculo en tres pasos: haz directo del sol (irradiancia de Meinel proyectada al plano horizontal), luz difusa en línea recta por cada vano, y un primer rebote — esa misma luz pega en la cara interior de cada muro y ese muro se vuelve fuente secundaria que ilumina el resto del piso (por eso mover un vano o agrandar un muro cambia visiblemente cómo se reparte la luz).</div>
       </div>
       <div class="mode-settings" id="settings-wind">
         <button type="button" class="vbtn" id="wind-fetch-btn" style="width:100%; margin-bottom:9px; justify-content:center;">📡 Usar viento real de este sitio</button>
@@ -1050,7 +1050,7 @@ function collectActiveOpenings(){
 }
 
 // Mosaico deliberado: pocas teselas grandes y nítidas — más fácil de leer que un gradiente fino.
-const MOSAIC_TILES = 15;
+const MOSAIC_TILES = 28;
 
 function computeFloorHeatmap(){
   const bb = buildingBBox();
@@ -1176,38 +1176,61 @@ function computeFloorHeatmap(){
       }
 
       data[iz*nx+ix] = val;
-      if (val>maxVal) maxVal = val;
     }
   }
-  return { bb, nx, nz, data, maxVal, mode:currentMode };
+
+  // Suaviza el borde del haz directo: geométricamente es una sombra dura (o el punto ve el sol por el
+  // vano, o no), pero ningún borde de luz real es un corte de un píxel — se difumina levemente entre
+  // teselas vecinas, sin perder la forma general del patrón ni la posición del haz.
+  const smoothed = new Float32Array(nx*nz);
+  for (let iz=0; iz<nz; iz++){
+    for (let ix=0; ix<nx; ix++){
+      let sum=0, n=0;
+      for (let dz=-1; dz<=1; dz++){
+        const jz=iz+dz; if (jz<0||jz>=nz) continue;
+        for (let dx=-1; dx<=1; dx++){
+          const jx=ix+dx; if (jx<0||jx>=nx) continue;
+          const w = (dx===0&&dz===0) ? 4 : 1; // el propio valor pesa más que sus vecinos
+          sum += data[jz*nx+jx]*w; n+=w;
+        }
+      }
+      const v = sum/n;
+      smoothed[iz*nx+ix] = v;
+      if (v>maxVal) maxVal = v;
+    }
+  }
+  return { bb, nx, nz, data:smoothed, maxVal, mode:currentMode };
 }
 
 // Dibuja el mosaico: una tesela cuadrada y sólida por celda, con un pequeño hueco entre ellas.
 // Nada de gradiente ni difuminado — cada tesela es un valor que se puede leer directamente.
+// El haz directo (cientos de W/m²) y el rebote (unos pocos W/m²) difieren en dos órdenes de magnitud.
+// El NÚMERO sigue siendo el real (0–1000 W/m², igual dominio que los muros); lo que se realza es el
+// COLOR con una curva perceptual (t^0.22), calibrada para que un rebote típico de ~10-50 W/m² caiga a
+// media escala en vez de aplastarse contra el 0 — así se ve la progresión completa azul→verde→rojo.
+const FLOOR_SCALE_MAX = 1000;
+const FLOOR_GAMMA = 0.22;
+const MOSAIC_BANDS = 12; // el color se escalona en bandas discretas, como una leyenda de lux de verdad
+
 function drawHeatmapCanvas(grid){
-  const TILE = 20, GAP = 3;
+  const TILE = 14, GAP = 1.5;
   const canvas = document.createElement('canvas');
   canvas.width = grid.nx*TILE; canvas.height = grid.nz*TILE;
   const ctx = canvas.getContext('2d');
   ctx.imageSmoothingEnabled = false;
   const isWind = grid.mode==='wind';
-  // En sol, el piso sigue en la MISMA escala física (0–1000 W/m²) que los muros — el número de fondo
-  // no cambia — pero el haz directo (cientos de W/m²) y el primer rebote (unos pocos W/m²) difieren en
-  // dos órdenes de magnitud, y en una escala lineal el rebote se ve todo igual de apagado. Por eso el
-  // COLOR (no el dato) se pinta con una curva perceptual (t^0.42): realza justo la parte baja donde vive
-  // el rebote, sin mover casi nada la parte alta donde ya está el haz directo.
-  const scaleMax = isWind ? Math.max(grid.maxVal*0.55, 0.001) : 1000;
-  const GAMMA = isWind ? 0.5 : 0.2;
+  const scaleMax = isWind ? Math.max(grid.maxVal*0.55, 0.001) : FLOOR_SCALE_MAX;
   for (let iz=0; iz<grid.nz; iz++){
     const rowFromTop = grid.nz-1-iz; // z máxima (norte) arriba de la imagen
     for (let ix=0; ix<grid.nx; ix++){
       const val = grid.data[iz*grid.nx+ix];
-      const tLinear = Math.min(1, val/scaleMax);
-      const t = Math.pow(tLinear, GAMMA); // misma curva para color y opacidad: un solo valor, dos usos
-      if (t<0.05) continue; // tesela vacía: se deja transparente
-      const hex = isWind ? windColorRamp(t) : colorRamp(t, 0, 1);
+      if (val<=0.02) continue; // tesela vacía: se deja transparente
+      const tRaw = Math.min(1, val/scaleMax);
+      const t = Math.pow(tRaw, isWind ? 0.5 : FLOOR_GAMMA);
+      const tBand = Math.min(1, Math.floor(t*MOSAIC_BANDS)/MOSAIC_BANDS + 0.5/MOSAIC_BANDS);
+      const hex = isWind ? windColorRamp(tBand) : colorRamp(tBand, 0, 1);
       const r=(hex>>16)&255, g=(hex>>8)&255, b=hex&255;
-      ctx.fillStyle = `rgba(${r},${g},${b},${Math.min(1,0.22+t*0.85).toFixed(3)})`;
+      ctx.fillStyle = `rgba(${r},${g},${b},0.97)`;
       ctx.fillRect(ix*TILE+GAP/2, rowFromTop*TILE+GAP/2, TILE-GAP, TILE-GAP);
     }
   }
