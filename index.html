@@ -252,7 +252,7 @@
         <button class="mode-btn" id="mode-wind">💨 Viento</button>
       </div>
       <div class="mode-settings visible" id="settings-sol">
-        <div class="block-note">Colorea cada muro por la radiación que recibe a la hora seleccionada — misma escala física (W/m²) en 3D, en el piso y en la lista de resultados. El patrón sobre el piso no es decorativo: el haz directo usa la irradiancia real de Meinel proyectada al plano horizontal, y la luz difusa que entra por cada vano se calcula con la fórmula de transferencia radiativa punto-a-área (coseno en el vano, coseno en el piso, 1/d²).</div>
+        <div class="block-note">Colorea cada muro por la radiación que recibe a la hora seleccionada — misma escala física (W/m²) en 3D, en el piso y en la lista de resultados. El mosaico del piso suma tres pasos reales: el haz directo del sol (irradiancia de Meinel proyectada al plano horizontal), la luz difusa que entra en línea recta por cada vano, y un primer rebote — esa misma luz vuelve a pegar en la cara interior de cada muro y ese muro se convierte en una fuente secundaria que ilumina el resto del piso (por eso mover un vano o agrandar un muro cambia visiblemente cómo se reparte la luz, no solo su brillo).</div>
       </div>
       <div class="mode-settings" id="settings-wind">
         <button type="button" class="vbtn" id="wind-fetch-btn" style="width:100%; margin-bottom:9px; justify-content:center;">📡 Usar viento real de este sitio</button>
@@ -346,7 +346,7 @@
     </div>
 
     <footer>
-      <b>Metodología:</b> posición solar — algoritmo NOAA/Meeus. Radiación en muros — cielo despejado de Meinel, componente difusa y reflejada isotrópica; no incluye nubosidad real. Radiación en piso — mismo modelo de Meinel: el haz directo se traza vano por vano (sin atenuar con la distancia, como corresponde a un haz colimado) y la componente difusa usa la ecuación de transferencia radiativa punto-a-área (radiancia del vano × coseno emisor × coseno receptor / d²), con una transmitancia de vidrio de 0.82. Viento — efecto chimenea y viento cruzado de ASHRAE Fundamentals (Cd=0.6, Cv=0.55) combinados en cuadratura, a partir de los vanos de tu planta; el patrón de alcance en piso es una estimación cualitativa, no un campo de velocidades (no hay CFD). Herramienta de estudio conceptual, no de proyecto ejecutivo.
+      <b>Metodología:</b> posición solar — algoritmo NOAA/Meeus. Radiación en muros — cielo despejado de Meinel, componente difusa y reflejada isotrópica; no incluye nubosidad real. Radiación en piso — mismo modelo de Meinel, en dos pasos de transferencia radiativa punto-a-área (radiancia de la fuente × coseno emisor × coseno receptor / d², con oclusión real de los muros de tu planta): (1) el haz directo se traza vano por vano sin atenuar con la distancia, como corresponde a un haz colimado, y la componente difusa pasa por cada vano con una transmitancia de vidrio de 0.82; (2) esa luz vuelve a pegar en la cara interior de cada muro (con la misma fórmula) y ese muro, con una reflectancia interior de 0.55, se convierte en una fuente secundaria que ilumina el resto del piso — el primer rebote real, no un promedio inventado. Rebotes posteriores (2°, 3°...) no se modelan. Viento — efecto chimenea y viento cruzado de ASHRAE Fundamentals (Cd=0.6, Cv=0.55) combinados en cuadratura, a partir de los vanos de tu planta; el patrón de alcance en piso es una estimación cualitativa, no un campo de velocidades (no hay CFD). Herramienta de estudio conceptual, no de proyecto ejecutivo.
     </footer>
   </div>
 
@@ -361,6 +361,14 @@
 const SOLAR_CONST = 1353;
 const ALBEDO = 0.2;
 const TAU_GLASS = 0.82; // transmitancia típica de un vidrio claro (fracción que atraviesa el vano)
+const RHO_ROOM = 0.55;  // reflectancia interior promedio típica (muros, piso y techo claros)
+
+function computeFloorArea(){
+  if (!closedLoop) return 0;
+  let area = 0;
+  getSegments().forEach(s=>{ area += s.a.x*s.b.z - s.b.x*s.a.z; });
+  return Math.abs(area)/2;
+}
 function toRad(d){ return d*Math.PI/180; }
 function toDeg(r){ return r*180/Math.PI; }
 function dayOfYear(y,m,d){
@@ -530,12 +538,16 @@ function renderWallsPanel(){
 
 document.getElementById('wallsList').addEventListener('input', (e)=>{
   const t = e.target; const field = t.dataset.field; if (!field) return;
-  const vIdx = +t.dataset.vIdx; const v = vertices[vIdx]; if (!v) return;
+  // Los campos de vano (ancho/alto/antepecho) no llevan sus propios data-v-idx/data-op-idx: se leen
+  // del .op-row contenedor, que sí los tiene — un solo lugar de verdad en vez de repetirlos en cada input.
+  const scope = t.closest('[data-v-idx]');
+  if (!scope) return;
+  const vIdx = +scope.dataset.vIdx; const v = vertices[vIdx]; if (!v) return;
   const val = parseFloat(t.value);
   if (field==='height') v.height = isFinite(val) ? Math.max(0.5,val) : v.height;
   else if (field==='thickness') v.thickness = isFinite(val) ? Math.max(1,val) : v.thickness;
   else if (field==='openW' || field==='openH' || field==='openSill'){
-    const oi = +t.dataset.opIdx; const op = v.openings[oi]; if (!op) return;
+    const oi = +scope.dataset.opIdx; const op = v.openings[oi]; if (!op) return;
     const key = field==='openW' ? 'w' : (field==='openH' ? 'h' : 'sill');
     op[key] = isFinite(val) ? Math.max(0,val) : op[key];
   }
@@ -1054,6 +1066,53 @@ function computeFloorHeatmap(){
   const isWind = currentMode==='wind';
   const sunDx = Math.sin(toRad(lastSunAz)), sunDz = Math.cos(toRad(lastSunAz));
 
+  // Transferencia radiativa punto-a-área entre dos superficies Lambertianas, con oclusión real.
+  // srcPos/rcvPos llevan {x,y,z}; Ns/Nr son las normales YA orientadas hacia adentro del cuarto
+  // (la cara que efectivamente emite o recibe luz). Es la misma fórmula de la óptica de iluminación
+  // (radiancia × cosenos / d²) — se reusa para vano→piso, vano→muro y muro→piso: un solo cálculo,
+  // tres usos, en vez de tres fórmulas distintas.
+  function transferPointToArea(srcPos, Ns, Lsrc, Asrc, rcvPos, Nr, excludeIdx){
+    const dx=srcPos.x-rcvPos.x, dy=srcPos.y-rcvPos.y, dz=srcPos.z-rcvPos.z;
+    const d2 = dx*dx+dy*dy+dz*dz;
+    const d = Math.sqrt(d2) || 1e-6;
+    const cosSrc = -(dx*Ns.x+dy*Ns.y+dz*Ns.z)/d;
+    const cosRcv =  (dx*Nr.x+dy*Nr.y+dz*Nr.z)/d;
+    if (cosSrc<=0.001 || cosRcv<=0.001) return 0;
+    for (let j=0;j<occluders.length;j++){
+      const oc = occluders[j];
+      if (oc.vIndex===excludeIdx[0] || oc.vIndex===excludeIdx[1]) continue;
+      if (segmentsIntersect(rcvPos.x,rcvPos.z, srcPos.x,srcPos.z, oc.a.x,oc.a.z, oc.b.x,oc.b.z)) return 0;
+    }
+    return (Lsrc*Asrc*cosSrc*cosRcv)/d2;
+  }
+
+  if (!isWind){
+    // Radiancia lambertiana de cada vano (lo que ya no es haz directo): se calcula una sola vez y se
+    // reusa tanto para iluminar el piso en línea recta como para iluminar los muros (paso siguiente).
+    openings.forEach(op=>{
+      const diffRefl = Math.max(0, op.wm.currentIrradiance - op.wm.currentDirect);
+      op.Lrad = diffRefl>0.05 ? (diffRefl*TAU_GLASS)/Math.PI : 0;
+      op.srcPos = { x:op.x, y:op.centerY, z:op.z };
+      op.Ns = { x:-op.normal.x, y:0, z:-op.normal.z }; // normal hacia adentro del cuarto
+    });
+
+    // Primer rebote: cuánta luz de vano le llega a la CARA INTERIOR de cada muro. Ese muro se
+    // convierte entonces en una fuente secundaria (radiosidad = lo recibido × reflectancia) que
+    // reparte luz hacia el resto del piso — así es como la luz "se dispersa" en un cuarto real en
+    // vez de quedarse solo en la franja que ve la ventana en línea recta.
+    wallMeshes.forEach(wm=>{
+      const Nin = { x:-wm.normal.x, y:0, z:-wm.normal.z };
+      const rcvPos = { x: wm.midX+Nin.x*0.06, y: wm.height*0.5, z: wm.midZ+Nin.z*0.06 };
+      let received = 0;
+      openings.forEach(op=>{
+        if (op.Lrad<=0 || op.ownVIndex===wm.seg.vIndex) return;
+        received += transferPointToArea(op.srcPos, op.Ns, op.Lrad, op.area, rcvPos, Nin, [op.ownVIndex, wm.seg.vIndex]);
+      });
+      wm.interiorReceived = received;
+      wm.radiosity = received*RHO_ROOM; // W/m² que este muro reemite hacia el cuarto
+    });
+  }
+
   let data = new Float32Array(nx*nz);
   let maxVal = 1e-6;
 
@@ -1062,42 +1121,14 @@ function computeFloorHeatmap(){
     for (let ix=0; ix<nx; ix++){
       const px = bb.minX + (ix+0.5)/nx*w;
       let val = 0;
-      for (let k=0;k<openings.length;k++){
-        const op = openings[k];
-        if (isWind && !op.wm.windward) continue;
-        const toOpX = op.x-px, toOpZ = op.z-pz;
-        const d = Math.hypot(toOpX,toOpZ) || 1e-6;
-        const facing = (toOpX*op.normal.x + toOpZ*op.normal.z)/d;
-        if (facing <= 0.02) continue;
-        let blocked = false;
-        for (let j=0;j<occluders.length;j++){
-          const oc = occluders[j];
-          if (oc.vIndex===op.ownVIndex) continue;
-          if (segmentsIntersect(px,pz, op.x,op.z, oc.a.x,oc.a.z, oc.b.x,oc.b.z)){ blocked=true; break; }
-        }
-        if (blocked) continue;
 
-        if (!isWind){
-          // Componente difusa+reflejada: transferencia radiativa punto-a-área real (no un factor inventado).
-          // El vano se trata como una fuente lambertiana de radiancia L = E_incidente·τ/π, y lo que llega
-          // al punto del piso sigue la ley del coseno en ambos extremos entre la fuente y d² (forma estándar
-          // de cálculo de iluminación punto-a-superficie, la misma que usan los métodos de "punto por punto" en luz natural).
-          const diffRefl = Math.max(0, op.wm.currentIrradiance - op.wm.currentDirect);
-          if (diffRefl > 0.05){
-            const winH = op.centerY;
-            const d3sq = d*d + winH*winH;
-            const d3 = Math.sqrt(d3sq) || 1e-6;
-            const cosEmit = facing*d/d3;      // ángulo entre el vano y la línea al punto
-            const cosReceive = winH/d3;       // ángulo entre el piso (normal vertical) y esa misma línea
-            if (cosEmit>0 && cosReceive>0){
-              const L = (diffRefl*TAU_GLASS)/Math.PI; // radiancia saliente del vano, W/(m²·sr)
-              val += (L*op.area*cosEmit*cosReceive)/d3sq;
-            }
+      if (!isWind){
+        // Vano → piso: haz directo (exacto, sin caída por distancia) + difusa en línea recta.
+        for (let k=0;k<openings.length;k++){
+          const op = openings[k];
+          if (op.Lrad>0){
+            val += transferPointToArea(op.srcPos, op.Ns, op.Lrad, op.area, {x:px,y:0,z:pz}, {x:0,y:1,z:0}, [op.ownVIndex,-1]);
           }
-
-          // Haz directo: solo si el rayo desde P hacia el sol sale exactamente por este vano.
-          // Un haz colimado no se atenúa con la distancia interior — por eso no lleva factor de distancia,
-          // solo la irradiancia horizontal real (Meinel) transmitida por el vidrio.
           if (op.wm.currentDirect>1 && lastSunVisible){
             let minT=Infinity, hitV=null, hitX=0, hitZ=0;
             for (let j=0;j<occluders.length;j++){
@@ -1113,13 +1144,37 @@ function computeFloorHeatmap(){
               }
             }
           }
-        } else {
+        }
+        // Muro → piso: primer rebote, mismo cálculo, ahora con el muro como fuente.
+        wallMeshes.forEach(wm=>{
+          if (wm.radiosity>0.02){
+            const Nin = { x:-wm.normal.x, y:0, z:-wm.normal.z };
+            const srcPos = { x:wm.midX, y:wm.height*0.5, z:wm.midZ };
+            val += transferPointToArea(srcPos, Nin, wm.radiosity/Math.PI, wm.length*wm.height, {x:px,y:0,z:pz}, {x:0,y:1,z:0}, [wm.seg.vIndex,-1]);
+          }
+        });
+      } else {
+        for (let k=0;k<openings.length;k++){
+          const op = openings[k];
+          if (!op.wm.windward) continue;
+          const toOpX = op.x-px, toOpZ = op.z-pz;
+          const d = Math.hypot(toOpX,toOpZ) || 1e-6;
+          const facing = (toOpX*op.normal.x + toOpZ*op.normal.z)/d;
+          if (facing <= 0.02) continue;
+          let blocked = false;
+          for (let j=0;j<occluders.length;j++){
+            const oc = occluders[j];
+            if (oc.vIndex===op.ownVIndex) continue;
+            if (segmentsIntersect(px,pz, op.x,op.z, oc.a.x,oc.a.z, oc.b.x,oc.b.z)){ blocked=true; break; }
+          }
+          if (blocked) continue;
           const windDx = -lastWindFromVec.x, windDz = -lastWindFromVec.z; // hacia adentro del volumen
           const flowAlign = Math.max(0, (toOpX*windDx + toOpZ*windDz)/d);
           const distFactor = 1/(1+0.05*d*d);
           val += facing * flowAlign * distFactor * (op.width*1.4+0.3);
         }
       }
+
       data[iz*nx+ix] = val;
       if (val>maxVal) maxVal = val;
     }
@@ -1326,10 +1381,7 @@ function updateWind(){
   document.getElementById('r-q-stack').textContent = (Qstack*3600).toFixed(0)+' m³/h';
   document.getElementById('r-q-total').textContent = (Qtotal*3600).toFixed(0)+' m³/h';
 
-  let area=0;
-  const segs = getSegments();
-  segs.forEach(s=>{ area += s.a.x*s.b.z - s.b.x*s.a.z; });
-  area = Math.abs(area)/2;
+  const area = computeFloorArea();
   const avgH = wallMeshes.length ? wallMeshes.reduce((a,wm)=>a+wm.height,0)/wallMeshes.length : 0;
   const vol = area*avgH;
   const ach = vol>0 ? (Qtotal*3600)/vol : 0;
