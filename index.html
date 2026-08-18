@@ -37,7 +37,7 @@
   h1,h2,h3{ font-family:'Manrope', sans-serif; }
 
   .title-block{
-    background:var(--surface); color:var(--text); padding:14px 22px;
+    background:var(--surface); color:var(--text); padding:12px 22px;
     display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;
     border-bottom:1px solid var(--border); position:relative;
   }
@@ -46,19 +46,19 @@
     background:linear-gradient(90deg, var(--sun), var(--sun-deep)); transition:background .35s ease;
   }
   body.mode-wind .title-block::before{ background:linear-gradient(90deg, var(--wind), var(--wind-deep)); }
-  .title-block h1{ margin:0; font-weight:800; font-size: clamp(18px, 2.4vw, 22px); letter-spacing:-0.01em; display:flex; align-items:center; gap:8px; }
+  .title-block h1{ margin:0; font-weight:800; font-size: clamp(17px, 2.4vw, 21px); letter-spacing:-0.01em; display:flex; align-items:center; gap:8px; }
   .title-block .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-faint); margin-bottom:3px; font-weight:600; }
-  .title-block .meta{ text-align:right; font-size:11px; color:var(--text-soft); line-height:1.5; max-width:320px; }
+  .title-block .meta{ text-align:right; font-size:11px; color:var(--text-soft); line-height:1.5; max-width:340px; }
   .mode-pill{
     display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:700; padding:3px 9px 3px 7px;
     border-radius:999px; background:var(--mode-accent); color:#fff; text-transform:uppercase; letter-spacing:0.04em;
     transition:background .35s ease;
   }
 
-  .app{ display:grid; grid-template-columns: 320px 1fr; min-height: calc(100vh - 60px); }
+  .app{ display:grid; grid-template-columns: 330px 1fr; min-height: calc(100vh - 58px); }
   @media (max-width:980px){ .app{ grid-template-columns: 1fr; } }
 
-  .panel{ background:var(--surface); border-right:1px solid var(--border); padding:14px 14px 34px; max-height: calc(100vh - 60px); overflow-y:auto; }
+  .panel{ background:var(--surface); border-right:1px solid var(--border); padding:14px 14px 34px; max-height: calc(100vh - 58px); overflow-y:auto; }
   @media (max-width:980px){ .panel{ max-height:none; border-right:none; border-bottom:1px solid var(--border);} }
 
   .block{ margin-bottom:14px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 12px 13px; }
@@ -69,6 +69,7 @@
   }
   .block-title{ font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:0.02em; }
   .block-note{ font-size:11px; color:var(--text-faint); margin: 2px 0 9px; line-height:1.5; }
+  .block-note b{ color:var(--text-soft); }
 
   .field{ margin-bottom:8px; }
   .field label{ display:block; font-size:10.5px; font-weight:700; margin-bottom:3px; color:var(--text-soft); }
@@ -81,11 +82,18 @@
   .row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; }
 
   input[type=range]{ accent-color:var(--mode-accent); width:100%; }
-  .hora-display{ font-family:'IBM Plex Mono', monospace; font-weight:700; color:var(--mode-accent-deep); font-size:15px; text-align:center; margin-top:3px; transition:color .35s ease; }
+  .hora-display{ font-family:'IBM Plex Mono', monospace; font-weight:700; color:var(--mode-accent-deep); font-size:15px; text-align:center; margin-top:1px; transition:color .35s ease; }
   .check-row{ display:flex; align-items:center; gap:6px; margin:7px 0 2px; }
   .check-row label{ font-size:11px; font-weight:600; margin:0; color:var(--text-soft); }
 
+  /* barra día/noche bajo el slider de hora */
+  .daybar{ position:relative; height:7px; border-radius:4px; overflow:hidden; background:#28324a; margin:1px 0 2px; }
+  .daybar .lit{ position:absolute; top:0; bottom:0; background:linear-gradient(90deg,#F5C24B,#EF9B0F,#F5C24B); }
+  .daybar .now{ position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--text); }
+  .daybar-labels{ display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--text-faint); font-weight:600; }
+
   .mode-toggle{ display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:9px; background:var(--surface-2); border-radius:var(--radius-md); }
+  .mode-toggle.three{ grid-template-columns:1fr 1fr 1fr; }
   .mode-btn{
     font-family:'Manrope', sans-serif; font-weight:700; font-size:12px; padding:9px 6px;
     border:1px solid var(--border-strong); border-radius:var(--radius-sm); background:#fff; color:var(--text-soft); cursor:pointer; text-align:center;
@@ -98,29 +106,56 @@
   .mode-settings{ display:none; }
   .mode-settings.visible{ display:block; }
 
-  .wall-row{ border:1px solid var(--border-strong); border-radius:var(--radius-sm); background:#fff; padding:8px 9px 9px; margin-bottom:7px; }
-  .wall-row-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
-  .wall-row-head .wname{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:11.5px; color:var(--accent); }
-  .wall-row-head .wlen{ font-weight:400; color:var(--text-faint); }
-  .icon-btn{
-    font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:700; border:1px solid var(--border-strong);
-    background:#fff; color:var(--text-soft); border-radius:var(--radius-sm); padding:3px 7px; cursor:pointer; line-height:1.6;
+  /* ---- planta: formas rápidas + inspector contextual ---- */
+  .shape-row{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:8px; }
+  .shape-btn{
+    font-family:'Manrope',sans-serif; font-size:10.5px; font-weight:700; padding:8px 4px; cursor:pointer;
+    border:1px solid var(--border-strong); border-radius:var(--radius-sm); background:#fff; color:var(--text-soft);
+    display:flex; flex-direction:column; align-items:center; gap:3px; line-height:1.2;
   }
-  .icon-btn:hover{ background:var(--surface-2); }
-  .icon-btn.danger{ color:#B4432E; }
-  .op-row{ display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:5px; align-items:end; margin-top:5px; padding-top:6px; border-top:1px dashed var(--border-strong); }
-  .op-row .field{ margin-bottom:0; }
-  .op-row .field label{ font-size:9px; }
-  .op-row input{ font-size:11px; padding:5px 5px; }
-  .op-row .icon-btn{ padding:5px 7px; align-self:stretch; }
-  .no-openings{ font-size:10.5px; color:var(--text-faint); font-style:italic; }
+  .shape-btn:hover{ background:var(--surface-2); color:var(--text); }
+  .shape-btn svg{ display:block; }
 
-  .plan-hint{ font-size:10.5px; color:var(--text-soft); font-weight:600; margin-top:2px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:4px; margin:6px 0 2px; }
+  .chip{
+    font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:700; padding:4px 8px; cursor:pointer;
+    border:1px solid var(--border-strong); border-radius:999px; background:#fff; color:var(--text-soft);
+  }
+  .chip:hover{ background:var(--surface-2); }
+  .chip.active{ background:var(--sel); border-color:var(--sel); color:#fff; }
+  .chip.win{ border-style:dashed; }
+
+  .inspector{ background:#fff; border:1px solid var(--border-strong); border-radius:var(--radius-sm); padding:9px 10px 10px; margin-top:7px; }
+  .inspector.empty{ background:transparent; border-style:dashed; color:var(--text-faint); font-size:11px; text-align:center; padding:14px 10px; }
+  .inspector-head{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:7px; }
+  .inspector-head .t{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11.5px; color:var(--accent); }
+  .inspector-head .s{ font-size:10px; color:var(--text-faint); font-weight:600; }
+  .mini-elev{ background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); margin:4px 0 8px; }
+  .btn-row{ display:flex; gap:5px; margin-top:7px; }
+  .btn-row .icon-btn{ flex:1; text-align:center; }
+  .icon-btn{
+    font-family:'Manrope', sans-serif; font-size:10.5px; font-weight:700; border:1px solid var(--border-strong);
+    background:#fff; color:var(--text-soft); border-radius:var(--radius-sm); padding:6px 8px; cursor:pointer; line-height:1.4;
+  }
+  .icon-btn:hover{ background:var(--surface-2); color:var(--text); }
+  .icon-btn.danger{ color:#B4432E; }
+  .icon-btn.danger:hover{ background:#FDF0ED; }
+  .icon-btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .icon-btn.primary:hover{ background:#3444B0; color:#fff; }
+
+  /* rosa de los vientos interactiva */
+  .dial-wrap{ display:flex; gap:10px; align-items:center; }
+  .dial-wrap .dial{ flex:0 0 92px; cursor:grab; touch-action:none; }
+  .dial-wrap .dial:active{ cursor:grabbing; }
+  .dial-fields{ flex:1 1 auto; }
+
+  .plan-hint{ font-size:10.5px; color:var(--text-soft); font-weight:600; margin-top:2px; transition:opacity .4s ease; }
+  .plan-hint.gone{ opacity:0; }
 
   /* ---- columna derecha ---- */
   .right{ display:flex; flex-direction:column; }
-  .views{ display:grid; grid-template-columns: 1.3fr 1fr; gap:12px; padding:12px 12px 0; flex: 0 0 min(56vh, 540px); }
-  @media (max-width:760px){ .views{ grid-template-columns:1fr; flex-basis:auto; } .view-box{ height:44vh; } }
+  .views{ display:grid; grid-template-columns: 1.25fr 1fr; gap:12px; padding:12px 12px 0; flex: 0 0 min(58vh, 560px); }
+  @media (max-width:760px){ .views{ grid-template-columns:1fr; flex-basis:auto; } .view-box{ height:46vh; } }
 
   .view-box{ position:relative; background:#E4EEF3; min-height:260px; border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-sm); border:1px solid var(--border); }
   .view-box canvas, .view-box svg{ display:block; width:100%; height:100%; }
@@ -129,7 +164,7 @@
     letter-spacing:0.07em; text-transform:uppercase; background:rgba(255,255,255,0.9); backdrop-filter:blur(4px); border:1px solid var(--border);
     border-radius:var(--radius-sm); padding:4px 8px; color:var(--text-soft); z-index:5; pointer-events:none;
   }
-  .view-controls{ position:absolute; top:10px; right:10px; display:flex; flex-direction:column; gap:5px; z-index:5; }
+  .view-controls{ position:absolute; top:10px; right:10px; display:flex; flex-direction:column; gap:5px; z-index:5; align-items:flex-end; }
   .view-controls.row{ flex-direction:row; top:auto; bottom:10px; right:10px; }
   .vbtn{
     font-family:'Manrope', sans-serif; font-size:10.5px; font-weight:700; background:rgba(255,255,255,0.94);
@@ -138,7 +173,6 @@
   }
   .vbtn:hover{ background:#fff; border-color:var(--border-strong); }
   .vbtn.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
-  .vbtn.on-wind.active{ background:var(--wind); border-color:var(--wind); }
   .compass-note{
     position:absolute; left:10px; bottom:10px; background:rgba(255,255,255,0.92); border:1px solid var(--border); border-radius:999px;
     padding:4px 9px; font-size:9.5px; color:var(--text-soft); font-weight:700; z-index:5; pointer-events:none;
@@ -147,27 +181,37 @@
     position:absolute; right:10px; bottom:10px; background:rgba(255,255,255,0.94); border:1px solid var(--border); border-radius:var(--radius-md);
     padding:6px 9px; font-family:'IBM Plex Mono', monospace; font-size:8.5px; z-index:5; pointer-events:none; box-shadow:var(--shadow-sm);
   }
-  .legend .bar{ width:112px; height:7px; margin:4px 0; border-radius:4px; background:linear-gradient(90deg, rgb(31,76,115), rgb(46,139,180), rgb(90,168,90), rgb(230,180,40), rgb(156,43,33)); }
+  .legend .bar{ width:130px; height:8px; margin:4px 0 3px; border-radius:3px; }
   .legend .labels{ display:flex; justify-content:space-between; color:var(--text-soft); font-weight:600; }
   .legend .cap{ color:var(--text-faint); margin-bottom:2px; font-weight:600; text-transform:uppercase; letter-spacing:0.03em; }
 
   #plan-svg{ touch-action:none; cursor:crosshair; }
   #plan-svg.mode-move{ cursor:default; }
-  .plan-vertex{ fill:var(--accent); stroke:#fff; cursor:grab; }
-  .plan-vertex.selected{ fill:var(--sel); }
+  .plan-vertex{ fill:#fff; stroke:var(--accent); cursor:grab; }
+  .plan-vertex.selected{ fill:var(--sel); stroke:var(--sel); }
   .plan-wall-hit{ stroke:transparent; fill:none; cursor:pointer; }
-  .plan-wall{ stroke:#7C8574; fill:none; stroke-linecap:square; }
+  .plan-wall{ stroke:#6E7668; fill:none; stroke-linecap:butt; }
   .plan-wall.selected{ stroke:var(--sel); }
-  .plan-opening-line{ stroke:var(--wind); stroke-linecap:butt; opacity:0.9; cursor:grab; }
-  .plan-opening-line.selected{ stroke:var(--sel); }
+  .plan-dim{ font-family:'IBM Plex Mono', monospace; font-weight:600; fill:var(--text-faint); text-anchor:middle; pointer-events:none; }
+  .plan-split{ cursor:copy; }
+  .plan-split-hit{ fill:transparent; cursor:copy; }
+  .plan-opening-line{ stroke:#fff; stroke-linecap:butt; cursor:grab; }
+  .plan-opening-jamb{ stroke:var(--wind-deep); stroke-linecap:butt; }
+  .plan-opening-jamb.selected{ stroke:var(--sel); }
   .plan-opening-hit{ stroke:transparent; fill:none; cursor:grab; }
-  .plan-opening-handle{ fill:#fff; stroke:var(--wind); stroke-width:0.035; cursor:grab; }
-  .plan-opening-handle.selected{ fill:var(--sel); stroke:var(--sel); }
+  .plan-op-handle{ fill:#fff; stroke:var(--wind-deep); cursor:ew-resize; }
+  .plan-op-handle.selected{ stroke:var(--sel); }
+  .plan-stream{ fill:none; stroke:var(--wind-deep); stroke-linecap:round; opacity:0.75; pointer-events:none; }
+  .plan-stream.anim{ stroke-dasharray:0.35 0.55; animation:flow 1.1s linear infinite; }
+  @keyframes flow{ to { stroke-dashoffset:-0.9; } }
+  .plan-iso{ fill:none; stroke:rgba(255,255,255,0.72); pointer-events:none; }
+  .plan-iso-label{ font-family:'IBM Plex Mono',monospace; fill:#fff; text-anchor:middle; pointer-events:none;
+                   paint-order:stroke; stroke:rgba(0,0,0,0.45); stroke-linejoin:round; }
 
   /* ---- resultados ---- */
   .results{ padding:14px 16px 30px; }
   .stat-row{ display:flex; flex-wrap:wrap; gap:9px; margin-bottom:13px; }
-  .stat{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:9px 12px; min-width:110px; flex:1 1 110px; box-shadow:var(--shadow-sm); cursor:help; }
+  .stat{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:9px 12px; min-width:112px; flex:1 1 112px; box-shadow:var(--shadow-sm); cursor:help; }
   .stat .k{ font-size:9.5px; text-transform:uppercase; letter-spacing:0.03em; color:var(--text-faint); font-weight:700; }
   .stat .v{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:15px; color:var(--text); margin-top:3px; }
   .stat.hl{ border-color:var(--mode-accent); }
@@ -176,14 +220,15 @@
   .wall-result-list{ display:flex; flex-direction:column; gap:5px; }
   .wall-result-row{
     display:flex; align-items:center; gap:9px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
-    padding:7px 11px; font-family:'IBM Plex Mono', monospace; font-size:11px; box-shadow:var(--shadow-sm);
+    padding:7px 11px; font-family:'IBM Plex Mono', monospace; font-size:11px; box-shadow:var(--shadow-sm); cursor:pointer;
   }
+  .wall-result-row:hover{ border-color:var(--border-strong); }
   .wall-result-row .swatch{ width:11px; height:11px; border-radius:3px; flex:0 0 auto; border:1px solid rgba(0,0,0,0.12); }
   .wall-result-row .name{ font-weight:700; color:var(--text); min-width:54px; }
   .wall-result-row .tag{ color:var(--text-faint); font-size:9.5px; }
   .wall-result-row .val{ margin-left:auto; font-weight:700; }
 
-  footer{ padding: 4px 16px 30px; font-size:10.5px; color:var(--text-faint); line-height:1.6; max-width: 860px; }
+  footer{ padding: 4px 16px 30px; font-size:10.5px; color:var(--text-faint); line-height:1.6; max-width: 900px; }
   footer b{ color:var(--text-soft); }
 </style>
 </head>
@@ -194,7 +239,7 @@
     <div class="eyebrow">Planta libre · interactiva</div>
     <h1>Asoleamiento y viento <span class="mode-pill" id="mode-pill">☀ Sol</span></h1>
   </div>
-  <div class="meta">Dibuja tus muros en la planta (derecha)<br>Posición solar NOAA/Meeus · Radiación de cielo despejado (Meinel) · Ventilación ASHRAE</div>
+  <div class="meta">Posición solar NOAA/Meeus · Cielo despejado Hottel + Liu-Jordan<br>Ventilación: red de presiones ASHRAE · Flujo potencial 2D</div>
 </div>
 
 <div class="app">
@@ -202,8 +247,9 @@
   <!-- ============ PANEL ============ -->
   <div class="panel">
 
+    <!-- ---------- 1. SITIO, CIELO Y HORA ---------- -->
     <div class="block">
-      <div class="block-head"><span class="block-num">1</span><span class="block-title">Sitio y hora</span></div>
+      <div class="block-head"><span class="block-num">1</span><span class="block-title">Sitio, cielo y hora</span></div>
       <div class="mode-toggle" id="site-mode-toggle">
         <button type="button" class="mode-btn active" id="site-mode-city" data-site-mode="city">🏙 Ciudad</button>
         <button type="button" class="mode-btn" id="site-mode-coords" data-site-mode="coords">📍 Coordenadas</button>
@@ -211,15 +257,20 @@
       <div class="mode-settings visible" id="site-city-panel">
         <div class="field">
           <select id="ciudad">
-            <option value="19.4326,-99.1332,-6" selected>Ciudad de México</option>
-            <option value="20.6597,-103.3496,-6">Guadalajara</option>
-            <option value="25.6866,-100.3161,-6">Monterrey</option>
-            <option value="21.1619,-86.8515,-5">Cancún</option>
-            <option value="20.9674,-89.5926,-6">Mérida</option>
-            <option value="32.5149,-117.0382,-8">Tijuana</option>
-            <option value="4.7110,-74.0721,-5">Bogotá</option>
-            <option value="40.4168,-3.7038,1">Madrid</option>
-            <option value="-34.6037,-58.3816,-3">Buenos Aires</option>
+            <option value="19.4326,-99.1332,-6,2240" selected>Ciudad de México · 2240 m</option>
+            <option value="20.6597,-103.3496,-6,1566">Guadalajara · 1566 m</option>
+            <option value="25.6866,-100.3161,-6,540">Monterrey · 540 m</option>
+            <option value="21.1619,-86.8515,-5,10">Cancún · 10 m</option>
+            <option value="20.9674,-89.5926,-6,10">Mérida · 10 m</option>
+            <option value="19.1738,-96.1342,-6,10">Veracruz · 10 m</option>
+            <option value="16.8531,-99.8237,-6,10">Acapulco · 10 m</option>
+            <option value="32.5149,-117.0382,-8,20">Tijuana · 20 m</option>
+            <option value="19.7060,-101.1950,-6,1920">Morelia · 1920 m</option>
+            <option value="4.7110,-74.0721,-5,2640">Bogotá · 2640 m</option>
+            <option value="-12.0464,-77.0428,-5,150">Lima · 150 m</option>
+            <option value="-33.4489,-70.6693,-3,570">Santiago · 570 m</option>
+            <option value="-34.6037,-58.3816,-3,25">Buenos Aires · 25 m</option>
+            <option value="40.4168,-3.7038,1,660">Madrid · 660 m</option>
           </select>
         </div>
       </div>
@@ -228,44 +279,88 @@
           <div class="field"><label>Latitud (°)</label><input type="number" id="lat" value="19.4326" step="0.0001"></div>
           <div class="field"><label>Longitud (°)</label><input type="number" id="lon" value="-99.1332" step="0.0001"></div>
         </div>
-        <div class="field"><label>Huso horario (UTC)</label><input type="number" id="tz" value="-6" step="1"></div>
+        <div class="row2">
+          <div class="field"><label>Huso horario (UTC)</label><input type="number" id="tz" value="-6" step="1"></div>
+          <div class="field"><label>Altitud (m)</label><input type="number" id="alt" value="2240" step="10"></div>
+        </div>
       </div>
       <div class="field"><label>Fecha</label><input type="date" id="fecha"></div>
-      <div class="field">
+      <div class="field" style="margin-bottom:4px;">
         <label>Hora local</label>
-        <input type="range" id="hora" min="0" max="24" step="0.1" value="12">
-        <div class="hora-display" id="hora-display">12:00</div>
+        <input type="range" id="hora" min="0" max="24" step="0.05" value="12">
+        <div class="daybar" id="daybar"><div class="lit" id="daybar-lit"></div><div class="now" id="daybar-now"></div></div>
+        <div class="daybar-labels"><span id="lbl-salida">—</span><span class="hora-display" id="hora-display" style="margin:0;">12:00</span><span id="lbl-puesta">—</span></div>
       </div>
-      <div class="check-row"><input type="checkbox" id="animar"><label for="animar">Animar recorrido del día</label></div>
+      <div class="field">
+        <label>Nubosidad — <span id="cloud-val">10</span>%</label>
+        <input type="range" id="cloud" min="0" max="100" step="5" value="10">
+      </div>
+      <div class="check-row"><input type="checkbox" id="animar"><label for="animar">Animar el recorrido del día</label></div>
+      <button type="button" class="icon-btn" id="weather-btn" style="width:100%; margin-top:8px;">📡 Traer clima real de este sitio</button>
+      <div class="block-note" id="weather-status" style="margin:6px 0 0;">Viento, temperatura y nubosidad actuales (Open-Meteo).</div>
     </div>
 
+    <!-- ---------- 2. PLANTA ---------- -->
     <div class="block">
-      <div class="block-head"><span class="block-num">2</span><span class="block-title">Muros y vanos</span></div>
-      <div class="block-note">Dibuja y mueve los muros directamente en la vista de <b>Planta</b> →. En cada vano, el ancho que ves aquí es exactamente el ancho de la línea azul que aparece sobre el muro.</div>
-      <div id="wallsList"></div>
+      <div class="block-head"><span class="block-num">2</span><span class="block-title">Planta: muros y vanos</span></div>
+      <div class="block-note">Empieza con una forma y ajústala arrastrando en la <b>Planta</b> →. Doble clic sobre un muro agrega un vano ahí mismo.</div>
+      <div class="shape-row">
+        <button class="shape-btn" data-shape="rect"><svg width="26" height="18" viewBox="0 0 26 18"><rect x="2" y="3" width="22" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Rectángulo</button>
+        <button class="shape-btn" data-shape="ele"><svg width="26" height="18" viewBox="0 0 26 18"><path d="M2 3 H14 V9 H24 V15 H2 Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>En L</button>
+        <button class="shape-btn" data-shape="open"><svg width="26" height="18" viewBox="0 0 26 18"><path d="M2 15 V3 H24 V15" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Abierta</button>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Ancho (m)</label><input type="number" id="shape-w" value="10" step="0.5" min="1"></div>
+        <div class="field"><label>Largo (m)</label><input type="number" id="shape-d" value="6" step="0.5" min="1"></div>
+        <div class="field"><label>Giro (°)</label><input type="number" id="shape-rot" value="0" step="5"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Altura de muros (m)</label><input type="number" id="global-h" value="3" step="0.1" min="0.5"></div>
+        <div class="field"><label>Espesor (cm)</label><input type="number" id="global-t" value="15" step="1" min="2"></div>
+      </div>
+      <div class="chips" id="wall-chips"></div>
+      <div id="inspector"></div>
     </div>
 
+    <!-- ---------- 3. MODO ---------- -->
     <div class="block">
       <div class="block-head"><span class="block-num">3</span><span class="block-title">Modo de representación</span></div>
       <div class="mode-toggle">
         <button class="mode-btn active" id="mode-sol">☀ Asoleamiento</button>
         <button class="mode-btn" id="mode-wind">💨 Viento</button>
       </div>
+
       <div class="mode-settings visible" id="settings-sol">
-        <div class="block-note">Colorea cada muro por la radiación que recibe a la hora seleccionada — mismo dominio físico (0–1000+ W/m²) en el piso, solo que ahí el color se realza para que el rebote (unos pocos W/m²) no se vea igual de apagado que el haz directo (cientos de W/m²): son dos órdenes de magnitud de diferencia. Es un cálculo en tres pasos: haz directo del sol (irradiancia de Meinel proyectada al plano horizontal), luz difusa en línea recta por cada vano, y un primer rebote — esa misma luz pega en la cara interior de cada muro y ese muro se vuelve fuente secundaria que ilumina el resto del piso (por eso mover un vano o agrandar un muro cambia visiblemente cómo se reparte la luz).</div>
-      </div>
-      <div class="mode-settings" id="settings-wind">
-        <button type="button" class="vbtn" id="wind-fetch-btn" style="width:100%; margin-bottom:9px; justify-content:center;">📡 Usar viento real de este sitio</button>
-        <div class="block-note" id="wind-fetch-status" style="margin-top:-4px;">Trae viento y temperatura actuales del sitio (Open-Meteo), según la ciudad de arriba.</div>
+        <div class="check-row"><input type="checkbox" id="has-roof" checked><label for="has-roof">El espacio tiene losa de techo</label></div>
+        <div class="block-note" style="margin-top:5px;">Sin losa, el piso recibe sol directo salvo donde los muros dan sombra. Con losa, la luz entra únicamente por los vanos.</div>
         <div class="row2">
-          <div class="field"><label>Velocidad viento (m/s)</label><input type="number" id="wind-speed" value="2.0" step="0.1" min="0"></div>
-          <div class="field"><label>Dirección <span style="font-weight:400;color:var(--text-faint);">de donde viene</span></label><input type="number" id="wind-dir" value="45" step="1" min="0" max="359"></div>
+          <div class="field"><label>Reflectancia muros</label><input type="number" id="rho-wall" value="0.55" step="0.05" min="0" max="0.95"></div>
+          <div class="field"><label>Reflectancia piso</label><input type="number" id="rho-floor" value="0.25" step="0.05" min="0" max="0.95"></div>
+        </div>
+        <div class="field"><label>Transmitancia del vidrio</label><input type="number" id="tau-glass" value="0.8" step="0.05" min="0.05" max="1"></div>
+        <div class="block-note">El piso se mide en <b>lux</b> con escala logarítmica: es el único modo de ver a la vez el haz directo (decenas de miles de lux) y la luz rebotada del fondo del cuarto (decenas de lux). Los muros se colorean en W/m² — ganancia térmica.</div>
+      </div>
+
+      <div class="mode-settings" id="settings-wind">
+        <div class="dial-wrap">
+          <svg class="dial" id="wind-dial" viewBox="-50 -50 100 100" width="92" height="92"></svg>
+          <div class="dial-fields">
+            <div class="field" style="margin-bottom:6px;"><label>Velocidad a 10 m (m/s)</label><input type="number" id="wind-speed" value="2.5" step="0.1" min="0"></div>
+            <div class="field" style="margin-bottom:0;"><label>Dirección <span style="font-weight:400;color:var(--text-faint);">de donde viene</span></label><input type="number" id="wind-dir" value="45" step="1"></div>
+          </div>
+        </div>
+        <div class="field" style="margin-top:8px;"><label>Entorno (perfil de viento)</label>
+          <select id="terrain">
+            <option value="0.14">Campo abierto / costa</option>
+            <option value="0.22" selected>Suburbano / arbolado</option>
+            <option value="0.33">Urbano denso</option>
+          </select>
         </div>
         <div class="row2">
           <div class="field"><label>T° exterior (°C)</label><input type="number" id="t-ext" value="22" step="0.5"></div>
-          <div class="field"><label>T° interior (°C)</label><input type="number" id="t-int" value="24" step="0.5"></div>
+          <div class="field"><label>T° interior (°C)</label><input type="number" id="t-int" value="26" step="0.5"></div>
         </div>
-        <div class="block-note">Cada vano se clasifica <b>barlovento</b> (recibe el viento) o <b>sotavento</b> (lo extrae) según la orientación de su muro. El efecto chimenea usa el vano más bajo y el más alto de toda la planta.</div>
+        <div class="block-note">Cada vano recibe su propio coeficiente de presión <b>Cp</b> según cómo lo golpea el viento (Swami-Chandra), y se resuelve la presión interior que equilibra entradas y salidas. Un vano puede entrar en <b>barlovento</b> o salir en <b>sotavento</b> según toda la configuración, no solo su orientación.</div>
       </div>
     </div>
 
@@ -282,46 +377,47 @@
           <button class="vbtn" id="toggle-path">Trayectoria solar</button>
           <button class="vbtn" id="reset-cam">Reencuadrar</button>
         </div>
-        <div class="legend" id="legend-sol">
-          <div class="cap">Radiación, W/m²</div>
-          <div class="bar"></div>
-          <div class="labels"><span>0</span><span>500</span><span>1000+</span></div>
+        <div class="legend" id="legend-3d">
+          <div class="cap" id="legend-3d-cap">Radiación en muros, W/m²</div>
+          <div class="bar" id="legend-3d-bar"></div>
+          <div class="labels" id="legend-3d-labels"><span>0</span><span>500</span><span>1000</span></div>
         </div>
       </div>
       <div class="view-box" id="view-plan">
         <div class="view-label">Planta</div>
         <div class="compass-note" style="left:auto; right:10px; bottom:10px;">↑ Norte</div>
         <div class="view-controls">
-          <button class="vbtn active" id="plan-mode-move" data-mode="move">Mover</button>
-          <button class="vbtn" id="plan-mode-wall" data-mode="wall">+ Muro</button>
-          <button class="vbtn" id="plan-mode-opening" data-mode="opening">+ Vano</button>
+          <button class="vbtn active" id="plan-mode-move" data-mode="move">✥ Editar</button>
+          <button class="vbtn" id="plan-mode-wall" data-mode="wall">✎ Dibujar</button>
+          <button class="vbtn active" id="plan-iso">◎ Isolíneas</button>
+          <button class="vbtn" id="plan-fit">⤢ Reencuadrar</button>
         </div>
         <div class="view-controls row">
           <button class="vbtn" id="plan-close" style="display:none;">Cerrar planta</button>
+          <button class="vbtn" id="plan-undo" title="Deshacer (Ctrl+Z)">↩ Deshacer</button>
           <button class="vbtn" id="plan-delete" style="display:none;">🗑 Eliminar</button>
         </div>
         <svg id="plan-svg" class="mode-move" viewBox="-8 -6 16 12" preserveAspectRatio="xMidYMid meet">
           <defs>
             <pattern id="gridpat" width="1" height="1" patternUnits="userSpaceOnUse">
-              <path d="M 1 0 L 0 0 0 1" fill="none" stroke="#c9cdc2" stroke-width="0.015"/>
+              <path d="M 1 0 L 0 0 0 1" fill="none" stroke="#c9cdc2" stroke-width="0.012"/>
             </pattern>
             <clipPath id="plan-clip" clipPathUnits="userSpaceOnUse"><polygon id="plan-clip-poly" points=""></polygon></clipPath>
+            <marker id="arrow-wind" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+              <path d="M 0 1 L 9 5 L 0 9 z" fill="#155F9E"></path>
+            </marker>
           </defs>
-          <rect x="-500" y="-500" width="1000" height="1000" fill="url(#gridpat)"></rect>
-          <image id="plan-heatmap-img" x="0" y="0" width="0" height="0" style="display:none; image-rendering:pixelated;" preserveAspectRatio="none" image-rendering="pixelated"></image>
+          <rect id="plan-bg" x="-500" y="-500" width="1000" height="1000" fill="url(#gridpat)"></rect>
+          <image id="plan-heatmap-img" x="0" y="0" width="0" height="0" style="display:none;" preserveAspectRatio="none"></image>
+          <g id="plan-overlay"></g>
           <g id="plan-content"></g>
         </svg>
-        <div class="legend" id="legend-plan-sol" style="right:auto; left:10px; bottom:10px;">
-          <div class="cap">Irradiancia en piso, W/m² (escala realzada)</div>
-          <div class="bar"></div>
-          <div class="labels"><span>0</span><span>rebote</span><span>haz directo</span></div>
+        <div class="legend" id="legend-plan" style="right:auto; left:10px; bottom:10px;">
+          <div class="cap" id="legend-plan-cap">Iluminancia en piso, lux</div>
+          <div class="bar" id="legend-plan-bar"></div>
+          <div class="labels" id="legend-plan-labels"></div>
         </div>
-        <div class="legend" id="legend-plan-wind" style="display:none; right:auto; left:10px; bottom:10px;">
-          <div class="cap">Alcance de ventilación (estimación cualitativa)</div>
-          <div class="bar" style="background:linear-gradient(90deg, rgb(233,238,232), rgb(178,214,225), rgb(70,150,180), rgb(18,70,95));"></div>
-          <div class="labels"><span>0</span><span>media</span><span>alta</span></div>
-        </div>
-        <div class="plan-hint" style="position:absolute; left:10px; right:118px; top:10px; z-index:5; background:rgba(255,255,255,0.92); padding:5px 8px; border-radius:8px; pointer-events:none;" id="plan-hint">Arrastra los puntos para mover muros. Usa «+ Muro» para dibujar y «+ Vano» para agregar ventanas.</div>
+        <div class="plan-hint" style="position:absolute; left:10px; right:132px; top:10px; z-index:5; background:rgba(255,255,255,0.92); padding:5px 8px; border-radius:8px; pointer-events:none;" id="plan-hint">Arrastra vértices, muros o vanos. Doble clic sobre un muro = nuevo vano. Rueda = zoom.</div>
       </div>
     </div>
 
@@ -331,22 +427,29 @@
           <div class="stat" title="Hora solar verdadera: corrige la hora del reloj por la ecuación del tiempo y tu longitud."><div class="k">Hora solar</div><div class="v" id="r-hora-solar">—</div></div>
           <div class="stat" title="Ángulo del sol sobre el horizonte. 0° = amanece/anochece, 90° = sol al cenit."><div class="k">Elevación</div><div class="v" id="r-elevacion">—</div></div>
           <div class="stat" title="Dirección del sol medida desde el Norte, en sentido horario."><div class="k">Azimut</div><div class="v" id="r-azimut">—</div></div>
+          <div class="stat" title="Irradiancia directa normal: lo que llega del disco solar a un plano perpendicular al rayo."><div class="k">Directa (DNI)</div><div class="v" id="r-dni">—</div></div>
+          <div class="stat hl" title="Iluminancia media sobre el piso interior, incluyendo haz directo, difusa por los vanos y rebote."><div class="k">Piso: media</div><div class="v" id="r-lux-media">—</div></div>
+          <div class="stat" title="Porcentaje del piso por encima de 300 lux, el umbral habitual de una tarea de oficina o estudio."><div class="k">Área &gt; 300 lx</div><div class="v" id="r-util">—</div></div>
+          <div class="stat" title="Uniformidad = mínimo / media. Por debajo de 0.2 el contraste entre la mancha de sol y el fondo es incómodo."><div class="k">Uniformidad</div><div class="v" id="r-unif">—</div></div>
         </div>
         <div class="wall-result-list" id="wall-result-list"></div>
       </div>
       <div id="results-wind" style="display:none;">
         <div class="stat-row">
-          <div class="stat" title="Aire movido por la diferencia de presión del viento entre el lado barlovento y el sotavento."><div class="k">Caudal por viento</div><div class="v" id="r-q-wind">—</div></div>
-          <div class="stat" title="Aire movido por diferencia de temperatura y altura entre el vano más bajo y el más alto."><div class="k">Caudal por chimenea</div><div class="v" id="r-q-stack">—</div></div>
-          <div class="stat hl" title="Ambos efectos combinados en cuadratura (raíz de la suma de cuadrados)."><div class="k">Caudal combinado</div><div class="v" id="r-q-total">—</div></div>
-          <div class="stat" title="Renovaciones de aire por hora: caudal combinado dividido entre el volumen del espacio."><div class="k">Equivalente</div><div class="v" id="r-ach">—</div></div>
+          <div class="stat" title="Velocidad del viento corregida a la altura del edificio con el perfil de potencia del entorno elegido."><div class="k">Viento a la altura</div><div class="v" id="r-vh">—</div></div>
+          <div class="stat" title="Aire que entra por todos los vanos en barlovento, resolviendo la presión interior de equilibrio."><div class="k">Caudal de entrada</div><div class="v" id="r-q-total">—</div></div>
+          <div class="stat" title="Caudal que movería solo la diferencia de temperatura, sin viento (efecto chimenea)."><div class="k">Solo chimenea</div><div class="v" id="r-q-stack">—</div></div>
+          <div class="stat" title="Intercambio por fluctuaciones de presión: es lo que sigue renovando el aire cuando el viento corre paralelo a los vanos y la diferencia de presión media es cero."><div class="k">Turbulento</div><div class="v" id="r-q-turb">—</div></div>
+          <div class="stat hl" title="Renovaciones de aire por hora: caudal de entrada dividido entre el volumen del espacio."><div class="k">Renovaciones</div><div class="v" id="r-ach">—</div></div>
+          <div class="stat" title="Velocidad media del aire dentro del espacio según el campo de flujo potencial."><div class="k">Velocidad interior</div><div class="v" id="r-vint">—</div></div>
+          <div class="stat" title="Porcentaje del piso con más de 0.2 m/s, el umbral en el que el aire empieza a sentirse en la piel."><div class="k">Área con brisa</div><div class="v" id="r-brisa">—</div></div>
         </div>
         <div class="wall-result-list" id="wind-wall-list"></div>
       </div>
     </div>
 
     <footer>
-      <b>Metodología:</b> posición solar — algoritmo NOAA/Meeus. Radiación en muros — cielo despejado de Meinel, componente difusa y reflejada isotrópica; no incluye nubosidad real. Radiación en piso — mismo modelo de Meinel, en dos pasos de transferencia radiativa punto-a-área (radiancia de la fuente × coseno emisor × coseno receptor / d², con oclusión real de los muros de tu planta): (1) el haz directo se traza vano por vano sin atenuar con la distancia, como corresponde a un haz colimado, y la componente difusa pasa por cada vano con una transmitancia de vidrio de 0.82; (2) esa luz vuelve a pegar en la cara interior de cada muro (con la misma fórmula) y ese muro, con una reflectancia interior de 0.55, se convierte en una fuente secundaria que ilumina el resto del piso — el primer rebote real, no un promedio inventado. Rebotes posteriores (2°, 3°...) no se modelan. Viento — efecto chimenea y viento cruzado de ASHRAE Fundamentals (Cd=0.6, Cv=0.55) combinados en cuadratura, a partir de los vanos de tu planta; el patrón de alcance en piso es una estimación cualitativa, no un campo de velocidades (no hay CFD). Herramienta de estudio conceptual, no de proyecto ejecutivo.
+      <b>Metodología.</b> <b>Sol:</b> posición solar NOAA/Meeus; cielo despejado con transmitancias de Hottel (corregidas por altitud del sitio) y difusa de Liu-Jordan; la nubosidad reduce la global con Kasten-Czeplak y desplaza la fracción difusa. <b>Luz en el piso:</b> tres términos separados — (1) haz directo trazado en 3D real: desde cada punto del piso se lanza el rayo hacia el sol con su elevación y su azimut, y solo hay mancha de sol si ese rayo cruza el hueco de un vano <i>a la altura correcta</i> (por eso la mancha entra, avanza y se retira con las horas); (2) difusa del cielo y del suelo que atraviesa cada vano, resuelta subdividiendo el vano en parches y sumando radiancia × cosenos / d² con oclusión real; (3) componente interreflejada, con el patrón del primer rebote en muros normalizado al balance de flujo de la esfera integradora Φρ/(A(1−ρ)), que sí contabiliza todos los rebotes. Conversión a lux con 110 lm/W. <b>Viento:</b> perfil de potencia según entorno, Cp por vano con la correlación de Swami-Chandra para edificación baja, y red de presiones de zona única — se resuelve por bisección la presión interior que hace que entradas y salidas se compensen, incluyendo el término de chimenea a la altura de cada vano. El campo interior es flujo potencial 2D (fuentes y sumideros sobre los vanos, con imagen en el muro): idealizado, sin turbulencia ni separación — muestra la <i>trayectoria</i> del aire y las zonas muertas, no un resultado de CFD. Herramienta de estudio conceptual, no de proyecto ejecutivo.
     </footer>
   </div>
 
@@ -356,27 +459,23 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 /* =========================================================
-   FÍSICA
+   1 · FÍSICA — SOL
    ========================================================= */
-const SOLAR_CONST = 1353;
-const ALBEDO = 0.2;
-const TAU_GLASS = 0.82; // transmitancia típica de un vidrio claro (fracción que atraviesa el vano)
-const RHO_ROOM = 0.55;  // reflectancia interior promedio típica (muros, piso y techo claros)
+const SOLAR_CONST = 1367;      // W/m² constante solar
+const ALBEDO = 0.2;            // reflectancia del suelo exterior
+const LUM_EFF = 110;           // lm/W — eficacia luminosa de la luz de día
 
-function computeFloorArea(){
-  if (!closedLoop) return 0;
-  let area = 0;
-  getSegments().forEach(s=>{ area += s.a.x*s.b.z - s.b.x*s.a.z; });
-  return Math.abs(area)/2;
-}
-function toRad(d){ return d*Math.PI/180; }
-function toDeg(r){ return r*180/Math.PI; }
+const toRad = d => d*Math.PI/180;
+const toDeg = r => r*180/Math.PI;
+const clamp = (v,a,b) => v<a?a:(v>b?b:v);
+
 function dayOfYear(y,m,d){
   const isLeap = (y%4===0 && y%100!==0) || y%400===0;
   const dim=[31,isLeap?29:28,31,30,31,30,31,31,30,31,30,31];
   let doy=d; for(let i=0;i<m-1;i++) doy+=dim[i];
   return {doy, totalDays: isLeap?366:365};
 }
+
 function solarPosition(lat, lon, utcOffset, y,m,d, hourDecimal){
   const {doy, totalDays} = dayOfYear(y,m,d);
   const gamma = (2*Math.PI/totalDays)*(doy-1+(hourDecimal-12)/24);
@@ -387,45 +486,123 @@ function solarPosition(lat, lon, utcOffset, y,m,d, hourDecimal){
   const ha = toRad((tst/4)-180);
   const latR = toRad(lat);
   const cosZenith = Math.sin(latR)*Math.sin(decl)+Math.cos(latR)*Math.cos(decl)*Math.cos(ha);
-  const zenith = Math.acos(Math.max(-1,Math.min(1,cosZenith)));
+  const zenith = Math.acos(clamp(cosZenith,-1,1));
   const elevation = Math.PI/2-zenith;
   const cosEl = Math.cos(elevation) || 1e-6;
   const sinAz = -Math.sin(ha)*Math.cos(decl)/cosEl;
   const cosAz = (Math.sin(decl)-Math.sin(latR)*Math.sin(elevation))/(Math.cos(latR)*cosEl);
   let az = toDeg(Math.atan2(sinAz,cosAz));
   if (az<0) az+=360;
-  const trueSolarHour = (((hourDecimal*60+time_offset)/60)%24+24)%24;
-  return {elevation, elevationDeg: toDeg(elevation), azimuthDeg: az, declinationDeg: toDeg(decl), trueSolarHour};
+  return { elevation, elevationDeg: toDeg(elevation), azimuthDeg: az, declination: decl,
+           doy, totalDays, trueSolarHour: ((tst/60)%24+24)%24 };
 }
-function meinelDNI(elevationRad){
-  if (elevationRad<=0) return 0;
-  const AM = 1/Math.sin(elevationRad);
-  return SOLAR_CONST*Math.pow(0.7, Math.pow(AM,0.678));
+
+/* Amanecer y atardecer locales (elevación = -0.833° por refracción) */
+function sunriseSunset(lat, lon, tz, y,m,d){
+  const {doy, totalDays} = dayOfYear(y,m,d);
+  const gamma = (2*Math.PI/totalDays)*(doy-1);
+  const eqtime = 229.18*(0.000075+0.001868*Math.cos(gamma)-0.032077*Math.sin(gamma)-0.014615*Math.cos(2*gamma)-0.040849*Math.sin(2*gamma));
+  const decl = 0.006918-0.399912*Math.cos(gamma)+0.070257*Math.sin(gamma)-0.006758*Math.cos(2*gamma)+0.000907*Math.sin(2*gamma)-0.002697*Math.cos(3*gamma)+0.00148*Math.sin(3*gamma);
+  const latR = toRad(lat);
+  const cosHA = (Math.cos(toRad(90.833)) - Math.sin(latR)*Math.sin(decl)) / (Math.cos(latR)*Math.cos(decl));
+  if (cosHA>1) return {rise:null, set:null, polar:'noche'};   // no amanece
+  if (cosHA<-1) return {rise:null, set:null, polar:'dia'};    // no anochece
+  const ha = toDeg(Math.acos(cosHA));
+  const noon = (720 - 4*lon - eqtime + 60*tz)/60;
+  return { rise: noon - ha/15, set: noon + ha/15, noon, polar:null };
 }
-function wallIrradiance(elevationRad, azimuthDeg, wallAzimuthDeg){
-  if (elevationRad<=0) return {direct:0, diffuse:0, reflected:0, total:0, ghi:0};
-  const IDN = meinelDNI(elevationRad);
-  const diffH = 0.1*IDN;
-  const ghi = IDN*Math.sin(elevationRad)+diffH;
-  const dAz = toRad(wallAzimuthDeg - azimuthDeg);
-  const cosAOI = Math.cos(elevationRad)*Math.cos(dAz);
-  const direct = Math.max(0, IDN*cosAOI);
-  const diffuse = diffH*0.5;
-  const reflected = ghi*ALBEDO*0.5;
-  return {direct, diffuse, reflected, total: direct+diffuse+reflected, ghi};
+
+/* Transmitancias de cielo despejado — Hottel (1976), corregido por altitud del sitio.
+   La difusa sale de la correlación de Liu-Jordan. Es el modelo estándar de Duffie & Beckman,
+   y a diferencia de "difusa = 10% de la directa" sí responde a la altura sobre el nivel del mar
+   (por eso el sol pega distinto en la CDMX a 2240 m que en la costa). */
+function hottel(elevationRad, altitudeM, lat){
+  const A = clamp(altitudeM/1000, 0, 2.5);
+  const tropical = Math.abs(lat) < 23.5;
+  const r0 = tropical?0.95:0.97, r1 = tropical?0.98:0.99, rk = 1.02;
+  const a0 = r0*(0.4237-0.00821*Math.pow(6-A,2));
+  const a1 = r1*(0.5055+0.00595*Math.pow(6.5-A,2));
+  const k  = rk*(0.2711+0.01858*Math.pow(2.5-A,2));
+  const sinEl = Math.max(0.035, Math.sin(elevationRad));   // limita la masa de aire cerca del horizonte
+  const taub = Math.max(0, a0 + a1*Math.exp(-k/sinEl));
+  const taud = Math.max(0, 0.271 - 0.294*taub);
+  return {taub, taud};
 }
-function ventStack(Cd, A, H, TinC, ToutC){
-  const Ti = TinC+273.15, To=ToutC+273.15;
-  const dT = Ti-To;
-  if (A<=0 || H<=0) return 0;
-  const val = 2*9.81*H*Math.abs(dT)/Ti;
-  return Cd*A*Math.sqrt(Math.max(0,val));
+
+/* Irradiancias del cielo: directa normal, difusa horizontal y global horizontal.
+   La nubosidad reduce la global (Kasten-Czeplak) y empuja la energía hacia la difusa. */
+function skyIrradiance(elevationRad, doy, totalDays, altitudeM, lat, cloudFrac){
+  if (elevationRad <= 0) return {dni:0, dhi:0, ghi:0};
+  const Gon = SOLAR_CONST*(1+0.033*Math.cos(2*Math.PI*doy/totalDays));
+  const {taub, taud} = hottel(elevationRad, altitudeM, lat);
+  const sinEl = Math.sin(elevationRad);
+  let dni = Gon*taub;
+  let dhi = Gon*sinEl*taud;
+  const ghiClear = dni*sinEl + dhi;
+  if (ghiClear <= 0) return {dni:0, dhi:0, ghi:0};
+  const C = clamp(cloudFrac,0,1);
+  const ghi = ghiClear*(1-0.75*Math.pow(C,3.4));
+  const kdClear = dhi/ghiClear;
+  const kd = clamp(kdClear + (1-kdClear)*Math.pow(C,1.4), 0, 1);
+  dhi = ghi*kd;
+  dni = sinEl>0.02 ? Math.max(0,(ghi-dhi)/sinEl) : 0;
+  return {dni, dhi, ghi};
 }
-function ventWind(Cv, A, V){ return Cv*A*V; }
+
+/* Irradiancia sobre un plano vertical de azimut dado (cielo isotrópico). */
+function verticalIrradiance(sky, elevationRad, sunAzDeg, surfaceAzDeg){
+  if (elevationRad<=0) return {direct:0, diffuse:0, reflected:0, total:0};
+  const cosAOI = Math.cos(elevationRad)*Math.cos(toRad(surfaceAzDeg - sunAzDeg));
+  const direct = Math.max(0, sky.dni*cosAOI);
+  const diffuse = sky.dhi*0.5;                 // factor de vista al cielo de un muro vertical
+  const reflected = sky.ghi*ALBEDO*0.5;        // factor de vista al suelo
+  return {direct, diffuse, reflected, total: direct+diffuse+reflected};
+}
+
+/* =========================================================
+   2 · FÍSICA — VIENTO
+   ========================================================= */
+/* Presión atmosférica y densidad del aire, corregidas por altitud del sitio. */
+function airDensity(TC, altitudeM){
+  const p = 101325*Math.pow(1-2.25577e-5*Math.max(0,altitudeM), 5.2559);
+  return p/(287.05*(TC+273.15));
+}
+
+/* Perfil de viento en potencia: del dato meteorológico a 10 m a la altura del edificio. */
+function windAtHeight(v10, z, alpha){
+  return v10*Math.pow(Math.max(z,1.5)/10, alpha);
+}
+
+/* Coeficiente de presión sobre una fachada — correlación de Swami & Chandra (1988)
+   para edificación baja. theta = ángulo entre la dirección DE DONDE viene el viento y la
+   normal exterior del muro (0 = viento de frente). G = ln(relación de lados de la planta).
+   Sustituye al burdo "barlovento sí / no": una fachada a 60° ya casi no capta presión, y las
+   laterales quedan en succión — que es justamente lo que decide por dónde sale el aire. */
+function swamiChandraCp(thetaRad, G){
+  const t = Math.abs(((thetaRad + Math.PI)%(2*Math.PI)) - Math.PI); // 0..pi
+  const s2 = Math.sin(t/2), c2 = Math.cos(t/2);
+  const arg = 1.248
+    - 0.703*s2
+    - 1.175*Math.pow(Math.sin(t),2)
+    + 0.131*Math.pow(Math.sin(2*t*G),3)
+    + 0.769*c2
+    + 0.07*G*G*s2*s2
+    + 0.717*c2*c2;
+  return 0.6*Math.log(Math.max(arg, 0.05));
+}
+
+/* Caudal por un orificio bajo una diferencia de presión (ecuación del orificio). */
+function orificeFlow(Cd, area, dP, rho){
+  const s = dP>=0 ? 1 : -1;
+  return s*Cd*area*Math.sqrt(2*Math.abs(dP)/rho);
+}
+
+/* =========================================================
+   3 · UTILIDADES
+   ========================================================= */
 function cardinal(azDeg){
-  const dirs = ['N','NE','E','SE','S','SO','O','NO'];
-  const idx = Math.round(((azDeg%360)/45))%8;
-  return dirs[idx];
+  const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'];
+  return dirs[Math.round((((azDeg%360)+360)%360)/22.5)%16];
 }
 function decimalToHHMM(hDecimal){
   let h = Math.floor(hDecimal); let m = Math.round((hDecimal-h)*60);
@@ -433,410 +610,708 @@ function decimalToHHMM(hDecimal){
   h = ((h%24)+24)%24;
   return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
 }
-function colorRamp(value, min, max){
-  const t = Math.max(0, Math.min(1, (value-min)/(max-min)));
-  const stops = [[0.0,[31,76,115]],[0.25,[46,139,180]],[0.5,[90,168,90]],[0.75,[230,180,40]],[1.0,[156,43,33]]];
-  for (let i=0;i<stops.length-1;i++){
-    const t0=stops[i][0], c0=stops[i][1], t1=stops[i+1][0], c1=stops[i+1][1];
+function getNum(id){ const v = parseFloat(document.getElementById(id).value); return isFinite(v)?v:0; }
+function getEl(id){ return document.getElementById(id); }
+function colorToCss(c){ return 'rgb('+c[0]+','+c[1]+','+c[2]+')'; }
+
+/* Rampas de color. La de luz es tipo "inferno": oscuro = penumbra, claro = luz —
+   se lee sin necesidad de la leyenda, al revés que un azul-verde-rojo arbitrario. */
+const RAMP_LIGHT = [[0,[16,12,38]],[0.14,[48,14,84]],[0.30,[100,22,109]],[0.46,[152,40,95]],[0.62,[203,71,63]],[0.76,[239,124,25]],[0.89,[249,191,58]],[1,[252,252,191]]];
+const RAMP_HEAT  = [[0,[38,66,110]],[0.25,[64,146,178]],[0.48,[214,214,178]],[0.72,[236,150,55]],[1,[164,34,28]]];
+const RAMP_WIND  = [[0,[244,247,248]],[0.22,[196,228,234]],[0.48,[110,186,208]],[0.74,[38,116,163]],[1,[14,48,88]]];
+function rampColor(ramp, t){
+  t = clamp(t,0,1);
+  for (let i=0;i<ramp.length-1;i++){
+    const [t0,c0]=ramp[i], [t1,c1]=ramp[i+1];
     if (t>=t0 && t<=t1){
-      const f=(t-t0)/(t1-t0);
-      const r=Math.round(c0[0]+f*(c1[0]-c0[0])), g=Math.round(c0[1]+f*(c1[1]-c0[1])), b=Math.round(c0[2]+f*(c1[2]-c0[2]));
-      return (r<<16)|(g<<8)|b;
+      const f = (t1-t0)>0 ? (t-t0)/(t1-t0) : 0;
+      return [Math.round(c0[0]+f*(c1[0]-c0[0])), Math.round(c0[1]+f*(c1[1]-c0[1])), Math.round(c0[2]+f*(c1[2]-c0[2]))];
     }
   }
-  return 0x9C2B21;
+  return ramp[ramp.length-1][1];
 }
-function getNum(id){ const v = parseFloat(document.getElementById(id).value); return isFinite(v)?v:0; }
-function colorToCss(hex){ return '#'+hex.toString(16).padStart(6,'0'); }
-
-/* Resuelve la geometría real (recortada) de un vano dentro de su muro.
-   Un único punto de verdad usado por la planta, el volumen 3D y el mapa de calor,
-   para que "lo que ves" sea siempre "lo que hay". */
-function resolveOpening(op, wallLength, wallHeight){
-  let cx = -wallLength/2 + op.pos*wallLength;
-  const w = Math.min(op.w, wallLength*0.9);
-  cx = Math.max(-wallLength/2+w/2+0.03, Math.min(wallLength/2-w/2-0.03, cx));
-  const y0 = Math.max(0.02, op.sill), y1 = Math.min(op.sill+op.h, wallHeight-0.02);
-  const valid = w>0.05 && (y1-y0)>0.05;
-  return { cx, halfWidth:w/2, width:w, y0, y1, height:Math.max(0,y1-y0), valid };
+function rampHex(ramp, t){ const c = rampColor(ramp,t); return (c[0]<<16)|(c[1]<<8)|c[2]; }
+function rampCss(ramp, stops){
+  const parts = [];
+  for (let i=0;i<=stops;i++) parts.push(colorToCss(rampColor(ramp, i/stops))+' '+(100*i/stops).toFixed(0)+'%');
+  return 'linear-gradient(90deg,'+parts.join(',')+')';
 }
+/* Escala logarítmica de lux: 1 lx → 0, 20 000 lx → 1. Es la única forma honesta de
+   mostrar en un mismo mapa la mancha de sol y la penumbra del fondo. */
+const LUX_MIN = 1, LUX_MAX = 100000;
+const logLux = e => clamp(Math.log10(Math.max(e,LUX_MIN)/LUX_MIN)/Math.log10(LUX_MAX/LUX_MIN), 0, 1);
 
 /* =========================================================
-   ESTADO — PLANTA (vértices con las propiedades de SU muro saliente)
+   4 · ESTADO Y GEOMETRÍA
+   El muro i va del vértice i al i+1 y guarda sus propiedades en el vértice i.
    ========================================================= */
-let vertices = [
-  {x:-5, z:3,  height:6, thickness:15, openings:[{pos:0.5,w:1.5,h:1.2,sill:0.9}]},
-  {x:5,  z:3,  height:6, thickness:15, openings:[]},
-  {x:5,  z:-3, height:6, thickness:15, openings:[{pos:0.5,w:1.5,h:1.2,sill:0.9}]},
-  {x:-5, z:-3, height:6, thickness:15, openings:[]}
-];
+let vertices = [];
 let closedLoop = true;
 let currentMode = 'sol';
 let interiorView = false;
 let planMode = 'move';
-let selected = null; // {type:'vertex'|'wall'|'opening', vIndex, opIndex}
+let selected = null;          // {type:'vertex'|'wall'|'opening', vIndex, opIndex}
 let dragState = null;
+let history = [];
+
+function snapshot(){ return JSON.stringify({v:vertices, c:closedLoop}); }
+function pushHistory(){
+  const s = snapshot();
+  if (history.length && history[history.length-1]===s) return;
+  history.push(s);
+  if (history.length>60) history.shift();
+}
+function undo(){
+  if (history.length<2) return;
+  history.pop();
+  const st = JSON.parse(history[history.length-1]);
+  vertices = st.v; closedLoop = st.c; selected = null;
+  refreshAll(true);
+}
+
+function makeWall(x,z){
+  return { x, z, height:getNum('global-h')||3, thickness:getNum('global-t')||15, openings:[] };
+}
+function setShape(kind){
+  const W = Math.max(1,getNum('shape-w')), D = Math.max(1,getNum('shape-d'));
+  const rot = toRad(getNum('shape-rot'));
+  let pts;
+  if (kind==='rect' || kind==='open'){
+    pts = [[-W/2,D/2],[W/2,D/2],[W/2,-D/2],[-W/2,-D/2]];
+  } else {                                  // planta en L
+    pts = [[-W/2,D/2],[0,D/2],[0,0],[W/2,0],[W/2,-D/2],[-W/2,-D/2]];
+  }
+  vertices = pts.map(([x,z])=>{
+    const rx = x*Math.cos(rot) - z*Math.sin(rot);
+    const rz = x*Math.sin(rot) + z*Math.cos(rot);
+    return makeWall(Math.round(rx*100)/100, Math.round(rz*100)/100);
+  });
+  closedLoop = (kind!=='open');
+  // Un par de vanos por omisión, para que el modelo diga algo desde el primer segundo.
+  if (vertices.length>=4){
+    vertices[0].openings.push({pos:0.5, w:Math.min(2, W*0.35), h:1.5, sill:0.9});
+    vertices[2].openings.push({pos:0.5, w:Math.min(1.5, W*0.25), h:1.2, sill:0.9});
+  }
+  selected = null;
+  fitView();
+  refreshAll(true);
+}
 
 function segmentCount(){ return closedLoop ? vertices.length : Math.max(0, vertices.length-1); }
-function getSegments(){
-  const n = vertices.length, segs = [];
+
+/* Recorta un vano a lo que de verdad cabe en su muro. Único punto de verdad:
+   planta, 3D y cálculo leen exactamente esta geometría. */
+function resolveOpening(op, wallLength, wallHeight){
+  const w = Math.min(op.w, Math.max(0, wallLength-0.12));
+  let cx = -wallLength/2 + clamp(op.pos,0,1)*wallLength;
+  cx = clamp(cx, -wallLength/2+w/2+0.05, wallLength/2-w/2-0.05);
+  const y0 = Math.max(0.02, op.sill);
+  const y1 = Math.min(op.sill+op.h, wallHeight-0.03);
+  const height = Math.max(0, y1-y0);
+  return { cx, halfWidth:w/2, width:w, y0, y1, height, area:w*height, valid: w>0.05 && height>0.05 };
+}
+
+/* Construye toda la geometría derivada una sola vez por recálculo. */
+let G = null;
+function buildGeometry(){
+  const n = vertices.length;
   const count = segmentCount();
-  for(let i=0;i<count;i++){
+  const segs = [];
+  // signo del área: define cuál normal apunta hacia afuera
+  let area2 = 0;
+  for (let i=0;i<n;i++){ const a=vertices[i], b=vertices[(i+1)%n]; area2 += a.x*b.z - b.x*a.z; }
+  const sign = area2<=0 ? -1 : 1;
+
+  for (let i=0;i<count;i++){
     const a = vertices[i], b = vertices[(i+1)%n];
-    segs.push({ vIndex:i, a, b, length: Math.hypot(b.x-a.x, b.z-a.z) });
+    const len = Math.hypot(b.x-a.x, b.z-a.z);
+    if (len<0.02) continue;
+    const along = {x:(b.x-a.x)/len, z:(b.z-a.z)/len};
+    const nOut = sign<0 ? {x:-along.z, z:along.x} : {x:along.z, z:-along.x};
+    let az = toDeg(Math.atan2(nOut.x, nOut.z)); if (az<0) az+=360;
+    const midX = (a.x+b.x)/2, midZ = (a.z+b.z)/2;
+    const seg = {
+      i, a, b, len, along, nOut, nIn:{x:-nOut.x, z:-nOut.z}, az, midX, midZ,
+      height:a.height, thickness:a.thickness, openings:[]
+    };
+    a.openings.forEach((op,oi)=>{
+      const r = resolveOpening(op, len, a.height);
+      if (!r.valid) return;
+      const t = (r.cx + len/2)/len;
+      seg.openings.push({
+        opIndex:oi, segIndex:i, ...r, t,
+        x: a.x + (b.x-a.x)*t, z: a.z + (b.z-a.z)*t,
+        yc: (r.y0+r.y1)/2, along, nOut, nIn:seg.nIn, az
+      });
+    });
+    segs.push(seg);
   }
-  return segs;
+
+  let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity,maxH=0;
+  vertices.forEach(v=>{ minX=Math.min(minX,v.x); maxX=Math.max(maxX,v.x); minZ=Math.min(minZ,v.z); maxZ=Math.max(maxZ,v.z); maxH=Math.max(maxH,v.height); });
+  if (!isFinite(minX)){ minX=maxX=minZ=maxZ=0; }
+
+  // convexidad: si la planta es convexa, ningún muro puede tapar a otro por dentro
+  // y todo el trazado de oclusión interior se puede saltar (el caso rectangular, que es el común).
+  let convex = closedLoop && n>=3;
+  if (convex){
+    let s = 0;
+    for (let i=0;i<n;i++){
+      const p=vertices[i], q=vertices[(i+1)%n], r=vertices[(i+2)%n];
+      const cr = (q.x-p.x)*(r.z-q.z) - (q.z-p.z)*(r.x-q.x);
+      if (Math.abs(cr)<1e-9) continue;
+      if (s===0) s = Math.sign(cr); else if (Math.sign(cr)!==s){ convex=false; break; }
+    }
+  }
+
+  let area = 0;
+  if (closedLoop) area = Math.abs(area2)/2;
+
+  const allOpenings = [];
+  segs.forEach(s=> s.openings.forEach(o=> allOpenings.push(o)));
+
+  G = { segs, openings:allOpenings, bbox:{minX,maxX,minZ,maxZ}, cx:(minX+maxX)/2, cz:(minZ+maxZ)/2,
+        spanX:maxX-minX, spanZ:maxZ-minZ, maxH:maxH||3, area, convex, closed:closedLoop, sign };
+  return G;
 }
-function polygonWindingSign(){
-  const n = vertices.length; if (n<3) return -1;
-  let area=0;
-  for(let i=0;i<n;i++){ const a=vertices[i], b=vertices[(i+1)%n]; area += a.x*b.z - b.x*a.z; }
-  return area<=0 ? -1 : 1; // -1: usar normal=(-dz,dx); 1: normal=(dz,-dx)
+
+/* Primer muro que corta un rayo horizontal desde (px,pz) en dirección (dx,dz) unitaria. */
+function firstWallHit(px,pz,dx,dz){
+  let bestT = Infinity, best = null;
+  for (let i=0;i<G.segs.length;i++){
+    const s = G.segs[i];
+    const ex = s.b.x-s.a.x, ez = s.b.z-s.a.z;
+    const den = dx*ez - dz*ex;
+    if (Math.abs(den)<1e-12) continue;
+    const t = ((s.a.x-px)*ez - (s.a.z-pz)*ex)/den;
+    const u = ((s.a.x-px)*dz - (s.a.z-pz)*dx)/den;
+    if (t>1e-4 && u>=-1e-4 && u<=1+1e-4 && t<bestT){ bestT=t; best={seg:s, t, u}; }
+  }
+  return best;
 }
-function segAzimuth(seg, windSign){
-  const len = seg.length || 1e-6;
-  const dirX = (seg.b.x-seg.a.x)/len, dirZ = (seg.b.z-seg.a.z)/len;
-  const nx = windSign<0 ? -dirZ : dirZ;
-  const nz = windSign<0 ? dirX : -dirX;
-  let az = toDeg(Math.atan2(nx, nz));
-  if (az<0) az += 360;
-  return { az, nx, nz };
+/* ¿El segmento p→q está cortado por algún muro? (para la oclusión de la luz difusa) */
+function blocked(px,pz,qx,qz, skipA, skipB){
+  if (G.convex) return false;
+  const dx=qx-px, dz=qz-pz;
+  for (let i=0;i<G.segs.length;i++){
+    const s = G.segs[i];
+    if (s.i===skipA || s.i===skipB) continue;
+    const ex = s.b.x-s.a.x, ez = s.b.z-s.a.z;
+    const den = dx*ez - dz*ex;
+    if (Math.abs(den)<1e-12) continue;
+    const t = ((s.a.x-px)*ez - (s.a.z-pz)*ex)/den;
+    const u = ((s.a.x-px)*dz - (s.a.z-pz)*dx)/den;
+    if (t>0.004 && t<0.996 && u>0.004 && u<0.996) return true;
+  }
+  return false;
+}
+function pointInPlan(px,pz){
+  if (!closedLoop || vertices.length<3) return true;
+  let inside = false;
+  for (let i=0,j=vertices.length-1;i<vertices.length;j=i++){
+    const a=vertices[i], b=vertices[j];
+    if (((a.z>pz)!==(b.z>pz)) && (px < (b.x-a.x)*(pz-a.z)/(b.z-a.z)+a.x)) inside=!inside;
+  }
+  return inside;
 }
 
 /* =========================================================
-   PANEL — LISTA DE MUROS (medidas finas)
+   5 · VISTA EN PLANTA (SVG)
    ========================================================= */
-function renderWallsPanel(){
-  const list = document.getElementById('wallsList');
-  const segs = getSegments();
-  if (segs.length===0){
-    list.innerHTML = '<div class="no-openings">Sin muros — dibuja en la Planta con «+ Muro».</div>';
-    return;
-  }
-  list.innerHTML = segs.map((seg,i)=>{
-    const w = seg.a;
-    const openingsHtml = w.openings.length ? w.openings.map((op,oi)=>`
-      <div class="op-row" data-v-idx="${seg.vIndex}" data-op-idx="${oi}">
-        <div class="field"><label>Ancho</label><input type="number" step="0.1" min="0" value="${op.w.toFixed(2)}" data-field="openW"></div>
-        <div class="field"><label>Alto</label><input type="number" step="0.1" min="0" value="${op.h.toFixed(2)}" data-field="openH"></div>
-        <div class="field"><label>Antepecho</label><input type="number" step="0.1" min="0" value="${op.sill.toFixed(2)}" data-field="openSill"></div>
-        <button class="icon-btn danger" data-action="remove-opening" data-v-idx="${seg.vIndex}" data-op-idx="${oi}" title="Quitar vano">×</button>
-      </div>`).join('') : '<div class="no-openings">Sin vanos.</div>';
-    return `
-    <div class="wall-row" data-v-idx="${seg.vIndex}">
-      <div class="wall-row-head">
-        <span class="wname">Muro ${i+1} <span class="wlen">· ${seg.length.toFixed(2)} m</span></span>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Alto (m)</label><input type="number" step="0.1" min="0.5" value="${w.height}" data-field="height" data-v-idx="${seg.vIndex}"></div>
-        <div class="field"><label>Espesor (cm)</label><input type="number" step="1" min="1" value="${w.thickness}" data-field="thickness" data-v-idx="${seg.vIndex}"></div>
-      </div>
-      ${openingsHtml}
-    </div>`;
-  }).join('');
-}
-
-document.getElementById('wallsList').addEventListener('input', (e)=>{
-  const t = e.target; const field = t.dataset.field; if (!field) return;
-  // Los campos de vano (ancho/alto/antepecho) no llevan sus propios data-v-idx/data-op-idx: se leen
-  // del .op-row contenedor, que sí los tiene — un solo lugar de verdad en vez de repetirlos en cada input.
-  const scope = t.closest('[data-v-idx]');
-  if (!scope) return;
-  const vIdx = +scope.dataset.vIdx; const v = vertices[vIdx]; if (!v) return;
-  const val = parseFloat(t.value);
-  if (field==='height') v.height = isFinite(val) ? Math.max(0.5,val) : v.height;
-  else if (field==='thickness') v.thickness = isFinite(val) ? Math.max(1,val) : v.thickness;
-  else if (field==='openW' || field==='openH' || field==='openSill'){
-    const oi = +scope.dataset.opIdx; const op = v.openings[oi]; if (!op) return;
-    const key = field==='openW' ? 'w' : (field==='openH' ? 'h' : 'sill');
-    op[key] = isFinite(val) ? Math.max(0,val) : op[key];
-  }
-  renderPlan();
-  recomputeAll();
-});
-document.getElementById('wallsList').addEventListener('click', (e)=>{
-  if (e.target.dataset.action==='remove-opening'){
-    const vIdx = +e.target.dataset.vIdx, oi = +e.target.dataset.opIdx;
-    vertices[vIdx].openings.splice(oi,1);
-    renderWallsPanel(); renderPlan(); recomputeAll();
-  }
-});
-
-/* =========================================================
-   VISTA EN PLANTA — SVG INTERACTIVO
-   ========================================================= */
-const planSvg = document.getElementById('plan-svg');
-const planContent = document.getElementById('plan-content');
+const planSvg = getEl('plan-svg');
+const planContent = getEl('plan-content');
+const planOverlay = getEl('plan-overlay');
 const NS = 'http://www.w3.org/2000/svg';
+let vb = {x:-8, y:-6, w:16, h:12};
 
-function fitPlanViewBox(){
-  if (vertices.length===0){ planSvg.setAttribute('viewBox','-8 -6 16 12'); return; }
-  let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
-  vertices.forEach(v=>{ minX=Math.min(minX,v.x); maxX=Math.max(maxX,v.x); minZ=Math.min(minZ,v.z); maxZ=Math.max(maxZ,v.z); });
-  const spanX = Math.max(maxX-minX, 3), spanZ = Math.max(maxZ-minZ, 3);
-  const pad = Math.max(spanX,spanZ)*0.28 + 1.2;
-  minX-=pad; maxX+=pad; minZ-=pad; maxZ+=pad;
-  const w = maxX-minX, h = maxZ-minZ;
-  planSvg.setAttribute('viewBox', `${minX} ${-maxZ} ${w} ${h}`);
+function applyViewBox(){ planSvg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.w} ${vb.h}`); }
+function fitView(){
+  const g = G || buildGeometry();
+  const spanX = Math.max(g.spanX, 3), spanZ = Math.max(g.spanZ, 3);
+  const pad = Math.max(spanX,spanZ)*0.22 + 1.0;
+  const rect = planSvg.getBoundingClientRect();
+  const aspect = (rect.width && rect.height) ? rect.width/rect.height : 1.3;
+  let w = spanX+2*pad, h = spanZ+2*pad;
+  if (w/h < aspect) w = h*aspect; else h = w/aspect;
+  vb = { x: g.cx - w/2, y: -g.cz - h/2, w, h };
+  applyViewBox();
 }
-
 function screenToPlan(evt){
   const pt = planSvg.createSVGPoint();
   pt.x = evt.clientX; pt.y = evt.clientY;
-  const svgP = pt.matrixTransform(planSvg.getScreenCTM().inverse());
-  return { x: svgP.x, z: -svgP.y };
+  const p = pt.matrixTransform(planSvg.getScreenCTM().inverse());
+  return { x:p.x, z:-p.y };
 }
-
-function svgEl(tag, attrs){
+function svgEl(tag, attrs, cls){
   const el = document.createElementNS(NS, tag);
   for (const k in attrs) el.setAttribute(k, attrs[k]);
+  if (cls) el.setAttribute('class', cls);
   return el;
 }
+const px = v => v*(vb.w/ (planSvg.getBoundingClientRect().width||600));  // 1 px de pantalla en unidades de planta
 
 function renderPlan(){
   while (planContent.firstChild) planContent.removeChild(planContent.firstChild);
-  const segs = getSegments();
-  const wind = polygonWindingSign();
+  const g = G || buildGeometry();
+  const u = Math.max(vb.w,vb.h)/100;   // unidad visual, para que los tiradores no cambien de tamaño al hacer zoom
 
-  segs.forEach((seg,i)=>{
-    const isSel = selected && selected.type==='wall' && selected.vIndex===seg.vIndex;
-    const hit = svgEl('line', { x1:seg.a.x, y1:-seg.a.z, x2:seg.b.x, y2:-seg.b.z, 'stroke-width':Math.max(seg.a.thickness/100,0.3)+0.5, class:'plan-wall-hit' });
-    hit.dataset.vIdx = seg.vIndex;
-    hit.addEventListener('pointerdown', (e)=> onWallPointerDown(e, seg.vIndex));
+  g.segs.forEach(seg=>{
+    const isSel = selected && selected.type==='wall' && selected.vIndex===seg.i;
+    const tw = Math.max(seg.thickness/100, 0.06);
+
+    // zona de agarre
+    const hit = svgEl('line',{x1:seg.a.x,y1:-seg.a.z,x2:seg.b.x,y2:-seg.b.z,'stroke-width':tw+u*2.2}, 'plan-wall-hit');
+    hit.addEventListener('pointerdown', e=> onWallPointerDown(e, seg.i));
     planContent.appendChild(hit);
 
-    const line = svgEl('line', { x1:seg.a.x, y1:-seg.a.z, x2:seg.b.x, y2:-seg.b.z, 'stroke-width':Math.max(seg.a.thickness/100,0.08), class:'plan-wall'+(isSel?' selected':'') });
-    line.style.pointerEvents = 'none';
+    // muro
+    const line = svgEl('line',{x1:seg.a.x,y1:-seg.a.z,x2:seg.b.x,y2:-seg.b.z,'stroke-width':tw}, 'plan-wall'+(isSel?' selected':''));
+    line.style.pointerEvents='none';
     planContent.appendChild(line);
 
-    // vanos: la línea que ves mide exactamente lo que dice "Ancho" en el panel.
-    seg.a.openings.forEach((op,oi)=>{
-      const r = resolveOpening(op, seg.length, seg.a.height);
-      const isOpSel = selected && selected.type==='opening' && selected.vIndex===seg.vIndex && selected.opIndex===oi;
-      if (r.valid){
-        const t0 = (r.cx - r.halfWidth + seg.length/2)/seg.length;
-        const t1 = (r.cx + r.halfWidth + seg.length/2)/seg.length;
-        const x0 = seg.a.x + (seg.b.x-seg.a.x)*t0, z0 = seg.a.z + (seg.b.z-seg.a.z)*t0;
-        const x1 = seg.a.x + (seg.b.x-seg.a.x)*t1, z1 = seg.a.z + (seg.b.z-seg.a.z)*t1;
-        const hitLine = svgEl('line', { x1:x0, y1:-z0, x2:x1, y2:-z1, 'stroke-width':Math.max(seg.a.thickness/100,0.3)+0.35, class:'plan-opening-hit' });
-        hitLine.dataset.vIdx = seg.vIndex; hitLine.dataset.opIdx = oi;
-        hitLine.addEventListener('pointerdown', (e)=> onOpeningPointerDown(e, seg.vIndex, oi));
-        planContent.appendChild(hitLine);
+    // vanos: se dibujan como hueco real en el muro, con jambas — como en un plano
+    seg.openings.forEach(op=>{
+      const opSel = selected && selected.type==='opening' && selected.vIndex===seg.i && selected.opIndex===op.opIndex;
+      const t0 = (op.cx - op.halfWidth + seg.len/2)/seg.len, t1 = (op.cx + op.halfWidth + seg.len/2)/seg.len;
+      const P = t => ({x: seg.a.x+(seg.b.x-seg.a.x)*t, z: seg.a.z+(seg.b.z-seg.a.z)*t});
+      const p0 = P(t0), p1 = P(t1);
 
-        const visLine = svgEl('line', { x1:x0, y1:-z0, x2:x1, y2:-z1, 'stroke-width':Math.max(seg.a.thickness/100*0.75,0.09), class:'plan-opening-line'+(isOpSel?' selected':'') });
-        visLine.style.pointerEvents = 'none';
-        planContent.appendChild(visLine);
-      }
-      const cx = seg.a.x + (seg.b.x-seg.a.x)*op.pos;
-      const cz = seg.a.z + (seg.b.z-seg.a.z)*op.pos;
-      const handle = svgEl('circle', { cx:cx, cy:-cz, r:0.09, class:'plan-opening-handle'+(isOpSel?' selected':'') });
-      handle.dataset.vIdx = seg.vIndex; handle.dataset.opIdx = oi;
-      handle.addEventListener('pointerdown', (e)=> onOpeningPointerDown(e, seg.vIndex, oi));
-      planContent.appendChild(handle);
+      planContent.appendChild(svgEl('line',{x1:p0.x,y1:-p0.z,x2:p1.x,y2:-p1.z,'stroke-width':tw*1.05, style:'pointer-events:none'}, 'plan-opening-line'));
+      [[p0,-1],[p1,1]].forEach(([p,s])=>{
+        planContent.appendChild(svgEl('line',{
+          x1:p.x-seg.nOut.x*tw/2, y1:-(p.z-seg.nOut.z*tw/2),
+          x2:p.x+seg.nOut.x*tw/2, y2:-(p.z+seg.nOut.z*tw/2),
+          'stroke-width':u*0.9, style:'pointer-events:none'}, 'plan-opening-jamb'+(opSel?' selected':'')));
+      });
+      // arrastrar el vano entero
+      const oHit = svgEl('line',{x1:p0.x,y1:-p0.z,x2:p1.x,y2:-p1.z,'stroke-width':tw+u*2}, 'plan-opening-hit');
+      oHit.addEventListener('pointerdown', e=> onOpeningPointerDown(e, seg.i, op.opIndex, 'move'));
+      planContent.appendChild(oHit);
+      // tiradores de ancho en los extremos
+      [[p0,'a'],[p1,'b']].forEach(([p,which])=>{
+        const h = svgEl('circle',{cx:p.x, cy:-p.z, r:u*1.5, 'stroke-width':u*0.35}, 'plan-op-handle'+(opSel?' selected':''));
+        h.addEventListener('pointerdown', e=> onOpeningPointerDown(e, seg.i, op.opIndex, which));
+        planContent.appendChild(h);
+      });
     });
+
+    // cota del muro
+    const off = tw/2 + u*3.2;
+    const tx = seg.midX + seg.nOut.x*off, tz = seg.midZ + seg.nOut.z*off;
+    let ang = toDeg(Math.atan2(-(seg.b.z-seg.a.z), seg.b.x-seg.a.x));
+    if (ang>90) ang-=180; if (ang<-90) ang+=180;
+    const label = svgEl('text',{x:tx, y:-tz, 'font-size':u*3.4, transform:`rotate(${ang.toFixed(1)} ${tx} ${-tz})`}, 'plan-dim');
+    label.setAttribute('dominant-baseline','middle');
+    label.textContent = seg.len.toFixed(2)+' m';
+    planContent.appendChild(label);
+
+    // "+" para partir el muro: solo aparece en el muro seleccionado y SEPARADO de la línea,
+    // hacia adentro. Si se dibuja encima del muro se traga el clic con el que uno quería
+    // seleccionarlo y termina partiendo muros sin querer.
+    const wallActive = selected && selected.vIndex===seg.i && (selected.type==='wall' || selected.type==='opening');
+    if (planMode==='move' && wallActive){
+      const so = tw/2 + u*3.4;
+      const sx = seg.midX + seg.nIn.x*so, sz = seg.midZ + seg.nIn.z*so;
+      const sh = svgEl('circle',{cx:sx, cy:-sz, r:u*2.6}, 'plan-split-hit');
+      sh.addEventListener('pointerdown', e=>{ e.stopPropagation(); splitWall(seg.i); });
+      const sp = svgEl('g',{class:'plan-split', style:'pointer-events:none; opacity:1'});
+      sp.appendChild(svgEl('circle',{cx:sx, cy:-sz, r:u*2.1, 'stroke-width':u*0.35, fill:'#fff', stroke:'#3D4EC4'}));
+      sp.appendChild(svgEl('path',{d:`M ${sx-u} ${-sz} H ${sx+u} M ${sx} ${-sz-u} V ${-sz+u}`, stroke:'#3D4EC4','stroke-width':u*0.4, fill:'none'}));
+      planContent.appendChild(sh); planContent.appendChild(sp);
+    }
   });
 
   vertices.forEach((v,i)=>{
     const isSel = selected && selected.type==='vertex' && selected.vIndex===i;
-    const c = svgEl('circle', { cx:v.x, cy:-v.z, r:0.16, class:'plan-vertex'+(isSel?' selected':''), 'stroke-width':0.05 });
-    c.dataset.vIdx = i;
-    c.addEventListener('pointerdown', (e)=> onVertexPointerDown(e, i));
+    const c = svgEl('circle',{cx:v.x, cy:-v.z, r:u*2.2, 'stroke-width':u*0.55}, 'plan-vertex'+(isSel?' selected':''));
+    c.addEventListener('pointerdown', e=> onVertexPointerDown(e,i));
     planContent.appendChild(c);
   });
 
-  document.getElementById('plan-close').style.display = (planMode==='wall' && !closedLoop && vertices.length>=3) ? '' : 'none';
-  document.getElementById('plan-delete').style.display = selected ? '' : 'none';
+  getEl('plan-close').style.display = (!closedLoop && vertices.length>=3) ? '' : 'none';
+  getEl('plan-delete').style.display = selected ? '' : 'none';
 }
 
-/* --- interacción: click en vacío para dibujar --- */
-planSvg.addEventListener('pointerdown', (e)=>{
-  if (e.target !== planSvg && e.target.tagName !== 'rect') return; // solo fondo
+/* --- edición --- */
+function snapVal(v){ return Math.round(v*20)/20; }
+
+function onVertexPointerDown(e, idx){
+  if (planMode==='wall'){ e.stopPropagation(); return; }
+  e.stopPropagation();
+  selected = {type:'vertex', vIndex:idx};
+  dragState = {type:'vertex', vIndex:idx, moved:false};
+  planSvg.setPointerCapture(e.pointerId);
+  renderPlan(); renderInspector();
+}
+let lastWallTap = null;
+function onWallPointerDown(e, i){
+  e.stopPropagation();
+  if (planMode==='wall') return;
+  const p = screenToPlan(e);
+  // Doble clic hecho a mano: renderPlan() reemplaza los nodos en cada pointerdown, así que
+  // el dblclick nativo nunca llega a dispararse sobre el mismo elemento.
+  const now = performance.now();
+  if (lastWallTap && lastWallTap.i===i && now-lastWallTap.t < 420 &&
+      Math.hypot(e.clientX-lastWallTap.x, e.clientY-lastWallTap.y) < 14){
+    lastWallTap = null;
+    addOpeningAt(i, p);
+    return;
+  }
+  lastWallTap = {i, t:now, x:e.clientX, y:e.clientY};
+  selected = {type:'wall', vIndex:i};
+  const n = vertices.length;
+  dragState = {type:'wall', vIndex:i, start:p, moved:false,
+               a0:{x:vertices[i].x, z:vertices[i].z}, b0:{x:vertices[(i+1)%n].x, z:vertices[(i+1)%n].z}};
+  planSvg.setPointerCapture(e.pointerId);
+  renderPlan(); renderInspector();
+}
+function addOpeningAt(i, p){
+  const seg = G.segs.find(s=>s.i===i); if (!seg) return;
+  const t = clamp(projectOnSeg(p, seg), 0.05, 0.95);
+  const wall = vertices[i];
+  wall.openings.push({pos:t, w:Math.min(1.2, seg.len*0.4), h:1.2, sill:0.9});
+  selected = {type:'opening', vIndex:i, opIndex:wall.openings.length-1};
+  refreshAll(true);
+}
+function onOpeningPointerDown(e, vIndex, opIndex, grab){
+  if (planMode==='wall'){ e.stopPropagation(); return; }
+  e.stopPropagation();
+  selected = {type:'opening', vIndex, opIndex};
+  dragState = {type:'opening', vIndex, opIndex, grab, moved:false};
+  planSvg.setPointerCapture(e.pointerId);
+  renderPlan(); renderInspector();
+}
+function projectOnSeg(p, seg){
+  const dx=seg.b.x-seg.a.x, dz=seg.b.z-seg.a.z;
+  const len2 = dx*dx+dz*dz || 1e-9;
+  return ((p.x-seg.a.x)*dx + (p.z-seg.a.z)*dz)/len2;
+}
+function splitWall(i){
+  const n = vertices.length;
+  const a = vertices[i], b = vertices[(i+1)%n];
+  const mid = makeWall((a.x+b.x)/2, (a.z+b.z)/2);
+  mid.height = a.height; mid.thickness = a.thickness;
+  // los vanos de la primera mitad se quedan; los de la segunda pasan al muro nuevo
+  const keep=[], pass=[];
+  a.openings.forEach(op=>{ if (op.pos<0.5) keep.push({...op, pos:clamp(op.pos*2,0.05,0.95)}); else pass.push({...op, pos:clamp((op.pos-0.5)*2,0.05,0.95)}); });
+  a.openings = keep; mid.openings = pass;
+  vertices.splice(i+1, 0, mid);
+  selected = {type:'vertex', vIndex:i+1};
+  refreshAll(true);
+}
+
+planSvg.addEventListener('pointerdown', e=>{
+  if (e.target !== planSvg && e.target.id !== 'plan-bg' && e.target.id !== 'plan-heatmap-img') return;
   const p = screenToPlan(e);
   if (planMode==='wall'){
     if (vertices.length>=3 && !closedLoop){
-      const first = vertices[0];
-      if (Math.hypot(p.x-first.x, p.z-first.z) < 0.5){ closedLoop = true; endPlanEdit(); return; }
+      const f = vertices[0];
+      if (Math.hypot(p.x-f.x, p.z-f.z) < Math.max(0.4, vb.w*0.02)){ closedLoop=true; setPlanMode('move'); refreshAll(true); return; }
     }
-    const last = vertices.length ? vertices[vertices.length-1] : null;
-    if (last && closedLoop) closedLoop = false; // reabre para seguir extendiendo
-    vertices.push({ x:p.x, z:p.z, height: last?last.height:6, thickness: last?last.thickness:15, openings:[] });
-    endPlanEdit();
-  } else if (planMode==='opening'){
-    const hitSeg = findClosestSegment(p, 0.6);
-    if (hitSeg){
-      const t = projectOnSegment(p, hitSeg);
-      hitSeg.a.openings.push({ pos:t, w:1.0, h:1.2, sill:0.9 });
-      endPlanEdit();
-    }
-  } else {
-    selected = null;
-    renderPlan();
-  }
-});
-
-function findClosestSegment(p, maxDist){
-  const segs = getSegments();
-  let best=null, bestD=Infinity;
-  segs.forEach(seg=>{
-    const t = projectOnSegment(p, seg);
-    const px = seg.a.x + (seg.b.x-seg.a.x)*t, pz = seg.a.z + (seg.b.z-seg.a.z)*t;
-    const d = Math.hypot(p.x-px, p.z-pz);
-    if (d<bestD){ bestD=d; best=seg; }
-  });
-  return (best && bestD<=maxDist) ? best : null;
-}
-function projectOnSegment(p, seg){
-  const dx=seg.b.x-seg.a.x, dz=seg.b.z-seg.a.z;
-  const len2 = dx*dx+dz*dz || 1e-9;
-  let t = ((p.x-seg.a.x)*dx + (p.z-seg.a.z)*dz)/len2;
-  return Math.max(0.06, Math.min(0.94, t));
-}
-
-function beginDrag(e, type, vIndex, opIndex){
-  e.stopPropagation();
-  selected = (type==='opening') ? { type, vIndex, opIndex } : { type, vIndex };
-  dragState = { type, vIndex, opIndex, pointerId: e.pointerId };
-  planSvg.setPointerCapture(e.pointerId);
-  renderPlan();
-}
-function onVertexPointerDown(e, idx){
-  if (planMode==='wall' || planMode==='opening'){ e.stopPropagation(); return; }
-  beginDrag(e, 'vertex', idx);
-}
-function onWallPointerDown(e, vIndex){
-  e.stopPropagation();
-  if (planMode==='opening'){
-    const seg = getSegments().find(s=>s.vIndex===vIndex);
-    const p = screenToPlan(e);
-    const t = projectOnSegment(p, seg);
-    seg.a.openings.push({ pos:t, w:1.0, h:1.2, sill:0.9 });
-    endPlanEdit();
+    if (closedLoop && vertices.length>0) closedLoop = false;
+    vertices.push(makeWall(snapVal(p.x), snapVal(p.z)));
+    refreshAll(true);
     return;
   }
-  if (planMode==='wall') return;
-  selected = { type:'wall', vIndex };
-  renderPlan();
-}
-function onOpeningPointerDown(e, vIndex, opIndex){
-  if (planMode==='wall'){ e.stopPropagation(); return; }
-  beginDrag(e, 'opening', vIndex, opIndex);
-}
+  dragState = {type:'pan', start:p, vb0:{...vb}, moved:false};
+  planSvg.setPointerCapture(e.pointerId);
+});
 
-planSvg.addEventListener('pointermove', (e)=>{
+planSvg.addEventListener('pointermove', e=>{
   if (!dragState) return;
   const p = screenToPlan(e);
+  dragState.moved = true;
+  if (dragState.type==='pan'){
+    // el punto bajo el cursor debe quedarse bajo el cursor
+    const r = planSvg.getBoundingClientRect();
+    const sx = dragState.vb0.w / r.width, sy = dragState.vb0.h / r.height;
+    if (!dragState.screen0) dragState.screen0 = {x:e.clientX, y:e.clientY};
+    vb.x = dragState.vb0.x - (e.clientX-dragState.screen0.x)*sx;
+    vb.y = dragState.vb0.y - (e.clientY-dragState.screen0.y)*sy;
+    applyViewBox();
+    return;
+  }
   if (dragState.type==='vertex'){
     const v = vertices[dragState.vIndex];
-    v.x = Math.round(p.x*20)/20; v.z = Math.round(p.z*20)/20;
+    let nx = snapVal(p.x), nz = snapVal(p.z);
+    // alineación ortogonal con los vecinos: si está a menos de 20 cm, engancha
+    const n = vertices.length;
+    [vertices[(dragState.vIndex-1+n)%n], vertices[(dragState.vIndex+1)%n]].forEach(nb=>{
+      if (!nb || nb===v) return;
+      if (Math.abs(nx-nb.x)<0.2) nx = nb.x;
+      if (Math.abs(nz-nb.z)<0.2) nz = nb.z;
+    });
+    v.x = nx; v.z = nz;
+  } else if (dragState.type==='wall'){
+    const n = vertices.length;
+    const dx = snapVal(p.x - dragState.start.x), dz = snapVal(p.z - dragState.start.z);
+    vertices[dragState.vIndex].x = dragState.a0.x+dx; vertices[dragState.vIndex].z = dragState.a0.z+dz;
+    vertices[(dragState.vIndex+1)%n].x = dragState.b0.x+dx; vertices[(dragState.vIndex+1)%n].z = dragState.b0.z+dz;
   } else if (dragState.type==='opening'){
-    const seg = getSegments().find(s=>s.vIndex===dragState.vIndex);
+    const seg = G.segs.find(s=>s.i===dragState.vIndex);
     if (seg){
-      const t = projectOnSegment(p, seg);
-      seg.a.openings[dragState.opIndex].pos = t;
+      const op = vertices[dragState.vIndex].openings[dragState.opIndex];
+      const t = clamp(projectOnSeg(p, seg), 0, 1);
+      if (dragState.grab==='move'){
+        op.pos = t;
+      } else {
+        // arrastrar una jamba cambia el ancho manteniendo fija la otra jamba
+        const half = op.w/2/seg.len;
+        const fixed = dragState.grab==='a' ? clamp(op.pos,0,1)+half : clamp(op.pos,0,1)-half;
+        const newW = Math.abs(t-fixed)*seg.len;
+        op.w = Math.max(0.15, Math.round(newW*20)/20);
+        op.pos = clamp((t+fixed)/2, 0, 1);
+      }
     }
   }
-  renderPlan();
-  scheduleRecompute();
+  buildGeometry(); renderPlan(); renderInspector();
+  scheduleCompute('low');
 });
-planSvg.addEventListener('pointerup', (e)=>{
-  if (dragState){ dragState=null; endPlanEdit(); }
-});
+
+function endDrag(){
+  if (!dragState) return;
+  const wasPan = dragState.type==='pan', moved = dragState.moved;
+  dragState = null;
+  if (wasPan){
+    if (!moved){ selected=null; renderPlan(); renderInspector(); }
+    return;
+  }
+  refreshAll(true);
+}
+planSvg.addEventListener('pointerup', endDrag);
 planSvg.addEventListener('pointercancel', ()=>{ dragState=null; });
 
-function endPlanEdit(){
-  renderWallsPanel();
-  renderPlan();
-  fitPlanViewBox();
-  recomputeAll();
-}
+planSvg.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const p = screenToPlan(e);
+  const k = e.deltaY>0 ? 1.12 : 1/1.12;
+  const nw = clamp(vb.w*k, 1.5, 400), nh = nw*vb.h/vb.w;
+  vb.x = p.x - (p.x-vb.x)*(nw/vb.w);
+  vb.y = -p.z - (-p.z-vb.y)*(nh/vb.h);
+  vb.w = nw; vb.h = nh;
+  applyViewBox(); renderPlan();
+}, {passive:false});
 
 function deleteSelected(){
   if (!selected) return;
-  if (selected.type==='vertex'){
-    if (vertices.length<=2){ vertices=[]; closedLoop=false; }
-    else { vertices.splice(selected.vIndex,1); if (closedLoop && vertices.length<3) closedLoop=false; }
-  } else if (selected.type==='wall'){
+  if (selected.type==='opening'){
+    vertices[selected.vIndex].openings.splice(selected.opIndex,1);
+  } else {
+    if (vertices.length<=3){ return; }
     vertices.splice(selected.vIndex,1);
     if (closedLoop && vertices.length<3) closedLoop=false;
-  } else if (selected.type==='opening'){
-    vertices[selected.vIndex].openings.splice(selected.opIndex,1);
   }
   selected = null;
-  endPlanEdit();
+  refreshAll(true);
 }
-document.getElementById('plan-delete').addEventListener('click', deleteSelected);
-document.getElementById('plan-close').addEventListener('click', ()=>{ closedLoop=true; endPlanEdit(); });
-document.addEventListener('keydown', (e)=>{
-  if ((e.key==='Delete' || e.key==='Backspace') && selected){
-    const tag = document.activeElement.tagName;
-    if (tag==='INPUT' || tag==='SELECT' || tag==='TEXTAREA') return;
-    e.preventDefault();
-    deleteSelected();
-  }
+getEl('plan-delete').addEventListener('click', deleteSelected);
+getEl('plan-close').addEventListener('click', ()=>{ closedLoop=true; setPlanMode('move'); refreshAll(true); });
+getEl('plan-fit').addEventListener('click', ()=>{ fitView(); renderPlan(); scheduleCompute('low'); });
+getEl('plan-iso').addEventListener('click', function(){
+  showIso = !showIso;
+  this.classList.toggle('active', showIso);
+  runCompute(lastQuality||'low');
+});
+getEl('plan-undo').addEventListener('click', undo);
+document.addEventListener('keydown', e=>{
+  const tag = document.activeElement.tagName;
+  const typing = tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA';
+  if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='z' && !typing){ e.preventDefault(); undo(); return; }
+  if ((e.key==='Delete'||e.key==='Backspace') && selected && !typing){ e.preventDefault(); deleteSelected(); }
+  if (e.key==='Escape'){ selected=null; setPlanMode('move'); renderPlan(); renderInspector(); }
 });
 
-const planModeHints = {
-  move: 'Arrastra los puntos para mover muros, o el círculo azul para reposicionar un vano. Clic para seleccionar + Eliminar.',
-  wall: 'Clic para agregar puntos y extender la planta. Clic cerca del primer punto (o «Cerrar planta») para cerrar el volumen.',
-  opening: 'Clic sobre un muro para agregar un vano ahí mismo.'
+const planHints = {
+  move:'Arrastra vértices, muros o vanos. Doble clic sobre un muro = nuevo vano. Rueda = zoom, arrastra el fondo = mover.',
+  wall:'Clic para ir agregando vértices. Clic sobre el primero (o «Cerrar planta») para cerrar el contorno.'
 };
-['move','wall','opening'].forEach(m=>{
-  document.getElementById('plan-mode-'+m).addEventListener('click', ()=>{
-    planMode = m;
-    ['move','wall','opening'].forEach(mm=> document.getElementById('plan-mode-'+mm).classList.toggle('active', mm===m));
-    planSvg.classList.toggle('mode-move', m==='move');
-    document.getElementById('plan-hint').textContent = planModeHints[m];
-    selected = null;
-    renderPlan();
-  });
-});
+let hintDismissed = false;
+function dismissHint(){
+  if (hintDismissed) return;
+  hintDismissed = true;
+  getEl('plan-hint').classList.add('gone');
+}
+planSvg.addEventListener('pointerdown', ()=> setTimeout(dismissHint, 1200), true);
+
+function setPlanMode(m){
+  planMode = m;
+  if (hintDismissed) getEl('plan-hint').classList.remove('gone'), hintDismissed=false, setTimeout(()=>{ hintDismissed=true; getEl('plan-hint').classList.add('gone'); }, 3500);
+  ['move','wall'].forEach(mm=> getEl('plan-mode-'+mm).classList.toggle('active', mm===m));
+  planSvg.classList.toggle('mode-move', m==='move');
+  getEl('plan-hint').textContent = planHints[m];
+  renderPlan();
+}
+['move','wall'].forEach(m=> getEl('plan-mode-'+m).addEventListener('click', ()=>{ selected=null; setPlanMode(m); renderInspector(); }));
 
 /* =========================================================
-   ESCENA 3D
+   6 · PANEL CONTEXTUAL — solo se edita lo que está seleccionado
    ========================================================= */
-let scene, camera3d, renderer3d, controls3d;
-let buildingGroup;
-let sunLight, sunGizmo, sunPathLine=null, northArrow, windArrowHelper=null;
-let showPath = false;
-let animTimer = null;
-let wallMeshes = [];
-let rafScheduled = false;
-let floorMesh = null;
-let lastSunAz = 0, lastSunElevation = -1, lastSunVisible = false;
-let lastWindFromVec = { x:0, z:1 };
+function renderWallChips(){
+  const box = getEl('wall-chips');
+  const g = G || buildGeometry();
+  if (!g.segs.length){ box.innerHTML = '<span class="block-note" style="margin:0;">Sin muros — elige una forma o dibuja con «✎ Dibujar».</span>'; return; }
+  box.innerHTML = g.segs.map(s=>{
+    const on = selected && selected.vIndex===s.i && (selected.type==='wall'||selected.type==='opening');
+    const nOp = vertices[s.i].openings.length;
+    return `<button class="chip${on?' active':''}" data-sel-wall="${s.i}">M${s.i+1}${nOp?' · '+nOp+'▯':''}</button>`;
+  }).join('');
+}
+getEl('wall-chips').addEventListener('click', e=>{
+  const b = e.target.closest('[data-sel-wall]'); if (!b) return;
+  selected = {type:'wall', vIndex:+b.dataset.selWall};
+  renderPlan(); renderInspector(); renderWallChips();
+});
 
-/* --- geometría 2D auxiliar para el heatmap de piso (línea de vista / oclusión) --- */
-function segmentsIntersect(px,py,qx,qy, ax,ay,bx,by){
-  const d1x=qx-px, d1y=qy-py, d2x=bx-ax, d2y=by-ay;
-  const denom = d1x*d2y - d1y*d2x;
-  if (Math.abs(denom)<1e-9) return false;
-  const t = ((ax-px)*d2y - (ay-py)*d2x)/denom;
-  const u = ((ax-px)*d1y - (ay-py)*d1x)/denom;
-  return t>0.002 && t<0.998 && u>0.002 && u<0.998;
-}
-function raySegmentParam(px,py,dx,dy, ax,ay,bx,by){
-  const ex=bx-ax, ey=by-ay;
-  const denom = dx*ey - dy*ex;
-  if (Math.abs(denom)<1e-9) return Infinity;
-  const t = ((ax-px)*ey - (ay-py)*ex)/denom;
-  const u = ((ax-px)*dy - (ay-py)*dx)/denom;
-  if (t>0.001 && u>=-0.02 && u<=1.02) return t;
-  return Infinity;
+/* Alzado esquemático del muro: es lo que falta cuando editas antepecho y alto en una planta. */
+function elevationSvg(seg, highlightOp){
+  const H = seg.height, L = seg.len;
+  const W = 250, sc = Math.min((W-24)/L, 74/H), ox = (W - L*sc)/2, oy = 6;
+  let s = `<svg class="mini-elev" viewBox="0 0 ${W} ${H*sc+22}" width="100%" height="${H*sc+22}">`;
+  s += `<rect x="${ox}" y="${oy}" width="${L*sc}" height="${H*sc}" fill="#E9E6DA" stroke="#C6C2B2"/>`;
+  seg.openings.forEach(op=>{
+    const x = ox + (op.cx + L/2 - op.halfWidth)*sc;
+    const y = oy + (H - op.y1)*sc;
+    const hl = highlightOp===op.opIndex;
+    s += `<rect x="${x}" y="${y}" width="${op.width*sc}" height="${op.height*sc}" fill="${hl?'#FDECC8':'#CFE4F5'}" stroke="${hl?'#EF9B0F':'#2F8FE0'}" stroke-width="${hl?1.6:1}"/>`;
+    if (hl){
+      s += `<line x1="${x-6}" y1="${oy+H*sc}" x2="${x-6}" y2="${y+op.height*sc}" stroke="#EF9B0F" stroke-width="1"/>`;
+      s += `<text x="${x-9}" y="${oy+H*sc-2}" font-family="IBM Plex Mono" font-size="8" fill="#D2560B" text-anchor="end">${op.y0.toFixed(2)}</text>`;
+    }
+  });
+  s += `<line x1="${ox}" y1="${oy+H*sc}" x2="${ox+L*sc}" y2="${oy+H*sc}" stroke="#6E7668" stroke-width="2"/>`;
+  s += `<text x="${W/2}" y="${H*sc+18}" font-family="IBM Plex Mono" font-size="8.5" fill="#9399A6" text-anchor="middle">alzado interior · ${L.toFixed(2)} × ${H.toFixed(2)} m</text>`;
+  return s+'</svg>';
 }
 
-function scheduleRecompute(){
-  if (rafScheduled) return;
-  rafScheduled = true;
-  requestAnimationFrame(()=>{ rafScheduled=false; recomputeAll(); });
+function renderInspector(){
+  const box = getEl('inspector');
+  const g = G || buildGeometry();
+  renderWallChips();
+  if (!selected || !vertices[selected.vIndex]){
+    box.className = 'inspector empty';
+    box.innerHTML = 'Selecciona un muro o un vano — en la planta o con los botones de arriba — para editarlo aquí.';
+    return;
+  }
+  box.className = 'inspector';
+  const i = selected.vIndex;
+  const wall = vertices[i];
+  const seg = g.segs.find(s=>s.i===i);
+
+  if (selected.type==='opening'){
+    const op = wall.openings[selected.opIndex];
+    if (!op){ selected = {type:'wall', vIndex:i}; return renderInspector(); }
+    const rop = seg ? seg.openings.find(o=>o.opIndex===selected.opIndex) : null;
+    const cut = rop && (Math.abs(rop.width-op.w)>0.02 || Math.abs(rop.height-op.h)>0.02);
+    box.innerHTML = `
+      <div class="inspector-head"><span class="t">Vano en Muro ${i+1}</span><span class="s">${(op.w*op.h).toFixed(2)} m²</span></div>
+      ${seg ? elevationSvg(seg, selected.opIndex) : ''}
+      ${cut ? '<div class="block-note" style="margin:0 0 6px; color:#B4432E;">No cabe completo en el muro: se está recortando.</div>' : ''}
+      <div class="row3">
+        <div class="field"><label>Ancho (m)</label><input type="number" step="0.1" min="0.15" value="${op.w.toFixed(2)}" data-op="w"></div>
+        <div class="field"><label>Alto (m)</label><input type="number" step="0.1" min="0.15" value="${op.h.toFixed(2)}" data-op="h"></div>
+        <div class="field"><label>Antepecho</label><input type="number" step="0.1" min="0" value="${op.sill.toFixed(2)}" data-op="sill"></div>
+      </div>
+      <div class="field" style="margin-bottom:2px;"><label>Posición en el muro — ${(op.pos*100).toFixed(0)}%</label>
+        <input type="range" min="0" max="1" step="0.01" value="${op.pos}" data-op="pos"></div>
+      <div class="btn-row">
+        <button class="icon-btn" data-act="op-preset" data-w="1.2" data-h="1.2" data-s="0.9">Ventana</button>
+        <button class="icon-btn" data-act="op-preset" data-w="0.9" data-h="2.1" data-s="0">Puerta</button>
+        <button class="icon-btn" data-act="op-preset" data-w="${(seg?seg.len*0.8:3).toFixed(2)}" data-h="2.4" data-s="0">Ventanal</button>
+      </div>
+      <div class="btn-row">
+        <button class="icon-btn" data-act="sel-wall">← Ver el muro</button>
+        <button class="icon-btn danger" data-act="del-op">🗑 Quitar vano</button>
+      </div>`;
+  } else {
+    const nOp = wall.openings.length;
+    const areaOp = seg ? seg.openings.reduce((a,o)=>a+o.area,0) : 0;
+    const areaWall = seg ? seg.len*wall.height : 0;
+    box.innerHTML = `
+      <div class="inspector-head"><span class="t">Muro ${i+1}</span><span class="s">${seg?seg.len.toFixed(2):'—'} m · ${seg?Math.round(seg.az):'—'}° ${seg?cardinal(seg.az):''}</span></div>
+      ${seg ? elevationSvg(seg, -1) : ''}
+      <div class="row2">
+        <div class="field"><label>Alto (m)</label><input type="number" step="0.1" min="0.5" value="${wall.height}" data-wall="height"></div>
+        <div class="field"><label>Espesor (cm)</label><input type="number" step="1" min="2" value="${wall.thickness}" data-wall="thickness"></div>
+      </div>
+      <div class="block-note" style="margin:0 0 6px;">${nOp? nOp+' vano(s) · '+areaOp.toFixed(2)+' m² = '+(areaWall>0?(100*areaOp/areaWall).toFixed(0):'0')+'% del muro' : 'Sin vanos en este muro.'}</div>
+      ${nOp? '<div class="chips">'+wall.openings.map((o,oi)=>`<button class="chip win" data-sel-op="${oi}">Vano ${oi+1} · ${o.w.toFixed(1)}×${o.h.toFixed(1)}</button>`).join('')+'</div>' : ''}
+      <div class="btn-row">
+        <button class="icon-btn primary" data-act="add-op">+ Vano</button>
+        <button class="icon-btn" data-act="split">⇔ Partir muro</button>
+        <button class="icon-btn danger" data-act="del-wall">🗑 Muro</button>
+      </div>`;
+  }
 }
+
+getEl('inspector').addEventListener('input', e=>{
+  const t = e.target;
+  const val = parseFloat(t.value);
+  if (!selected) return;
+  const wall = vertices[selected.vIndex]; if (!wall) return;
+  if (t.dataset.wall){
+    if (!isFinite(val)) return;
+    if (t.dataset.wall==='height') wall.height = Math.max(0.5,val);
+    else wall.thickness = Math.max(2,val);
+  } else if (t.dataset.op){
+    const op = wall.openings[selected.opIndex]; if (!op || !isFinite(val)) return;
+    const k = t.dataset.op;
+    op[k] = (k==='pos') ? clamp(val,0,1) : Math.max(k==='sill'?0:0.15, val);
+  } else return;
+  buildGeometry(); renderPlan();
+  if (t.dataset.op==='pos') { const lab = t.closest('.field').querySelector('label'); if (lab) lab.textContent = `Posición en el muro — ${(clamp(val,0,1)*100).toFixed(0)}%`; }
+  scheduleCompute('low');
+  clearTimeout(window.__inspTimer);
+  window.__inspTimer = setTimeout(()=>{ pushHistory(); scheduleCompute('high'); }, 320);
+});
+
+getEl('inspector').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if (!b || !selected) return;
+  const i = selected.vIndex, wall = vertices[i];
+  const seg = G.segs.find(s=>s.i===i);
+  if (b.dataset.selOp!==undefined){ selected = {type:'opening', vIndex:i, opIndex:+b.dataset.selOp}; renderPlan(); renderInspector(); return; }
+  const act = b.dataset.act;
+  if (act==='sel-wall'){ selected = {type:'wall', vIndex:i}; renderPlan(); renderInspector(); return; }
+  if (act==='add-op'){
+    wall.openings.push({pos:0.5, w:Math.min(1.2, (seg?seg.len:3)*0.4), h:1.2, sill:0.9});
+    selected = {type:'opening', vIndex:i, opIndex:wall.openings.length-1};
+  }
+  else if (act==='del-op'){ wall.openings.splice(selected.opIndex,1); selected = {type:'wall', vIndex:i}; }
+  else if (act==='del-wall'){ deleteSelected(); return; }
+  else if (act==='split'){ splitWall(i); return; }
+  else if (act==='op-preset'){
+    const op = wall.openings[selected.opIndex]; if (!op) return;
+    op.w = +b.dataset.w; op.h = +b.dataset.h; op.sill = +b.dataset.s;
+  }
+  refreshAll(true);
+});
+
+/* Alto y espesor globales: se aplican a todos los muros de un golpe. */
+['global-h','global-t'].forEach(id=>{
+  getEl(id).addEventListener('input', ()=>{
+    const h = Math.max(0.5, getNum('global-h')), t = Math.max(2, getNum('global-t'));
+    vertices.forEach(v=>{ if (id==='global-h') v.height=h; else v.thickness=t; });
+    refreshAll(false);
+    clearTimeout(window.__globTimer);
+    window.__globTimer = setTimeout(pushHistory, 400);
+  });
+});
+document.querySelectorAll('.shape-btn').forEach(b=> b.addEventListener('click', ()=> setShape(b.dataset.shape)));
+
+/* =========================================================
+   7 · ESCENA 3D
+   ========================================================= */
+let scene, camera3d, renderer3d, controls3d, buildingGroup, flowGroup;
+let sunLight, sunGizmo, sunPathLine=null, northArrow, windArrow;
+let showPath = false, animTimer = null;
+let wallItems = [], floorMesh = null;
 
 function initScene(){
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xE4EEF3);
-  scene.fog = new THREE.Fog(0xE4EEF3, 45, 160);
+  scene.fog = new THREE.Fog(0xE4EEF3, 55, 190);
 
-  const el3d = document.getElementById('view-3d');
-  camera3d = new THREE.PerspectiveCamera(45, el3d.clientWidth/el3d.clientHeight, 0.1, 500);
+  const el3d = getEl('view-3d');
+  camera3d = new THREE.PerspectiveCamera(45, el3d.clientWidth/el3d.clientHeight, 0.1, 600);
   camera3d.position.set(16,13,16);
   renderer3d = new THREE.WebGLRenderer({antialias:true});
   renderer3d.setPixelRatio(Math.min(window.devicePixelRatio,2));
@@ -846,704 +1321,1046 @@ function initScene(){
   el3d.appendChild(renderer3d.domElement);
 
   controls3d = new THREE.OrbitControls(camera3d, renderer3d.domElement);
-  controls3d.target.set(0,2.5,0);
-  controls3d.enableDamping = true;
-  controls3d.dampingFactor = 0.08;
-  controls3d.maxPolarAngle = Math.PI*0.49;
+  controls3d.target.set(0,1.4,0);
+  controls3d.enableDamping = true; controls3d.dampingFactor = 0.08;
+  controls3d.maxPolarAngle = Math.PI*0.495;
 
-  const groundGeo = new THREE.PlaneGeometry(240,240);
-  const groundMat = new THREE.MeshStandardMaterial({color:0xE1E6D8});
-  const ground = new THREE.Mesh(groundGeo, groundMat);
-  ground.rotation.x = -Math.PI/2; ground.receiveShadow = true;
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(400,400), new THREE.MeshStandardMaterial({color:0xE1E6D8}));
+  ground.rotation.x = -Math.PI/2; ground.position.y = -0.02; ground.receiveShadow = true;
   scene.add(ground);
-
-  const grid = new THREE.GridHelper(240, 48, 0xa7ac99, 0xd2d6c8);
-  scene.add(grid);
+  scene.add(new THREE.GridHelper(240, 48, 0xa7ac99, 0xd2d6c8));
 
   northArrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,1), new THREE.Vector3(0,0.05,0), 8, 0x9C2B21, 1.4, 0.8);
   scene.add(northArrow);
 
-  const hemi = new THREE.HemisphereLight(0xffffff, 0x445544, 0.6);
-  scene.add(hemi);
-  scene.add(new THREE.AmbientLight(0xffffff, 0.24));
+  scene.add(new THREE.HemisphereLight(0xdfefff, 0x6b7355, 0.55));
+  scene.add(new THREE.AmbientLight(0xffffff, 0.22));
 
-  sunLight = new THREE.DirectionalLight(0xffffff, 1.3);
+  sunLight = new THREE.DirectionalLight(0xfff3dd, 1.25);
   sunLight.castShadow = true;
   sunLight.shadow.mapSize.set(2048,2048);
-  sunLight.shadow.camera.left=-22; sunLight.shadow.camera.right=22;
-  sunLight.shadow.camera.top=22; sunLight.shadow.camera.bottom=-22;
-  sunLight.shadow.camera.near=1; sunLight.shadow.camera.far=100;
-  sunLight.shadow.bias = -0.0015;
+  sunLight.shadow.camera.left=-30; sunLight.shadow.camera.right=30;
+  sunLight.shadow.camera.top=30; sunLight.shadow.camera.bottom=-30;
+  sunLight.shadow.camera.near=1; sunLight.shadow.camera.far=140;
+  sunLight.shadow.bias = -0.0012;
   scene.add(sunLight); scene.add(sunLight.target);
 
-  sunGizmo = new THREE.Mesh(new THREE.SphereGeometry(0.4,16,16), new THREE.MeshBasicMaterial({color:0xffe08a}));
+  sunGizmo = new THREE.Mesh(new THREE.SphereGeometry(0.5,16,16), new THREE.MeshBasicMaterial({color:0xffd97a}));
   scene.add(sunGizmo);
 
-  windArrowHelper = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,1.2,0), 6, 0x2F8FE0, 1.3, 0.7);
-  windArrowHelper.visible = false;
-  scene.add(windArrowHelper);
+  windArrow = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,1.2,0), 6, 0x155F9E, 1.3, 0.7);
+  windArrow.visible = false;
+  scene.add(windArrow);
 
-  buildingGroup = new THREE.Group();
-  scene.add(buildingGroup);
+  buildingGroup = new THREE.Group(); scene.add(buildingGroup);
+  flowGroup = new THREE.Group(); scene.add(flowGroup);
 
   window.addEventListener('resize', onResize);
-  animateLoop();
+  loop3d();
 }
-
 function onResize(){
-  const el3d = document.getElementById('view-3d');
+  const el3d = getEl('view-3d');
   camera3d.aspect = el3d.clientWidth/el3d.clientHeight;
   camera3d.updateProjectionMatrix();
   renderer3d.setSize(el3d.clientWidth, el3d.clientHeight);
+  fitView(); renderPlan();
 }
-function animateLoop(){
-  requestAnimationFrame(animateLoop);
-  controls3d.update();
-  renderer3d.render(scene, camera3d);
-}
+function loop3d(){ requestAnimationFrame(loop3d); controls3d.update(); renderer3d.render(scene, camera3d); }
 
-function buildWallShape(length, height, openings){
-  const shape = new THREE.Shape();
-  shape.moveTo(-length/2, 0); shape.lineTo(length/2, 0); shape.lineTo(length/2, height); shape.lineTo(-length/2, height); shape.lineTo(-length/2, 0);
-  openings.forEach(op=>{
-    const r = resolveOpening(op, length, height);
-    if (!r.valid) return;
-    const x0=r.cx-r.halfWidth, x1=r.cx+r.halfWidth;
-    const hole = new THREE.Path();
-    hole.moveTo(x0,r.y0); hole.lineTo(x1,r.y0); hole.lineTo(x1,r.y1); hole.lineTo(x0,r.y1); hole.lineTo(x0,r.y0);
-    shape.holes.push(hole);
-  });
-  return shape;
+function disposeGroup(grp){
+  while(grp.children.length){
+    const c = grp.children[0];
+    grp.remove(c);
+    if (c.geometry) c.geometry.dispose();
+    if (c.material){ if (c.material.map) c.material.map.dispose(); c.material.dispose(); }
+  }
 }
 
 function rebuildBuilding(){
-  while(buildingGroup.children.length) buildingGroup.remove(buildingGroup.children[0]);
-  wallMeshes = [];
-  const segs = getSegments();
-  const windSign = polygonWindingSign();
-  const wallColor = 0xEDE9DC;
+  disposeGroup(buildingGroup);
+  wallItems = []; floorMesh = null;
+  const g = G;
 
-  segs.forEach(seg=>{
-    const w = seg.a;
-    const length = seg.length;
-    if (length<0.05) return;
-    const midX = (seg.a.x+seg.b.x)/2, midZ = (seg.a.z+seg.b.z)/2;
-    const {az, nx, nz} = segAzimuth(seg, windSign);
-    const thicknessM = Math.max(0.02, w.thickness/100);
+  g.segs.forEach(seg=>{
+    const th = Math.max(0.02, seg.thickness/100);
+    const shape = new THREE.Shape();
+    shape.moveTo(-seg.len/2,0); shape.lineTo(seg.len/2,0); shape.lineTo(seg.len/2,seg.height); shape.lineTo(-seg.len/2,seg.height); shape.closePath();
+    seg.openings.forEach(op=>{
+      const p = new THREE.Path();
+      p.moveTo(op.cx-op.halfWidth, op.y0); p.lineTo(op.cx+op.halfWidth, op.y0);
+      p.lineTo(op.cx+op.halfWidth, op.y1); p.lineTo(op.cx-op.halfWidth, op.y1); p.closePath();
+      shape.holes.push(p);
+    });
+    const geo = new THREE.ExtrudeGeometry(shape, {depth:th, bevelEnabled:false});
+    geo.translate(0,0,-th/2);
+    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color:0xEDE9DC, roughness:0.93}));
+    mesh.position.set(seg.midX, 0, seg.midZ);
+    mesh.rotation.y = toRad(seg.az);
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    buildingGroup.add(mesh);
 
-    const shape = buildWallShape(length, w.height, w.openings);
-    const geo = new THREE.ExtrudeGeometry(shape, {depth: thicknessM, bevelEnabled:false});
-    geo.translate(0,0,-thicknessM/2);
-    const wallMat = new THREE.MeshStandardMaterial({color:wallColor, roughness:0.92});
-    const wallMesh = new THREE.Mesh(geo, wallMat);
-    wallMesh.position.set(midX,0,midZ);
-    wallMesh.rotation.y = toRad(az);
-    wallMesh.castShadow = true; wallMesh.receiveShadow = true;
-    buildingGroup.add(wallMesh);
+    // capa exterior: color = radiación incidente (ganancia térmica)
+    const heat = new THREE.Mesh(new THREE.PlaneGeometry(seg.len, seg.height),
+      new THREE.MeshBasicMaterial({color:0x264 , transparent:true, opacity:0.82, depthWrite:false}));
+    heat.position.set(seg.midX + seg.nOut.x*(th/2+0.015), seg.height/2, seg.midZ + seg.nOut.z*(th/2+0.015));
+    heat.rotation.y = toRad(seg.az);
+    buildingGroup.add(heat);
 
-    const heatMat = new THREE.MeshBasicMaterial({color:0x1F4C73, transparent:true, opacity:0.85, side:THREE.FrontSide, depthWrite:false});
-    const heatMesh = new THREE.Mesh(new THREE.PlaneGeometry(length, w.height), heatMat);
-    heatMesh.position.set(midX + nx*(thicknessM/2+0.02), w.height/2, midZ + nz*(thicknessM/2+0.02));
-    heatMesh.rotation.y = toRad(az);
-    heatMesh.visible = (currentMode==='sol');
-    buildingGroup.add(heatMesh);
+    // capa interior: color = iluminancia recibida (se pinta con el campo calculado)
+    const inner = new THREE.Mesh(new THREE.PlaneGeometry(seg.len, seg.height),
+      new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.92, side:THREE.DoubleSide, depthWrite:false}));
+    inner.position.set(seg.midX + seg.nIn.x*(th/2+0.015), seg.height/2, seg.midZ + seg.nIn.z*(th/2+0.015));
+    inner.rotation.y = toRad(seg.az+180);
+    inner.visible = false;
+    buildingGroup.add(inner);
 
-    const resolvedOpenings = [];
-    const along = { x:(seg.b.x-seg.a.x)/length, z:(seg.b.z-seg.a.z)/length };
-    w.openings.forEach(op=>{
-      const r = resolveOpening(op, length, w.height);
-      if (!r.valid) return;
-      const wx = midX + along.x*r.cx, wz = midZ + along.z*r.cx;
-      const winMat = new THREE.MeshStandardMaterial({color:0x2F8FE0, transparent:true, opacity:0.4, side:THREE.DoubleSide, roughness:0.15});
-      const win = new THREE.Mesh(new THREE.PlaneGeometry(r.width, r.height), winMat);
-      win.position.set(wx, (r.y0+r.y1)/2, wz);
-      win.rotation.y = toRad(az);
+    seg.openings.forEach(op=>{
+      const win = new THREE.Mesh(new THREE.PlaneGeometry(op.width, op.height),
+        new THREE.MeshStandardMaterial({color:0x9FD4F2, transparent:true, opacity:0.28, side:THREE.DoubleSide, roughness:0.1}));
+      win.position.set(op.x, op.yc, op.z);
+      win.rotation.y = toRad(seg.az);
       buildingGroup.add(win);
-      resolvedOpenings.push({ cx:r.cx, halfWidth:r.halfWidth, width:r.width, x:wx, z:wz, area:r.width*r.height, centerY:(r.y0+r.y1)/2 });
     });
 
-    wallMeshes.push({ seg, wallMesh, heatMesh, midX, midZ, azimuth:az, normal:{x:nx,z:nz}, along, length, height:w.height, openings:w.openings, resolvedOpenings, currentIrradiance:0, currentDirect:0, windward:false });
+    wallItems.push({seg, mesh, heat, inner});
   });
 
-  floorMesh = null;
-  if (closedLoop && segs.length>=3){
+  if (closedLoop && g.segs.length>=3){
     const shape = new THREE.Shape();
-    segs.forEach((s,i)=>{ if (i===0) shape.moveTo(s.a.x, -s.a.z); else shape.lineTo(s.a.x, -s.a.z); });
+    vertices.forEach((v,i)=> i===0 ? shape.moveTo(v.x,-v.z) : shape.lineTo(v.x,-v.z));
     shape.closePath();
-    const floorGeo = new THREE.ShapeGeometry(shape);
-    floorGeo.rotateX(-Math.PI/2);
-    const floorMat = new THREE.MeshStandardMaterial({color:0xDDD8C6, roughness:0.95, side:THREE.DoubleSide});
-    const floor = new THREE.Mesh(floorGeo, floorMat);
-    floor.position.y = -0.015; floor.receiveShadow = true;
-    buildingGroup.add(floor);
-    floorMesh = floor;
+    const fgeo = new THREE.ShapeGeometry(shape); fgeo.rotateX(-Math.PI/2);
+    // ShapeGeometry hereda como UV las coordenadas del contorno (metros, no 0-1): hay que
+    // normalizarlas al bounding box o la textura del campo no se ve en el piso 3D.
+    const pos = fgeo.attributes.position, uvA = fgeo.attributes.uv;
+    const sx = Math.max(1e-6, g.bbox.maxX-g.bbox.minX), sz = Math.max(1e-6, g.bbox.maxZ-g.bbox.minZ);
+    for (let i=0;i<pos.count;i++) uvA.setXY(i, (pos.getX(i)-g.bbox.minX)/sx, (pos.getZ(i)-g.bbox.minZ)/sz);
+    uvA.needsUpdate = true;
+    const fmat = new THREE.MeshBasicMaterial({color:0xDDD8C6, side:THREE.DoubleSide});
+    floorMesh = new THREE.Mesh(fgeo, fmat);
+    floorMesh.position.y = 0.008;
+    buildingGroup.add(floorMesh);
   }
-
   applyCameraFraming();
 }
 
-function boundsAndCentroid(){
-  let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity,maxH=3;
-  vertices.forEach(v=>{ minX=Math.min(minX,v.x); maxX=Math.max(maxX,v.x); minZ=Math.min(minZ,v.z); maxZ=Math.max(maxZ,v.z); maxH=Math.max(maxH,v.height); });
-  if (!isFinite(minX)) return { cx:0, cz:0, maxH:3, spanX:6, spanZ:6 };
-  return { cx:(minX+maxX)/2, cz:(minZ+maxZ)/2, maxH, spanX:maxX-minX, spanZ:maxZ-minZ };
-}
-
 function applyCameraFraming(){
-  const b = boundsAndCentroid();
-  if (!interiorView){
-    controls3d.target.set(b.cx, b.maxH*0.42, b.cz);
-  } else {
-    let target = wallMeshes[0], maxArea=-1;
-    wallMeshes.forEach(wm=>{ const area = wm.openings.reduce((a,o)=>a+o.w*o.h,0); if (area>maxArea){ maxArea=area; target=wm; } });
-    if (target){
-      const eyeH = Math.min(1.7, Math.max(1.2, b.maxH*0.3));
-      const camX = b.cx - target.normal.x*Math.max(1.0, Math.min(b.spanX,b.spanZ)*0.28);
-      const camZ = b.cz - target.normal.z*Math.max(1.0, Math.min(b.spanX,b.spanZ)*0.28);
-      camera3d.position.set(camX, eyeH, camZ);
-      controls3d.target.set(target.midX - target.normal.x*0.4, eyeH, target.midZ - target.normal.z*0.4);
+  const g = G;
+  if (!interiorView){ controls3d.target.set(g.cx, g.maxH*0.4, g.cz); return; }
+  let best=null, bestArea=-1;
+  G.segs.forEach(s=>{ const a = s.openings.reduce((x,o)=>x+o.area,0); if (a>bestArea){ bestArea=a; best=s; } });
+  if (!best) return;
+  const eye = Math.min(1.65, Math.max(1.1, g.maxH*0.5));
+  const back = Math.max(1.2, Math.min(g.spanX,g.spanZ)*0.35);
+  camera3d.position.set(best.midX + best.nIn.x*back, eye, best.midZ + best.nIn.z*back);
+  controls3d.target.set(best.midX, eye*0.9, best.midZ);
+}
+function resetExteriorCamera(){
+  const g = G;
+  const dist = Math.max(g.spanX, g.spanZ, 6)*1.15 + 7;
+  camera3d.position.set(g.cx+dist*0.72, g.maxH*1.7+6, g.cz+dist*0.72);
+  controls3d.target.set(g.cx, g.maxH*0.4, g.cz);
+}
+function updateSunPath(){
+  if (sunPathLine){ scene.remove(sunPathLine); sunPathLine.geometry.dispose(); sunPathLine=null; }
+  if (!showPath) return;
+  const {lat,lon,tz} = siteParams(); const d = dateParts(); if (!d) return;
+  const pts = [];
+  for (let hh=0; hh<=24; hh+=0.1){
+    const sp = solarPosition(lat,lon,tz,d.Y,d.M,d.D,hh);
+    if (sp.elevation>0){
+      const R = Math.max(28, G.maxH*4 + Math.max(G.spanX,G.spanZ));
+      pts.push(new THREE.Vector3(
+        R*Math.cos(sp.elevation)*Math.sin(toRad(sp.azimuthDeg)) + G.cx,
+        R*Math.sin(sp.elevation),
+        R*Math.cos(sp.elevation)*Math.cos(toRad(sp.azimuthDeg)) + G.cz));
     }
   }
-}
-
-function resetExteriorCamera(){
-  const b = boundsAndCentroid();
-  const dist = Math.max(b.spanX,b.spanZ,6)*1.15 + 6;
-  camera3d.position.set(b.cx+dist*0.7, b.maxH*1.5+5, b.cz+dist*0.7);
-  controls3d.target.set(b.cx, b.maxH*0.42, b.cz);
+  if (pts.length>1){
+    sunPathLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({color:0xEF9B0F}));
+    scene.add(sunPathLine);
+  }
 }
 
 /* =========================================================
-   HEATMAP DE PISO — cómo entra la radiación/el viento por cada vano
+   8 · CAMPO DE LUZ EN EL PISO
+   Tres términos separados, cada uno con su física:
+     (1) haz directo, trazado en 3D (azimut Y elevación) — por eso la mancha se mueve;
+     (2) difusa del cielo/suelo que entra por cada vano, con el vano subdividido en parches;
+     (3) interreflejada: patrón del primer rebote en muros, normalizado al balance de flujo
+         de la esfera integradora, que sí incluye todos los rebotes siguientes.
    ========================================================= */
-function windColorRamp(t){
-  t = Math.max(0,Math.min(1,t));
-  const stops = [[0,[233,238,232]], [0.35,[178,214,225]], [0.7,[70,150,180]], [1,[18,70,95]]];
-  for (let i=0;i<stops.length-1;i++){
-    const [t0,c0]=stops[i], [t1,c1]=stops[i+1];
-    if (t>=t0 && t<=t1){
-      const f=(t-t0)/(t1-t0);
-      const r=Math.round(c0[0]+f*(c1[0]-c0[0])), g=Math.round(c0[1]+f*(c1[1]-c0[1])), b=Math.round(c0[2]+f*(c1[2]-c0[2]));
-      return (r<<16)|(g<<8)|b;
-    }
+const SUN = { visible:false, el:0, az:0, dirH:{x:0,z:1}, tanEl:0, sky:{dni:0,dhi:0,ghi:0} };
+
+/* ¿Este punto del espacio ve el disco solar? Devuelve null si está en sombra,
+   o {glass:true/false} según si el rayo entró por un vano o por cielo abierto.
+   Esta es la corrección de fondo: antes solo se usaba el azimut y la mancha de sol
+   quedaba congelada; aquí el rayo sube con la elevación real y tiene que cruzar el
+   hueco del vano a la altura correcta. */
+function sunBeamAt(x,y,z, hasRoof){
+  if (!SUN.visible) return null;
+  const hit = firstWallHit(x, z, SUN.dirH.x, SUN.dirH.z);
+  if (!hit) return {glass:false};
+  const yh = y + hit.t*SUN.tanEl;
+  if (yh >= hit.seg.height) return hasRoof ? null : {glass:false};
+  const localX = (hit.u-0.5)*hit.seg.len;
+  for (let k=0;k<hit.seg.openings.length;k++){
+    const op = hit.seg.openings[k];
+    if (Math.abs(localX-op.cx) <= op.halfWidth && yh>=op.y0 && yh<=op.y1) return {glass:true};
   }
-  return 0x12465F;
+  return null;
 }
 
-function buildingBBox(){
-  let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
-  vertices.forEach(v=>{ minX=Math.min(minX,v.x); maxX=Math.max(maxX,v.x); minZ=Math.min(minZ,v.z); maxZ=Math.max(maxZ,v.z); });
-  if (!isFinite(minX)) return null;
-  return { minX, maxX, minZ, maxZ };
+/* Transferencia radiativa de un parche Lambertiano a un punto receptor. */
+function transfer(s, rx,ry,rz, nx,ny,nz, skipA, skipB){
+  const vx = rx-s.x, vy = ry-s.y, vz = rz-s.z;
+  let d2 = vx*vx+vy*vy+vz*vz;
+  if (d2 < s.minD2) d2 = s.minD2;
+  const d = Math.sqrt(d2);
+  const cosS = (vx*s.nx + vy*s.ny + vz*s.nz)/d;
+  if (cosS <= 0.002) return 0;
+  const cosR = -(vx*nx + vy*ny + vz*nz)/d;
+  if (cosR <= 0.002) return 0;
+  if (blocked(s.x, s.z, rx, rz, skipA, skipB)) return 0;
+  return s.L*s.area*cosS*cosR/d2;
 }
 
-// Recolecta todos los vanos activos con posición mundial, resueltos ya en rebuildBuilding()
-function collectActiveOpenings(){
-  const out = [];
-  wallMeshes.forEach(wm=>{
-    wm.resolvedOpenings.forEach(op=>{
-      out.push({ x:op.x, z:op.z, cx:op.cx, halfWidth:op.halfWidth, width:op.width, area:op.area, centerY:op.centerY,
-                 ownVIndex:wm.seg.vIndex, normal:wm.normal, wm });
+let lightResult = null;
+
+function computeLightField(quality){
+  const g = G;
+  if (!g.segs.length) return null;
+  const hasRoof = getEl('has-roof').checked;
+  const tau  = clamp(getNum('tau-glass'), 0.05, 1);
+  const rhoW = clamp(getNum('rho-wall'), 0, 0.95);
+  const rhoF = clamp(getNum('rho-floor'), 0, 0.95);
+  const sky = SUN.sky;
+
+  // ---- rejilla del piso ----
+  // Se fija un PRESUPUESTO de celdas en vez de un tamaño de celda: así una nave de 40 m
+  // no dispara el cálculo a medio segundo, y un cuarto chico igual sale bien resuelto.
+  const bw = Math.max(g.spanX, 0.5), bh = Math.max(g.spanZ, 0.5);
+  const budget = quality==='high' ? 15000 : 3600;
+  const cell = clamp(Math.sqrt(bw*bh/budget), quality==='high'?0.10:0.22, 0.45);
+  const nx = clamp(Math.round(bw/cell), 6, 220), nz = clamp(Math.round(bh/cell), 6, 220);
+  const dxc = bw/nx, dzc = bh/nz;
+  const total = new Float32Array(nx*nz), inside = new Uint8Array(nx*nz);
+
+  // ---- fuentes: cada vano subdividido en parches, con la radiancia que transmite ----
+  const sources = [];
+  g.segs.forEach(seg=>{
+    const vi = verticalIrradiance(sky, SUN.el, SUN.az, seg.az);
+    seg.openings.forEach(op=>{
+      const Ediff = vi.diffuse + vi.reflected;                  // difusa de cielo + reflejada del suelo
+      const L = Ediff*tau/Math.PI;                              // radiancia lambertiana transmitida
+      op.Ewin = Ediff; op.Ebeam = vi.direct;
+      if (L <= 1e-4) return;
+      const maxW = quality==='high'?4:1, maxH = quality==='high'?3:1;
+      const nw = clamp(Math.round(op.width/0.5), 1, maxW), nh = clamp(Math.round(op.height/0.5), 1, maxH);
+      const aw = op.width/nw, ah = op.height/nh;
+      for (let a=0;a<nw;a++) for (let b=0;b<nh;b++){
+        const off = op.cx - op.halfWidth + (a+0.5)*aw;
+        sources.push({
+          x: seg.a.x + seg.along.x*(off+seg.len/2) + seg.nIn.x*0.03,
+          z: seg.a.z + seg.along.z*(off+seg.len/2) + seg.nIn.z*0.03,
+          y: op.y0 + (b+0.5)*ah,
+          nx: seg.nIn.x, ny:0, nz: seg.nIn.z,
+          L, area: aw*ah, minD2: Math.max(0.05, aw*ah), seg: seg.i
+        });
+      }
     });
   });
-  return out;
-}
 
-// Mosaico deliberado: pocas teselas grandes y nítidas — más fácil de leer que un gradiente fino.
-const MOSAIC_TILES = 28;
-
-function computeFloorHeatmap(){
-  const bb = buildingBBox();
-  if (!bb || wallMeshes.length===0) return null;
-  const w = bb.maxX-bb.minX, h = bb.maxZ-bb.minZ;
-  if (w<=0.05 || h<=0.05) return null;
-  const openings = collectActiveOpenings();
-  if (openings.length===0) return { bb, nx:2, nz:2, data:new Float32Array(4), maxVal:0, mode:currentMode };
-
-  const nx = Math.max(6, Math.round(MOSAIC_TILES * (w/Math.max(w,h))));
-  const nz = Math.max(6, Math.round(MOSAIC_TILES * (h/Math.max(w,h))));
-  const occluders = wallMeshes.map(wm=>({ a:wm.seg.a, b:wm.seg.b, vIndex:wm.seg.vIndex }));
-  const isWind = currentMode==='wind';
-  const sunDx = Math.sin(toRad(lastSunAz)), sunDz = Math.cos(toRad(lastSunAz));
-
-  // Transferencia radiativa punto-a-área entre dos superficies Lambertianas, con oclusión real.
-  // srcPos/rcvPos llevan {x,y,z}; Ns/Nr son las normales YA orientadas hacia adentro del cuarto
-  // (la cara que efectivamente emite o recibe luz). Es la misma fórmula de la óptica de iluminación
-  // (radiancia × cosenos / d²) — se reusa para vano→piso, vano→muro y muro→piso: un solo cálculo,
-  // tres usos, en vez de tres fórmulas distintas.
-  function transferPointToArea(srcPos, Ns, Lsrc, Asrc, rcvPos, Nr, excludeIdx){
-    const dx=srcPos.x-rcvPos.x, dy=srcPos.y-rcvPos.y, dz=srcPos.z-rcvPos.z;
-    const d2 = dx*dx+dy*dy+dz*dz;
-    const d = Math.sqrt(d2) || 1e-6;
-    const cosSrc = -(dx*Ns.x+dy*Ns.y+dz*Ns.z)/d;
-    const cosRcv =  (dx*Nr.x+dy*Nr.y+dz*Nr.z)/d;
-    if (cosSrc<=0.001 || cosRcv<=0.001) return 0;
-    for (let j=0;j<occluders.length;j++){
-      const oc = occluders[j];
-      if (oc.vIndex===excludeIdx[0] || oc.vIndex===excludeIdx[1]) continue;
-      if (segmentsIntersect(rcvPos.x,rcvPos.z, srcPos.x,srcPos.z, oc.a.x,oc.a.z, oc.b.x,oc.b.z)) return 0;
+  // ---- parches de muro: reciben (difusa por vanos + haz directo) y rebotan ----
+  const wallPatches = [];
+  const wallGrids = [];
+  g.segs.forEach(seg=>{
+    const nc = clamp(Math.round(seg.len/0.6), 2, quality==='high'?10:5), nr = quality==='high'?3:2;
+    const cw = seg.len/nc, ch = seg.height/nr;
+    const grid = new Float32Array(nc*nr);
+    const azIn = seg.az + 180;
+    const cosAOIin = Math.cos(SUN.el)*Math.cos(toRad(azIn - SUN.az));
+    for (let c=0;c<nc;c++) for (let r=0;r<nr;r++){
+      const localX = -seg.len/2 + (c+0.5)*cw, py = (r+0.5)*ch;
+      let isHole = false;
+      for (const op of seg.openings) if (Math.abs(localX-op.cx)<=op.halfWidth && py>=op.y0 && py<=op.y1) isHole = true;
+      if (isHole){ grid[r*nc+c] = -1; continue; }
+      const wx = seg.a.x + seg.along.x*(localX+seg.len/2) + seg.nIn.x*0.04;
+      const wz = seg.a.z + seg.along.z*(localX+seg.len/2) + seg.nIn.z*0.04;
+      let E = 0;
+      for (let k=0;k<sources.length;k++){
+        if (sources[k].seg===seg.i) continue;             // un muro no se ilumina a sí mismo
+        E += transfer(sources[k], wx, py, wz, seg.nIn.x, 0, seg.nIn.z, sources[k].seg, seg.i);
+      }
+      if (cosAOIin > 0 && SUN.visible){
+        const b = sunBeamAt(wx, py, wz, hasRoof);
+        if (b) E += sky.dni*cosAOIin*(b.glass?tau:1);
+      }
+      grid[r*nc+c] = E;
+      wallPatches.push({ x:wx, z:wz, y:py, nx:seg.nIn.x, ny:0, nz:seg.nIn.z,
+                         L: E*rhoW/Math.PI, area: cw*ch, minD2: Math.max(0.08, cw*ch), seg: seg.i });
     }
-    return (Lsrc*Asrc*cosSrc*cosRcv)/d2;
+    wallGrids.push({seg, nc, nr, grid});
+  });
+
+  // ---- flujo total que entra: fija la energía de la componente interreflejada ----
+  let phi = 0, openArea = 0, wallArea = 0;
+  g.segs.forEach(seg=>{
+    wallArea += seg.len*seg.height;
+    seg.openings.forEach(op=>{
+      openArea += op.area;
+      phi += (op.Ewin||0)*tau*op.area + Math.max(0,(op.Ebeam||0))*tau*op.area;
+    });
+  });
+  const floorArea = g.area>0.1 ? g.area : bw*bh;
+  const ceilArea = hasRoof ? floorArea : 0;
+  const Aint = Math.max(1, floorArea + wallArea + ceilArea - openArea);
+  const rhoMean = clamp((floorArea*rhoF + (wallArea-openArea+ceilArea)*rhoW)/Aint, 0.02, 0.9);
+  const Eir = phi*rhoMean/(Aint*(1-rhoMean));      // esfera integradora: promedio con TODOS los rebotes
+
+  // ---- barrido del piso ----
+  const bounce = new Float32Array(nx*nz);
+  let bounceSum = 0, bounceN = 0;
+  const ss = quality==='high' ? 2 : 1;             // submuestreo del haz directo (penumbra)
+  const beamHoriz = sky.dni*Math.sin(SUN.el);
+
+  for (let iz=0; iz<nz; iz++){
+    const pz = g.bbox.minZ + (iz+0.5)*dzc;
+    for (let ix=0; ix<nx; ix++){
+      const p = g.bbox.minX + (ix+0.5)*dxc;
+      const idx = iz*nx+ix;
+      if (!pointInPlan(p,pz)) continue;
+      inside[idx] = 1;
+      let E = 0;
+
+      // (1) haz directo
+      if (SUN.visible && beamHoriz>0){
+        let litSum = 0, glassSum = 0;
+        for (let sy=0; sy<ss; sy++) for (let sx=0; sx<ss; sx++){
+          const qx = p + ((sx+0.5)/ss-0.5)*dxc, qz = pz + ((sy+0.5)/ss-0.5)*dzc;
+          const b = sunBeamAt(qx, 0, qz, hasRoof);
+          if (b){ litSum++; if (b.glass) glassSum++; }
+        }
+        if (litSum>0){
+          const frac = litSum/(ss*ss);
+          const glassFrac = glassSum/litSum;
+          E += beamHoriz*frac*(glassFrac*tau + (1-glassFrac));
+        }
+      }
+      // (1b) sin losa, el piso ve el cielo entero: difusa sin filtrar
+      if (!hasRoof) E += sky.dhi;
+
+      // (2) difusa por los vanos
+      for (let k=0;k<sources.length;k++) E += transfer(sources[k], p, 0, pz, 0,1,0, sources[k].seg, -1);
+
+      // (3) patrón del rebote (se normaliza después)
+      let bv = 0;
+      for (let k=0;k<wallPatches.length;k++){
+        const wp = wallPatches[k];
+        if (wp.L<=1e-5) continue;
+        bv += transfer(wp, p, 0, pz, 0,1,0, wp.seg, -1);
+      }
+      bounce[idx] = bv; bounceSum += bv; bounceN++;
+      total[idx] = E;
+    }
   }
 
-  if (!isWind){
-    // Radiancia lambertiana de cada vano (lo que ya no es haz directo): se calcula una sola vez y se
-    // reusa tanto para iluminar el piso en línea recta como para iluminar los muros (paso siguiente).
-    openings.forEach(op=>{
-      const diffRefl = Math.max(0, op.wm.currentIrradiance - op.wm.currentDirect);
-      op.Lrad = diffRefl>0.05 ? (diffRefl*TAU_GLASS)/Math.PI : 0;
-      op.srcPos = { x:op.x, y:op.centerY, z:op.z };
-      op.Ns = { x:-op.normal.x, y:0, z:-op.normal.z }; // normal hacia adentro del cuarto
-    });
+  // normaliza el patrón del rebote a la energía real (esfera integradora)
+  const meanB = bounceN ? bounceSum/bounceN : 0;
+  const kB = (meanB>1e-6 && hasRoof) ? Eir/meanB : 0;
+  for (let i=0;i<nx*nz;i++){
+    if (!inside[i]) continue;
+    total[i] += hasRoof ? (kB>0 ? bounce[i]*kB : Eir) : bounce[i];
+  }
 
-    // Primer rebote: cuánta luz de vano le llega a la CARA INTERIOR de cada muro. Ese muro se
-    // convierte entonces en una fuente secundaria (radiosidad = lo recibido × reflectancia) que
-    // reparte luz hacia el resto del piso — así es como la luz "se dispersa" en un cuarto real en
-    // vez de quedarse solo en la franja que ve la ventana en línea recta.
-    wallMeshes.forEach(wm=>{
-      const Nin = { x:-wm.normal.x, y:0, z:-wm.normal.z };
-      const rcvPos = { x: wm.midX+Nin.x*0.06, y: wm.height*0.5, z: wm.midZ+Nin.z*0.06 };
-      let received = 0;
-      openings.forEach(op=>{
-        if (op.Lrad<=0 || op.ownVIndex===wm.seg.vIndex) return;
-        received += transferPointToArea(op.srcPos, op.Ns, op.Lrad, op.area, rcvPos, Nin, [op.ownVIndex, wm.seg.vIndex]);
+  // ---- estadísticas de piso, en lux ----
+  let sum=0, n=0, mn=Infinity, mx=0, over=0;
+  for (let i=0;i<nx*nz;i++){
+    if (!inside[i]) continue;
+    const lx = total[i]*LUM_EFF;
+    sum+=lx; n++; if (lx<mn) mn=lx; if (lx>mx) mx=lx; if (lx>300) over++;
+  }
+  const mean = n? sum/n : 0;
+  lightResult = {
+    nx, nz, bbox:g.bbox, data:total, inside,
+    mean, min: n?mn:0, max:mx, uniform: mean>0 ? (n?mn:0)/mean : 0, overFrac: n?over/n:0,
+    wallGrids, Eir, phi
+  };
+  return lightResult;
+}
+
+/* Textura del piso a partir del campo calculado. */
+function fieldCanvas(res, mapFn){
+  const c = document.createElement('canvas');
+  c.width = res.nx; c.height = res.nz;
+  const ctx = c.getContext('2d');
+  const img = ctx.createImageData(res.nx, res.nz);
+  for (let iz=0; iz<res.nz; iz++){
+    const row = res.nz-1-iz;                       // el norte (z máxima) queda arriba
+    for (let ix=0; ix<res.nx; ix++){
+      const i = iz*res.nx+ix, o = (row*res.nx+ix)*4;
+      if (!res.inside[i]){ img.data[o+3]=0; continue; }
+      const col = mapFn(res.data[i]);
+      img.data[o]=col[0]; img.data[o+1]=col[1]; img.data[o+2]=col[2];
+      img.data[o+3]= col.length>3 ? col[3] : 245;
+    }
+  }
+  ctx.putImageData(img,0,0);
+  return c;
+}
+
+/* =========================================================
+   9 · CAMPO DE VIENTO
+   Primero la red de presiones (cuánto aire entra y sale por CADA vano),
+   después el campo de velocidades interior por flujo potencial 2D.
+   ========================================================= */
+const CD_ORIFICE = 0.62;
+let windResult = null;
+
+function computeWind(quality){
+  const g = G;
+  const v10 = Math.max(0, getNum('wind-speed'));
+  const dir = getNum('wind-dir');
+  const alpha = parseFloat(getEl('terrain').value)||0.22;
+  const Tout = getNum('t-ext'), Tin = getNum('t-int');
+  const alt = getNum('alt');
+  const rhoOut = airDensity(Tout, alt), rhoIn = airDensity(Tin, alt);
+  const Href = clamp(g.maxH*0.7, 1.5, 60);
+  const Vh = windAtHeight(v10, Href, alpha);
+  const qDyn = 0.5*rhoOut*Vh*Vh;
+  const dRho = rhoIn - rhoOut;         // negativo si adentro hace más calor → sale por arriba
+
+  // Cp por vano según cómo lo golpea el viento
+  const ops = [];
+  g.segs.forEach(seg=>{
+    const alignedX = Math.abs(seg.along.x) > Math.abs(seg.along.z);
+    const Wthis = alignedX ? Math.max(g.spanX,0.5) : Math.max(g.spanZ,0.5);
+    const Wadj  = alignedX ? Math.max(g.spanZ,0.5) : Math.max(g.spanX,0.5);
+    const Gr = Math.log(clamp(Wthis/Wadj, 0.2, 5));
+    const theta = toRad(dir - seg.az);
+    const Cp = swamiChandraCp(theta, Gr);
+    seg.openings.forEach(op=>{
+      ops.push({ op, seg, Cp, area:op.area, z:op.yc, x:op.x, zc:op.z });
+    });
+  });
+
+  const solveFor = (useWind)=>{
+    if (ops.length===0) return {Pi:0, Q:[], Qin:0};
+    const Pe = ops.map(o=> (useWind? o.Cp*qDyn : 0) + dRho*9.81*o.z);
+    let lo = Math.min(...Pe)-1e-3, hi = Math.max(...Pe)+1e-3;
+    if (hi-lo < 1e-9) return {Pi:lo, Q:ops.map(()=>0), Qin:0};
+    const f = Pi => ops.reduce((s,o,j)=>{
+      const dP = Pe[j]-Pi;
+      return s + orificeFlow(CD_ORIFICE, o.area, dP, dP>=0?rhoOut:rhoIn);
+    }, 0);
+    for (let it=0; it<60; it++){
+      const mid = (lo+hi)/2;
+      if (f(mid) > 0) lo = mid; else hi = mid;    // f decrece con Pi
+    }
+    const Pi = (lo+hi)/2;
+    const Q = ops.map((o,j)=>{ const dP = Pe[j]-Pi; return orificeFlow(CD_ORIFICE, o.area, dP, dP>=0?rhoOut:rhoIn); });
+    return {Pi, Q, Qin: Q.reduce((s,q)=> s + Math.max(0,q), 0)};
+  };
+
+  const full = solveFor(true);
+  const stackOnly = solveFor(false);
+  ops.forEach((o,j)=> o.Q = full.Q[j]);
+
+  // Intercambio turbulento (ASHRAE, ventilación de un solo lado: Q ~ 0.025·A·V).
+  // Sin esto el modelo de presiones medias contesta "cero caudal" cuando el viento corre
+  // paralelo a los dos vanos — y en la realidad el aire sí se renueva, por las fluctuaciones
+  // de presión. Es un intercambio en los dos sentidos por el mismo hueco, así que en el campo
+  // de velocidades se representa como un pequeño remolino pegado a cada vano.
+  const Aopen = ops.reduce((a,o)=>a+o.area, 0);
+  const Qturb = 0.025*Aopen*Vh;
+  const Qnet = full.Qin;
+  const QinTotal = Math.sqrt(Qnet*Qnet + Qturb*Qturb);
+
+  // ---- campo de velocidades: fuente/sumidero por vano, con imagen en el muro ----
+  const sinks = ops.filter(o=> Math.abs(o.Q)>1e-5).map(o=>({
+    x:o.x, z:o.zc,
+    q: o.Q/Math.max(o.op.height, 0.4),                 // caudal por unidad de altura
+    r0: Math.max(0.28, o.op.halfWidth*0.9)
+  }));
+  // remolino local de cada vano: mitad entra por un costado, mitad sale por el otro
+  if (Qturb > 1e-6){
+    ops.forEach(o=>{
+      const qt = (0.025*o.area*Vh)/Math.max(o.op.height,0.4)/2;
+      const d = Math.max(0.25, o.op.width*0.3);
+      [1,-1].forEach(sgn=>{
+        sinks.push({ x:o.x + o.seg.along.x*d*sgn + o.seg.nIn.x*0.1,
+                     z:o.zc + o.seg.along.z*d*sgn + o.seg.nIn.z*0.1,
+                     q: qt*sgn, r0: Math.max(0.22, o.op.halfWidth*0.6) });
       });
-      wm.interiorReceived = received;
-      wm.radiosity = received*RHO_ROOM; // W/m² que este muro reemite hacia el cuarto
     });
   }
+  const velAt = (px,pz)=>{
+    let ux=0, uz=0;
+    for (let i=0;i<sinks.length;i++){
+      const s = sinks[i];
+      let dx = px-s.x, dz = pz-s.z;
+      let r2 = dx*dx+dz*dz;
+      const r02 = s.r0*s.r0;
+      if (r2 < r02) r2 = r02;
+      const k = s.q/(Math.PI*r2);                       // media fuente sobre el muro
+      ux += k*dx; uz += k*dz;
+    }
+    return {x:ux, z:uz};
+  };
 
-  let data = new Float32Array(nx*nz);
-  let maxVal = 1e-6;
-
+  const bw = Math.max(g.spanX,0.5), bh = Math.max(g.spanZ,0.5);
+  const cell = clamp(Math.sqrt(bw*bh/(quality==='high'?18000:4000)), quality==='high'?0.10:0.22, 0.45);
+  const nx = clamp(Math.round(bw/cell),6,220), nz = clamp(Math.round(bh/cell),6,220);
+  const dxc = bw/nx, dzc = bh/nz;
+  const data = new Float32Array(nx*nz), inside = new Uint8Array(nx*nz);
+  let sum=0, n=0, brisa=0, vmax=0;
   for (let iz=0; iz<nz; iz++){
-    const pz = bb.minZ + (iz+0.5)/nz*h;
+    const pz = g.bbox.minZ+(iz+0.5)*dzc;
     for (let ix=0; ix<nx; ix++){
-      const px = bb.minX + (ix+0.5)/nx*w;
-      let val = 0;
-
-      if (!isWind){
-        // Vano → piso: haz directo (exacto, sin caída por distancia) + difusa en línea recta.
-        for (let k=0;k<openings.length;k++){
-          const op = openings[k];
-          if (op.Lrad>0){
-            val += transferPointToArea(op.srcPos, op.Ns, op.Lrad, op.area, {x:px,y:0,z:pz}, {x:0,y:1,z:0}, [op.ownVIndex,-1]);
-          }
-          if (op.wm.currentDirect>1 && lastSunVisible){
-            let minT=Infinity, hitV=null, hitX=0, hitZ=0;
-            for (let j=0;j<occluders.length;j++){
-              const oc = occluders[j];
-              const t = raySegmentParam(px,pz, sunDx,sunDz, oc.a.x,oc.a.z, oc.b.x,oc.b.z);
-              if (t<minT){ minT=t; hitV=oc.vIndex; hitX=px+sunDx*t; hitZ=pz+sunDz*t; }
-            }
-            if (hitV===op.ownVIndex){
-              const rel = (hitX-op.wm.seg.a.x)*op.wm.along.x + (hitZ-op.wm.seg.a.z)*op.wm.along.z;
-              const localX = rel - op.wm.length/2;
-              if (Math.abs(localX-op.cx) <= op.halfWidth){
-                val += meinelDNI(lastSunElevation)*Math.sin(lastSunElevation)*TAU_GLASS;
-              }
-            }
-          }
-        }
-        // Muro → piso: primer rebote, mismo cálculo, ahora con el muro como fuente.
-        wallMeshes.forEach(wm=>{
-          if (wm.radiosity>0.02){
-            const Nin = { x:-wm.normal.x, y:0, z:-wm.normal.z };
-            const srcPos = { x:wm.midX, y:wm.height*0.5, z:wm.midZ };
-            val += transferPointToArea(srcPos, Nin, wm.radiosity/Math.PI, wm.length*wm.height, {x:px,y:0,z:pz}, {x:0,y:1,z:0}, [wm.seg.vIndex,-1]);
-          }
-        });
-      } else {
-        for (let k=0;k<openings.length;k++){
-          const op = openings[k];
-          if (!op.wm.windward) continue;
-          const toOpX = op.x-px, toOpZ = op.z-pz;
-          const d = Math.hypot(toOpX,toOpZ) || 1e-6;
-          const facing = (toOpX*op.normal.x + toOpZ*op.normal.z)/d;
-          if (facing <= 0.02) continue;
-          let blocked = false;
-          for (let j=0;j<occluders.length;j++){
-            const oc = occluders[j];
-            if (oc.vIndex===op.ownVIndex) continue;
-            if (segmentsIntersect(px,pz, op.x,op.z, oc.a.x,oc.a.z, oc.b.x,oc.b.z)){ blocked=true; break; }
-          }
-          if (blocked) continue;
-          const windDx = -lastWindFromVec.x, windDz = -lastWindFromVec.z; // hacia adentro del volumen
-          const flowAlign = Math.max(0, (toOpX*windDx + toOpZ*windDz)/d);
-          const distFactor = 1/(1+0.05*d*d);
-          val += facing * flowAlign * distFactor * (op.width*1.4+0.3);
-        }
-      }
-
-      data[iz*nx+ix] = val;
+      const p = g.bbox.minX+(ix+0.5)*dxc, idx = iz*nx+ix;
+      if (!pointInPlan(p,pz)) continue;
+      inside[idx]=1;
+      const u = velAt(p,pz);
+      const sp = Math.hypot(u.x,u.z);
+      data[idx]=sp; sum+=sp; n++; if (sp>0.2) brisa++; if (sp>vmax) vmax=sp;
     }
   }
 
-  // Suaviza el borde del haz directo: geométricamente es una sombra dura (o el punto ve el sol por el
-  // vano, o no), pero ningún borde de luz real es un corte de un píxel — se difumina levemente entre
-  // teselas vecinas, sin perder la forma general del patrón ni la posición del haz.
-  const smoothed = new Float32Array(nx*nz);
-  for (let iz=0; iz<nz; iz++){
-    for (let ix=0; ix<nx; ix++){
-      let sum=0, n=0;
-      for (let dz=-1; dz<=1; dz++){
-        const jz=iz+dz; if (jz<0||jz>=nz) continue;
-        for (let dx=-1; dx<=1; dx++){
-          const jx=ix+dx; if (jx<0||jx>=nx) continue;
-          const w = (dx===0&&dz===0) ? 4 : 1; // el propio valor pesa más que sus vecinos
-          sum += data[jz*nx+jx]*w; n+=w;
-        }
+  // ---- líneas de corriente: de cada entrada hasta donde el aire se pierda o salga ----
+  const streams = [];
+  ops.forEach(o=>{
+    if (o.Q <= 1e-4 && Qturb <= 1e-6) return;
+    const seeds = Math.min(4, Math.max(2, Math.round(o.op.width/0.6)+1));
+    for (let s=0; s<seeds; s++){
+      const f = (s+0.5)/seeds - 0.5;
+      let px = o.x + o.seg.along.x*f*o.op.width + o.seg.nIn.x*0.18;
+      let pz = o.zc + o.seg.along.z*f*o.op.width + o.seg.nIn.z*0.18;
+      const line = [[px,pz]];
+      for (let k=0;k<420;k++){
+        const u1 = velAt(px,pz);
+        const s1 = Math.hypot(u1.x,u1.z); if (s1<0.008) break;
+        const h = 0.13;
+        const mx = px + u1.x/s1*h*0.5, mz = pz + u1.z/s1*h*0.5;
+        const u2 = velAt(mx,mz);
+        const s2 = Math.hypot(u2.x,u2.z); if (s2<1e-6) break;
+        px += u2.x/s2*h; pz += u2.z/s2*h;
+        if (!pointInPlan(px,pz)){ line.push([px,pz]); break; }
+        line.push([px,pz]);
       }
-      const v = sum/n;
-      smoothed[iz*nx+ix] = v;
-      if (v>maxVal) maxVal = v;
+      if (line.length>4) streams.push(line);
     }
-  }
-  return { bb, nx, nz, data:smoothed, maxVal, mode:currentMode };
+  });
+
+  const floorArea = g.area>0.1 ? g.area : bw*bh;
+  const meanH = g.segs.length ? g.segs.reduce((a,s)=>a+s.height,0)/g.segs.length : 3;
+  const vol = Math.max(1, floorArea*meanH);
+
+  windResult = {
+    nx, nz, bbox:g.bbox, data, inside, ops, Vh, Pi:full.Pi,
+    Qin: QinTotal, Qnet, Qturb, Qstack: stackOnly.Qin, ach: QinTotal*3600/vol,
+    vmean: n? sum/n : 0, vmax, brisaFrac: n? brisa/n : 0, vol, floorArea
+  };
+  drawStreams(streams);
+  return windResult;
 }
 
-// Dibuja el mosaico: una tesela cuadrada y sólida por celda, con un pequeño hueco entre ellas.
-// Nada de gradiente ni difuminado — cada tesela es un valor que se puede leer directamente.
-// El haz directo (cientos de W/m²) y el rebote (unos pocos W/m²) difieren en dos órdenes de magnitud.
-// El NÚMERO sigue siendo el real (0–1000 W/m², igual dominio que los muros); lo que se realza es el
-// COLOR con una curva perceptual (t^0.22), calibrada para que un rebote típico de ~10-50 W/m² caiga a
-// media escala en vez de aplastarse contra el 0 — así se ve la progresión completa azul→verde→rojo.
-const FLOOR_SCALE_MAX = 1000;
-const FLOOR_GAMMA = 0.22;
-const MOSAIC_BANDS = 12; // el color se escalona en bandas discretas, como una leyenda de lux de verdad
+/* Isolíneas de iluminancia (marching squares). Un mapa de color dice "más o menos";
+   una isolínea de 300 lx dice exactamente hasta dónde llega la luz útil. */
+let showIso = true;
+function drawLuxContours(res){
+  if (!res || !showIso) return;
+  const {nx, nz, bbox} = res;
+  const dx = (bbox.maxX-bbox.minX)/nx, dz = (bbox.maxZ-bbox.minZ)/nz;
+  const X = ix => bbox.minX + (ix+0.5)*dx;
+  const Z = iz => bbox.minZ + (iz+0.5)*dz;
+  const lux = i => res.data[i]*LUM_EFF;
+  const u = Math.max(vb.w, vb.h)/100;
+  const levels = [100, 300, 1000, 3000, 10000, 50000];
 
-function drawHeatmapCanvas(grid){
-  const TILE = 14, GAP = 1.5;
-  const canvas = document.createElement('canvas');
-  canvas.width = grid.nx*TILE; canvas.height = grid.nz*TILE;
-  const ctx = canvas.getContext('2d');
-  ctx.imageSmoothingEnabled = false;
-  const isWind = grid.mode==='wind';
-  const scaleMax = isWind ? Math.max(grid.maxVal*0.55, 0.001) : FLOOR_SCALE_MAX;
-  for (let iz=0; iz<grid.nz; iz++){
-    const rowFromTop = grid.nz-1-iz; // z máxima (norte) arriba de la imagen
-    for (let ix=0; ix<grid.nx; ix++){
-      const val = grid.data[iz*grid.nx+ix];
-      if (val<=0.02) continue; // tesela vacía: se deja transparente
-      const tRaw = Math.min(1, val/scaleMax);
-      const t = Math.pow(tRaw, isWind ? 0.5 : FLOOR_GAMMA);
-      const tBand = Math.min(1, Math.floor(t*MOSAIC_BANDS)/MOSAIC_BANDS + 0.5/MOSAIC_BANDS);
-      const hex = isWind ? windColorRamp(tBand) : colorRamp(tBand, 0, 1);
-      const r=(hex>>16)&255, g=(hex>>8)&255, b=hex&255;
-      ctx.fillStyle = `rgba(${r},${g},${b},0.97)`;
-      ctx.fillRect(ix*TILE+GAP/2, rowFromTop*TILE+GAP/2, TILE-GAP, TILE-GAP);
+  const placed = [];
+  levels.forEach((lv, li)=>{
+    let d = '';
+    const cand = [];
+    for (let iz=0; iz<nz-1; iz++){
+      for (let ix=0; ix<nx-1; ix++){
+        const i00=iz*nx+ix, i10=i00+1, i01=i00+nx, i11=i01+1;
+        if (!(res.inside[i00] && res.inside[i10] && res.inside[i01] && res.inside[i11])) continue;
+        const v = [lux(i00), lux(i10), lux(i11), lux(i01)];
+        const pts = [[X(ix),Z(iz)], [X(ix+1),Z(iz)], [X(ix+1),Z(iz+1)], [X(ix),Z(iz+1)]];
+        const cross = [];
+        for (let e=0;e<4;e++){
+          const a=v[e], b=v[(e+1)%4];
+          if ((a<lv) === (b<lv)) continue;
+          const f = (lv-a)/(b-a);
+          const pa=pts[e], pb=pts[(e+1)%4];
+          cross.push([pa[0]+f*(pb[0]-pa[0]), pa[1]+f*(pb[1]-pa[1])]);
+        }
+        for (let k=0; k+1<cross.length; k+=2){
+          d += `M${cross[k][0].toFixed(3)} ${(-cross[k][1]).toFixed(3)}L${cross[k+1][0].toFixed(3)} ${(-cross[k+1][1]).toFixed(3)}`;
+          cand.push(cross[k]);
+        }
+      }
     }
-  }
-  return canvas;
+    if (!d) return;
+    planOverlay.appendChild(svgEl('path', {d, 'stroke-width': u*(li===1?0.85:0.5),
+      'stroke-dasharray': li===1 ? '' : (u*1.6)+' '+(u*1.6), opacity: li===1?0.95:0.62}, 'plan-iso'));
+    // Rótulo: se busca un punto de la isolínea que no choque con los ya colocados,
+    // si no las etiquetas de dos niveles vecinos se encinan y no se lee ninguna.
+    const minSep = u*11;
+    let anchor = null;
+    for (let k=0; k<cand.length && !anchor; k++){
+      const c = cand[Math.floor(k*7919)%cand.length];
+      if (placed.every(q=> Math.hypot(q[0]-c[0], q[1]-c[1]) > minSep)) anchor = c;
+    }
+    if (anchor){
+      placed.push(anchor);
+      const t = svgEl('text', {x:anchor[0], y:-anchor[1]-u*1.4, 'font-size':u*2.6, 'stroke-width':u*0.6}, 'plan-iso-label');
+      t.textContent = (lv>=1000 ? (lv/1000)+'k' : lv)+' lx';
+      planOverlay.appendChild(t);
+    }
+  });
 }
 
-function updateFloorHeatmapVisuals(){
-  const grid = computeFloorHeatmap();
-  const svgImg = document.getElementById('plan-heatmap-img');
-  const clipPoly = document.getElementById('plan-clip-poly');
+/* Dibuja las líneas de corriente en planta (animadas) y en 3D. */
+function drawStreams(streams){
+  while (planOverlay.firstChild) planOverlay.removeChild(planOverlay.firstChild);
+  disposeGroup(flowGroup);
+  if (currentMode!=='wind') return;
+  const u = Math.max(vb.w,vb.h)/100;
+  streams.forEach(line=>{
+    const d = line.map((p,i)=> (i?'L':'M')+p[0].toFixed(3)+' '+(-p[1]).toFixed(3)).join(' ');
+    const path = svgEl('path', {d, 'stroke-width':u*0.75, 'marker-end':'url(#arrow-wind)'}, 'plan-stream anim');
+    planOverlay.appendChild(path);
+    const y = Math.min(1.1, G.maxH*0.45);
+    const pts = line.filter((_,i)=> i%2===0).map(p=> new THREE.Vector3(p[0], y, p[1]));
+    if (pts.length>2){
+      flowGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineBasicMaterial({color:0x1E6FA8, transparent:true, opacity:0.75})));
+    }
+  });
+}
 
-  if (!grid){
-    svgImg.style.display = 'none';
-    if (floorMesh) floorMesh.material.map = null, floorMesh.material.needsUpdate = true;
-    return;
+/* =========================================================
+   10 · ORQUESTACIÓN — recálculo, pintado y resultados
+   ========================================================= */
+function siteParams(){ return { lat:getNum('lat'), lon:getNum('lon'), tz:getNum('tz'), alt:getNum('alt') }; }
+function dateParts(){
+  const v = getEl('fecha').value; if (!v) return null;
+  const [Y,M,D] = v.split('-').map(Number);
+  return {Y,M,D};
+}
+
+function updateSunState(){
+  const {lat,lon,tz,alt} = siteParams();
+  const d = dateParts(); if (!d) return;
+  const hour = getNum('hora');
+  const cloud = getNum('cloud')/100;
+  getEl('cloud-val').textContent = Math.round(cloud*100);
+  getEl('hora-display').textContent = decimalToHHMM(hour);
+
+  const sp = solarPosition(lat,lon,tz,d.Y,d.M,d.D,hour);
+  const sky = skyIrradiance(sp.elevation, sp.doy, sp.totalDays, alt, lat, cloud);
+  SUN.visible = sp.elevation>0.008;
+  SUN.el = sp.elevation; SUN.az = sp.azimuthDeg;
+  SUN.dirH = { x:Math.sin(toRad(sp.azimuthDeg)), z:Math.cos(toRad(sp.azimuthDeg)) };
+  SUN.tanEl = Math.tan(Math.max(sp.elevation, 0.004));
+  SUN.sky = sky;
+
+  // sol en la escena
+  const R = Math.max(34, Math.max(G.spanX,G.spanZ)*2 + G.maxH*4);
+  const x = G.cx + R*Math.cos(sp.elevation)*Math.sin(toRad(sp.azimuthDeg));
+  const z = G.cz + R*Math.cos(sp.elevation)*Math.cos(toRad(sp.azimuthDeg));
+  const y = R*Math.sin(sp.elevation);
+  sunGizmo.visible = SUN.visible && currentMode==='sol';
+  sunLight.visible = SUN.visible;
+  if (SUN.visible){
+    sunGizmo.position.set(x,y,z);
+    sunLight.position.set(x,y,z);
+    sunLight.target.position.set(G.cx, G.maxH*0.4, G.cz);
+    sunLight.target.updateMatrixWorld();
+    const clarity = 1-0.65*cloud;
+    sunLight.intensity = clamp(0.35+1.15*Math.sin(sp.elevation),0.2,1.5)*clarity;
   }
-  const canvas = drawHeatmapCanvas(grid);
-  const dataUrl = canvas.toDataURL();
 
-  svgImg.setAttributeNS('http://www.w3.org/1999/xlink','href', dataUrl);
-  svgImg.setAttribute('href', dataUrl);
-  svgImg.setAttribute('x', grid.bb.minX);
-  svgImg.setAttribute('y', -grid.bb.maxZ);
-  svgImg.setAttribute('width', grid.bb.maxX-grid.bb.minX);
-  svgImg.setAttribute('height', grid.bb.maxZ-grid.bb.minZ);
-  svgImg.style.display = '';
-
-  if (closedLoop && vertices.length>=3){
-    const pts = vertices.map(v=> (v.x)+','+(-v.z)).join(' ');
-    clipPoly.setAttribute('points', pts);
-    svgImg.setAttribute('clip-path', 'url(#plan-clip)');
+  // barra de día y horas de salida/puesta
+  const ss = sunriseSunset(lat,lon,tz,d.Y,d.M,d.D);
+  const bar = getEl('daybar-lit');
+  if (ss.rise!=null){
+    bar.style.left = (100*clamp(ss.rise,0,24)/24)+'%';
+    bar.style.width = (100*clamp(ss.set-ss.rise,0,24)/24)+'%';
+    getEl('lbl-salida').textContent = '↑ '+decimalToHHMM(ss.rise);
+    getEl('lbl-puesta').textContent = decimalToHHMM(ss.set)+' ↓';
   } else {
-    svgImg.removeAttribute('clip-path');
+    const allDay = ss.polar==='dia';
+    bar.style.left='0%'; bar.style.width = allDay?'100%':'0%';
+    getEl('lbl-salida').textContent = allDay?'sol todo el día':'sin sol';
+    getEl('lbl-puesta').textContent = '';
   }
+  getEl('daybar-now').style.left = (100*clamp(hour,0,24)/24)+'%';
+
+  getEl('r-hora-solar').textContent = decimalToHHMM(sp.trueSolarHour);
+  getEl('r-elevacion').textContent = sp.elevationDeg.toFixed(1)+'°';
+  getEl('r-azimut').textContent = sp.azimuthDeg.toFixed(0)+'° ('+cardinal(sp.azimuthDeg)+')';
+  getEl('r-dni').textContent = Math.round(sky.dni)+' W/m²';
+  updateSunPath();
+}
+
+/* Coloca una textura de campo en la planta (SVG) y en el piso 3D. */
+function applyFieldTexture(res, mapFn){
+  const svgImg = getEl('plan-heatmap-img');
+  const clipPoly = getEl('plan-clip-poly');
+  if (!res){ svgImg.style.display='none'; return; }
+  const canvas = fieldCanvas(res, mapFn);
+  const url = canvas.toDataURL();
+  svgImg.setAttribute('href', url);
+  svgImg.setAttributeNS('http://www.w3.org/1999/xlink','href', url);
+  svgImg.setAttribute('x', res.bbox.minX);
+  svgImg.setAttribute('y', -res.bbox.maxZ);
+  svgImg.setAttribute('width', Math.max(0.01,res.bbox.maxX-res.bbox.minX));
+  svgImg.setAttribute('height', Math.max(0.01,res.bbox.maxZ-res.bbox.minZ));
+  svgImg.style.display = '';
+  if (closedLoop && vertices.length>=3){
+    clipPoly.setAttribute('points', vertices.map(v=> v.x+','+(-v.z)).join(' '));
+    svgImg.setAttribute('clip-path','url(#plan-clip)');
+  } else svgImg.removeAttribute('clip-path');
 
   if (floorMesh){
     const tex = new THREE.CanvasTexture(canvas);
-    tex.flipY = true;
-    tex.minFilter = THREE.NearestFilter;
-    tex.magFilter = THREE.NearestFilter;
+    tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
     tex.needsUpdate = true;
+    if (floorMesh.material.map) floorMesh.material.map.dispose();
     floorMesh.material.map = tex;
+    floorMesh.material.transparent = true;
     floorMesh.material.color.setHex(0xffffff);
     floorMesh.material.needsUpdate = true;
   }
 }
 
-/* =========================================================
-   SOL Y RESULTADOS
-   ========================================================= */
-function updateSunPath(){
-  if (sunPathLine){ scene.remove(sunPathLine); sunPathLine.geometry.dispose(); sunPathLine=null; }
-  if (!showPath) return;
-  const lat=getNum('lat'), lon=getNum('lon'), tz=getNum('tz');
-  const fechaVal = document.getElementById('fecha').value;
-  if (!fechaVal) return;
-  const parts = fechaVal.split('-').map(Number);
-  const Y=parts[0], M=parts[1], D=parts[2];
-  const pts=[];
-  for(let hh=0; hh<=24; hh+=0.25){
-    const sp = solarPosition(lat,lon,tz,Y,M,D,hh);
-    if (sp.elevation>0){
-      const dist=28;
-      const x=dist*Math.cos(sp.elevation)*Math.sin(toRad(sp.azimuthDeg));
-      const z=dist*Math.cos(sp.elevation)*Math.cos(toRad(sp.azimuthDeg));
-      const y=dist*Math.sin(sp.elevation);
-      pts.push(new THREE.Vector3(x,y,z));
+/* Pinta las caras interiores de los muros con la iluminancia que reciben. */
+function paintInteriorWalls(res){
+  wallItems.forEach(wi=>{
+    const wg = res && res.wallGrids.find(w=>w.seg.i===wi.seg.i);
+    wi.inner.visible = !!wg && currentMode==='sol';
+    if (!wg) return;
+    const c = document.createElement('canvas');
+    c.width = wg.nc; c.height = wg.nr;
+    const ctx = c.getContext('2d');
+    const img = ctx.createImageData(wg.nc, wg.nr);
+    for (let r=0;r<wg.nr;r++) for (let cc=0; cc<wg.nc; cc++){
+      const v = wg.grid[r*wg.nc+cc];
+      const o = ((wg.nr-1-r)*wg.nc+cc)*4;
+      if (v<0){ img.data[o+3]=0; continue; }
+      const lx = v*LUM_EFF, t = logLux(lx);
+      const col = rampColor(RAMP_LIGHT, t);
+      img.data[o]=col[0]; img.data[o+1]=col[1]; img.data[o+2]=col[2];
+      img.data[o+3]= lx<0.8 ? 0 : Math.round(60+170*t);
     }
-  }
-  if (pts.length>1){
-    const geo = new THREE.BufferGeometry().setFromPoints(pts);
-    const mat = new THREE.LineBasicMaterial({color:0xEF9B0F, linewidth:2});
-    sunPathLine = new THREE.Line(geo,mat);
-    scene.add(sunPathLine);
-  }
-}
-
-function recomputeSun(){
-  const lat=getNum('lat'), lon=getNum('lon'), tz=getNum('tz');
-  const fechaVal = document.getElementById('fecha').value;
-  if (!fechaVal) return;
-  const parts = fechaVal.split('-').map(Number);
-  const Y=parts[0], M=parts[1], D=parts[2];
-  const hourDecimal = getNum('hora');
-  document.getElementById('hora-display').textContent = decimalToHHMM(hourDecimal);
-
-  const sp = solarPosition(lat, lon, tz, Y, M, D, hourDecimal);
-  const dist = 28;
-  const elR = sp.elevation, azR = toRad(sp.azimuthDeg);
-  const x = dist*Math.cos(elR)*Math.sin(azR), z = dist*Math.cos(elR)*Math.cos(azR), y = dist*Math.sin(elR);
-  const visible = sp.elevation>0;
-  lastSunAz = sp.azimuthDeg; lastSunElevation = elR; lastSunVisible = visible;
-
-  sunGizmo.visible = visible;
-  if (visible) sunGizmo.position.set(x,y,z);
-  sunLight.visible = visible;
-  if (visible){
-    sunLight.position.set(x,y,z);
-    const b = boundsAndCentroid();
-    sunLight.target.position.set(b.cx, b.maxH*0.4, b.cz);
-    sunLight.target.updateMatrixWorld();
-    sunLight.intensity = 1.3;
-  }
-
-  document.getElementById('r-hora-solar').textContent = decimalToHHMM(sp.trueSolarHour);
-  document.getElementById('r-elevacion').textContent = sp.elevationDeg.toFixed(1)+'°';
-  document.getElementById('r-azimut').textContent = sp.azimuthDeg.toFixed(1)+'° ('+cardinal(sp.azimuthDeg)+')';
-
-  const wallResults = wallMeshes.map((wm,i)=>{
-    const irr = wallIrradiance(elR, sp.azimuthDeg, wm.azimuth);
-    const col = colorRamp(irr.total,0,1000);
-    wm.heatMesh.material.color.setHex(col);
-    wm.currentIrradiance = irr.total;
-    wm.currentDirect = irr.direct;
-    return { idx:i, azimuth:wm.azimuth, total:irr.total, color:col };
+    ctx.putImageData(img,0,0);
+    const tex = new THREE.CanvasTexture(c);
+    tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
+    if (wi.inner.material.map) wi.inner.material.map.dispose();
+    wi.inner.material.map = tex; wi.inner.material.needsUpdate = true;
   });
-  const list = document.getElementById('wall-result-list');
-  list.innerHTML = wallResults.map(r=>`
-    <div class="wall-result-row">
-      <span class="swatch" style="background:${colorToCss(r.color)}"></span>
-      <span class="name">Muro ${r.idx+1}</span>
-      <span class="tag">${r.azimuth.toFixed(0)}° (${cardinal(r.azimuth)})</span>
-      <span class="val">${r.total.toFixed(0)} W/m²</span>
-    </div>`).join('') || '<div class="no-openings">Dibuja al menos un muro en la planta.</div>';
-
-  updateSunPath();
-  if (currentMode==='sol') updateFloorHeatmapVisuals();
 }
 
-function updateWind(){
-  const V = getNum('wind-speed'), windDir = getNum('wind-dir');
-  const Tout = getNum('t-ext'), Tin = getNum('t-int');
-  const fromVec = { x: Math.sin(toRad(windDir)), z: Math.cos(toRad(windDir)) };
-  lastWindFromVec = fromVec;
+function renderSolResults(res){
+  const sky = SUN.sky;
+  const rows = G.segs.map(seg=>{
+    const vi = verticalIrradiance(sky, SUN.el, SUN.az, seg.az);
+    const t = clamp(vi.total/1000,0,1);
+    const col = rampColor(RAMP_HEAT, t);
+    const item = wallItems.find(w=>w.seg.i===seg.i);
+    if (item){ item.heat.material.color.setRGB(col[0]/255,col[1]/255,col[2]/255); item.heat.visible = currentMode==='sol'; }
+    return {i:seg.i, az:seg.az, total:vi.total, direct:vi.direct, col};
+  });
+  getEl('wall-result-list').innerHTML = rows.length ? rows.map(r=>`
+    <div class="wall-result-row" data-sel-wall="${r.i}">
+      <span class="swatch" style="background:${colorToCss(r.col)}"></span>
+      <span class="name">Muro ${r.i+1}</span>
+      <span class="tag">${Math.round(r.az)}° ${cardinal(r.az)} · ${r.direct>1?'sol directo':'sin sol directo'}</span>
+      <span class="val">${Math.round(r.total)} W/m²</span>
+    </div>`).join('') : '<div class="block-note">Dibuja al menos un muro.</div>';
 
-  windArrowHelper.visible = (currentMode==='wind');
+  if (res){
+    getEl('r-lux-media').textContent = res.mean>=1000 ? (res.mean/1000).toFixed(1)+'k lx' : Math.round(res.mean)+' lx';
+    getEl('r-util').textContent = Math.round(res.overFrac*100)+'%';
+    getEl('r-unif').textContent = res.uniform.toFixed(2);
+  }
+}
+
+function renderWindResults(res){
+  if (!res) return;
+  getEl('r-vh').textContent = res.Vh.toFixed(1)+' m/s';
+  getEl('r-q-total').textContent = Math.round(res.Qin*3600)+' m³/h';
+  getEl('r-q-stack').textContent = Math.round(res.Qstack*3600)+' m³/h';
+  getEl('r-q-turb').textContent = Math.round(res.Qturb*3600)+' m³/h';
+  getEl('r-ach').textContent = res.ach.toFixed(1)+' ren/h';
+  getEl('r-vint').textContent = res.vmean.toFixed(2)+' m/s';
+  getEl('r-brisa').textContent = Math.round(res.brisaFrac*100)+'%';
+  const list = getEl('wind-wall-list');
+  list.innerHTML = res.ops.length ? res.ops.map(o=>{
+    const mag = Math.abs(o.Q)*3600;
+    const turb = 0.025*o.area*res.Vh*3600;
+    const weak = mag < Math.max(1, turb*0.5);
+    const color = weak ? '#8E9AA6' : (o.Q>0 ? '#2F8FE0' : '#C46A3A');
+    const tag = weak ? '↔ solo intercambio turbulento' : (o.Q>0 ? '↘ entra' : '↗ sale');
+    return `<div class="wall-result-row" data-sel-wall="${o.seg.i}">
+      <span class="swatch" style="background:${color}"></span>
+      <span class="name">Muro ${o.seg.i+1}</span>
+      <span class="tag">${tag} · Cp ${o.Cp.toFixed(2)} · ${Math.round(o.seg.az)}° ${cardinal(o.seg.az)}</span>
+      <span class="val">${Math.round(weak?turb:mag)} m³/h</span>
+    </div>`;
+  }).join('') : '<div class="block-note">Sin vanos: agrega ventanas (doble clic sobre un muro en la planta).</div>';
+  // flecha del viento exterior
+  const dir = getNum('wind-dir');
+  const from = {x:Math.sin(toRad(dir)), z:Math.cos(toRad(dir))};
+  windArrow.visible = currentMode==='wind';
   if (currentMode==='wind'){
-    const b = boundsAndCentroid();
-    const dist = Math.max(b.spanX,b.spanZ,6)*0.9;
-    // se coloca del lado de donde sopla el viento (barlovento) y apunta hacia el volumen
-    windArrowHelper.position.set(b.cx+fromVec.x*dist, b.maxH*0.6, b.cz+fromVec.z*dist);
-    windArrowHelper.setDirection(new THREE.Vector3(-fromVec.x,0,-fromVec.z));
+    const dist = Math.max(G.spanX,G.spanZ,6)*1.15;
+    const len = Math.max(6, dist*0.55);
+    windArrow.position.set(G.cx+from.x*dist, G.maxH*0.6, G.cz+from.z*dist);
+    windArrow.setDirection(new THREE.Vector3(-from.x,0,-from.z));
+    windArrow.setLength(len, len*0.22, len*0.13);
   }
-
-  let windwardArea=0, leewardArea=0;
-  const openingCenters = [];
-  const windTags = [];
-  wallMeshes.forEach((wm,wi)=>{
-    const dot = Math.sin(toRad(wm.azimuth))*fromVec.x + Math.cos(toRad(wm.azimuth))*fromVec.z;
-    const windward = dot>0.05;
-    wm.windward = windward;
-    let wallHasActive=false;
-    wm.openings.forEach(op=>{
-      const r = resolveOpening(op, wm.length, wm.height);
-      if (r.valid){
-        if (windward) windwardArea+=r.width*r.height; else leewardArea+=r.width*r.height;
-        openingCenters.push({height:(r.y0+r.y1)/2, area:r.width*r.height});
-        wallHasActive = true;
-      }
-    });
-    if (wallHasActive) windTags.push({ idx:wi, windward });
+}
+document.querySelectorAll('#wall-result-list, #wind-wall-list').forEach(el=>{
+  el.addEventListener('click', e=>{
+    const r = e.target.closest('[data-sel-wall]'); if (!r) return;
+    selected = {type:'wall', vIndex:+r.dataset.selWall};
+    renderPlan(); renderInspector();
   });
+});
 
-  const Aeff = Math.min(windwardArea, leewardArea);
-  const Qwind = (Aeff>0) ? ventWind(0.55, Aeff, V) : 0;
-  let Qstack = 0;
-  if (openingCenters.length>=2){
-    let lowest=openingCenters[0], highest=openingCenters[0];
-    openingCenters.forEach(o=>{ if(o.height<lowest.height) lowest=o; if(o.height>highest.height) highest=o; });
-    const Hvent = highest.height-lowest.height;
-    if (Hvent>0.05) Qstack = ventStack(0.6, Math.min(lowest.area,highest.area), Hvent, Tin, Tout);
+function updateLegends(res){
+  const cap = getEl('legend-plan-cap'), bar = getEl('legend-plan-bar'), lab = getEl('legend-plan-labels');
+  if (currentMode==='sol'){
+    cap.textContent = 'Iluminancia en piso, lux (escala log)';
+    bar.style.background = rampCss(RAMP_LIGHT, 24);
+    lab.innerHTML = '<span>1</span><span>10</span><span>100</span><span>1k</span><span>10k</span><span>100k</span>';
+    getEl('legend-3d-cap').textContent = 'Radiación en muros, W/m²';
+    getEl('legend-3d-bar').style.background = rampCss(RAMP_HEAT, 20);
+    getEl('legend-3d-labels').innerHTML = '<span>0</span><span>500</span><span>1000</span>';
+  } else {
+    const mx = res ? Math.max(res.vmax*0.85, 0.15) : 1;
+    cap.textContent = 'Velocidad del aire interior, m/s';
+    bar.style.background = rampCss(RAMP_WIND, 20);
+    lab.innerHTML = `<span>0</span><span>${(mx/2).toFixed(2)}</span><span>${mx.toFixed(2)}</span>`;
+    getEl('legend-3d-cap').textContent = 'Trayectoria del aire';
+    getEl('legend-3d-bar').style.background = 'linear-gradient(90deg,#2F8FE0,#155F9E)';
+    getEl('legend-3d-labels').innerHTML = '<span>entra</span><span>sale</span>';
   }
-  const Qtotal = Math.sqrt(Qstack*Qstack + Qwind*Qwind);
-  document.getElementById('r-q-wind').textContent = (Qwind*3600).toFixed(0)+' m³/h';
-  document.getElementById('r-q-stack').textContent = (Qstack*3600).toFixed(0)+' m³/h';
-  document.getElementById('r-q-total').textContent = (Qtotal*3600).toFixed(0)+' m³/h';
-
-  const area = computeFloorArea();
-  const avgH = wallMeshes.length ? wallMeshes.reduce((a,wm)=>a+wm.height,0)/wallMeshes.length : 0;
-  const vol = area*avgH;
-  const ach = vol>0 ? (Qtotal*3600)/vol : 0;
-  document.getElementById('r-ach').textContent = ach.toFixed(1)+' cambios/h';
-
-  const list = document.getElementById('wind-wall-list');
-  list.innerHTML = windTags.length ? windTags.map(t=>`
-    <div class="wall-result-row">
-      <span class="swatch" style="background:${t.windward?'#2F8FE0':'#9AA79E'}"></span>
-      <span class="name">Muro ${t.idx+1}</span>
-      <span class="tag">${t.windward?'barlovento (recibe viento)':'sotavento (extrae)'}</span>
-    </div>`).join('') : '<div class="no-openings">No hay vanos activos — agrega ventanas en la planta.</div>';
-
-  updateFloorHeatmapVisuals();
 }
 
-function recomputeAll(){
+/* ---- ciclo de recálculo, con dos calidades ---- */
+let rafId = null, hiTimer = null, lastQuality = null;
+function runCompute(quality){
+  if (!G) buildGeometry();
+  if (currentMode==='sol'){
+    const res = computeLightField(quality);
+    applyFieldTexture(res, v=>{
+      const lx = v*LUM_EFF;
+      const t = logLux(lx);
+      const c = rampColor(RAMP_LIGHT, t);
+      // en penumbra la capa se vuelve translúcida: se sigue leyendo la planta debajo
+      return [c[0], c[1], c[2], lx<0.8 ? 0 : Math.round(70+175*t)];
+    });
+    paintInteriorWalls(res);
+    renderSolResults(res);
+    updateLegends(res);
+    while (planOverlay.firstChild) planOverlay.removeChild(planOverlay.firstChild);
+    disposeGroup(flowGroup);
+    drawLuxContours(res);
+  } else {
+    const res = computeWind(quality);
+    const mx = res ? Math.max(res.vmax*0.85, 0.15) : 1;
+    applyFieldTexture(res, v=>{
+      const t = clamp(v/mx,0,1);
+      const c = rampColor(RAMP_WIND, t);
+      return [c[0], c[1], c[2], Math.round(60+180*t)];
+    });
+    renderWindResults(res);
+    renderSolResults(null);
+    updateLegends(res);
+  }
+  lastQuality = quality;
+}
+function scheduleCompute(quality){
+  if (quality==='high'){ clearTimeout(hiTimer); hiTimer = setTimeout(()=>runCompute('high'), 180); return; }
+  clearTimeout(hiTimer);
+  if (!rafId) rafId = requestAnimationFrame(()=>{ rafId=null; runCompute('low'); });
+  hiTimer = setTimeout(()=>runCompute('high'), 260);
+}
+function refreshAll(pushHist){
+  buildGeometry();
   rebuildBuilding();
-  recomputeSun();
-  updateWind();
+  renderPlan();
+  renderInspector();
+  updateSunState();
+  scheduleCompute('low');
+  if (pushHist) pushHistory();
 }
 
 /* =========================================================
-   MODO Y VISTA
+   11 · MODO, VISTAS Y CONTROLES
    ========================================================= */
 function setMode(mode){
   currentMode = mode;
   document.body.classList.toggle('mode-wind', mode==='wind');
-  document.getElementById('mode-sol').classList.toggle('active', mode==='sol');
-  document.getElementById('mode-wind').classList.toggle('active', mode==='wind');
-  document.getElementById('settings-sol').classList.toggle('visible', mode==='sol');
-  document.getElementById('settings-wind').classList.toggle('visible', mode==='wind');
-  document.getElementById('results-sol').style.display = mode==='sol' ? '' : 'none';
-  document.getElementById('results-wind').style.display = mode==='wind' ? '' : 'none';
-  document.getElementById('legend-sol').style.display = mode==='sol' ? '' : 'none';
-  document.getElementById('legend-plan-sol').style.display = mode==='sol' ? '' : 'none';
-  document.getElementById('legend-plan-wind').style.display = mode==='wind' ? '' : 'none';
-  document.getElementById('mode-pill').textContent = mode==='sol' ? '☀ Sol' : '💨 Viento';
-  wallMeshes.forEach(wm=> wm.heatMesh.visible = (mode==='sol'));
-  updateWind();
+  getEl('mode-sol').classList.toggle('active', mode==='sol');
+  getEl('mode-wind').classList.toggle('active', mode==='wind');
+  getEl('settings-sol').classList.toggle('visible', mode==='sol');
+  getEl('settings-wind').classList.toggle('visible', mode==='wind');
+  getEl('results-sol').style.display = mode==='sol' ? '' : 'none';
+  getEl('results-wind').style.display = mode==='wind' ? '' : 'none';
+  getEl('mode-pill').textContent = mode==='sol' ? '☀ Sol' : '💨 Viento';
+  getEl('plan-iso').style.display = mode==='sol' ? '' : 'none';
+  wallItems.forEach(w=>{ w.heat.visible = (mode==='sol'); w.inner.visible = (mode==='sol'); });
+  sunGizmo.visible = SUN.visible && mode==='sol';
+  if (sunPathLine) sunPathLine.visible = (mode==='sol');
+  runCompute('low'); scheduleCompute('high');
 }
-document.getElementById('mode-sol').addEventListener('click', ()=>setMode('sol'));
-document.getElementById('mode-wind').addEventListener('click', ()=>setMode('wind'));
+getEl('mode-sol').addEventListener('click', ()=>setMode('sol'));
+getEl('mode-wind').addEventListener('click', ()=>setMode('wind'));
 
-document.getElementById('toggle-view').addEventListener('click', function(){
+getEl('toggle-view').addEventListener('click', function(){
   interiorView = !interiorView;
   this.classList.toggle('active', interiorView);
   this.textContent = 'Vista: '+(interiorView?'Interior':'Exterior');
   applyCameraFraming();
 });
-document.getElementById('toggle-path').addEventListener('click', function(){
+getEl('toggle-path').addEventListener('click', function(){
   this.classList.toggle('active');
   showPath = this.classList.contains('active');
   updateSunPath();
 });
-document.getElementById('reset-cam').addEventListener('click', function(){
+getEl('reset-cam').addEventListener('click', ()=>{
   interiorView = false;
-  document.getElementById('toggle-view').classList.remove('active');
-  document.getElementById('toggle-view').textContent = 'Vista: Exterior';
+  getEl('toggle-view').classList.remove('active');
+  getEl('toggle-view').textContent = 'Vista: Exterior';
   resetExteriorCamera();
 });
 
-const sunIds = ['lat','lon','tz','hora'];
-const windIds = ['wind-speed','wind-dir','t-ext','t-int'];
-sunIds.forEach(id=> document.getElementById(id).addEventListener('input', recomputeSun));
-windIds.forEach(id=> document.getElementById(id).addEventListener('input', updateWind));
-document.getElementById('fecha').addEventListener('input', recomputeSun);
+/* ---- rosa de los vientos: se arrastra, no se teclea ---- */
+const dial = getEl('wind-dial');
+function renderDial(){
+  const dir = getNum('wind-dir');
+  const a = toRad(dir);
+  const px_ = 34*Math.sin(a), py_ = -34*Math.cos(a);
+  let s = '<circle cx="0" cy="0" r="40" fill="#fff" stroke="#D3D8E1" stroke-width="1.5"/>';
+  ['N','E','S','O'].forEach((c,i)=>{
+    const ang = toRad(i*90);
+    s += `<text x="${46*Math.sin(ang)}" y="${-46*Math.cos(ang)+3}" font-family="IBM Plex Mono" font-size="9" font-weight="700" fill="${i===0?'#9C2B21':'#9399A6'}" text-anchor="middle">${c}</text>`;
+    s += `<line x1="${36*Math.sin(ang)}" y1="${-36*Math.cos(ang)}" x2="${40*Math.sin(ang)}" y2="${-40*Math.cos(ang)}" stroke="#D3D8E1" stroke-width="1.5"/>`;
+  });
+  s += `<line x1="${px_}" y1="${py_}" x2="${-px_*0.55}" y2="${-py_*0.55}" stroke="#2F8FE0" stroke-width="3.5" stroke-linecap="round"/>`;
+  s += `<path d="M ${-px_*0.55} ${-py_*0.55} l ${(px_*0.22 - py_*0.16)} ${(py_*0.22 + px_*0.16)} l ${(-px_*0.22*2)} ${(-py_*0.22*2)} z" fill="#155F9E" transform="rotate(${dir} 0 0) rotate(${-dir} ${-px_*0.55} ${-py_*0.55})"/>`;
+  s += `<circle cx="${px_}" cy="${py_}" r="5" fill="#fff" stroke="#2F8FE0" stroke-width="2.5"/>`;
+  s += `<text x="0" y="4" font-family="IBM Plex Mono" font-size="10" font-weight="700" fill="#5B6472" text-anchor="middle">${Math.round(dir)}°</text>`;
+  dial.innerHTML = s;
+}
+function dialSet(evt){
+  const r = dial.getBoundingClientRect();
+  const x = evt.clientX - (r.left+r.width/2), y = evt.clientY - (r.top+r.height/2);
+  let a = toDeg(Math.atan2(x,-y)); if (a<0) a+=360;
+  getEl('wind-dir').value = Math.round(a);
+  renderDial(); scheduleCompute('low');
+}
+dial.addEventListener('pointerdown', e=>{ dial.setPointerCapture(e.pointerId); dial.__drag=true; dialSet(e); });
+dial.addEventListener('pointermove', e=>{ if (dial.__drag) dialSet(e); });
+dial.addEventListener('pointerup', e=>{ dial.__drag=false; scheduleCompute('high'); });
 
-/* --- Sitio: alternar entre "Ciudad" (un menú, sin escribir números) y "Coordenadas" (control fino) --- */
+/* ---- sitio ---- */
 ['city','coords'].forEach(m=>{
-  document.getElementById('site-mode-'+m).addEventListener('click', ()=>{
-    ['city','coords'].forEach(mm=> document.getElementById('site-mode-'+mm).classList.toggle('active', mm===m));
-    document.getElementById('site-city-panel').classList.toggle('visible', m==='city');
-    document.getElementById('site-coords-panel').classList.toggle('visible', m==='coords');
+  getEl('site-mode-'+m).addEventListener('click', ()=>{
+    ['city','coords'].forEach(mm=>{
+      getEl('site-mode-'+mm).classList.toggle('active', mm===m);
+      getEl('site-'+mm+'-panel').classList.toggle('visible', mm===m);
+    });
   });
 });
 function applyCiudad(){
-  const [lat,lon,tz] = document.getElementById('ciudad').value.split(',').map(Number);
-  document.getElementById('lat').value = lat;
-  document.getElementById('lon').value = lon;
-  document.getElementById('tz').value = tz;
-  recomputeSun();
-  fetchSiteWind();
+  const [lat,lon,tz,alt] = getEl('ciudad').value.split(',').map(Number);
+  getEl('lat').value=lat; getEl('lon').value=lon; getEl('tz').value=tz; getEl('alt').value=alt;
+  updateSunState(); scheduleCompute('high');
+  fetchWeather();
 }
-document.getElementById('ciudad').addEventListener('change', applyCiudad);
+getEl('ciudad').addEventListener('change', applyCiudad);
 
-/* --- Viento real del sitio, según sus coordenadas (Open-Meteo, sin llave de acceso) --- */
-async function fetchSiteWind(){
-  const status = document.getElementById('wind-fetch-status');
-  const lat = getNum('lat'), lon = getNum('lon');
-  status.textContent = 'Consultando viento real del sitio…';
+/* ---- clima real (Open-Meteo, sin llave) ---- */
+async function fetchWeather(){
+  const status = getEl('weather-status');
+  const {lat,lon} = siteParams();
+  status.textContent = 'Consultando el clima real del sitio…';
   try{
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m,wind_direction_10m&wind_speed_unit=ms`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,cloud_cover,wind_speed_10m,wind_direction_10m&wind_speed_unit=ms`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('HTTP '+res.status);
-    const json = await res.json();
-    const c = json.current;
+    const c = (await res.json()).current;
     if (!c || !isFinite(c.wind_speed_10m)) throw new Error('sin datos');
-    document.getElementById('wind-speed').value = c.wind_speed_10m.toFixed(1);
-    document.getElementById('wind-dir').value = Math.round(c.wind_direction_10m);
-    document.getElementById('t-ext').value = c.temperature_2m.toFixed(1);
-    status.textContent = `Viento real ahora: ${c.wind_speed_10m.toFixed(1)} m/s desde el ${cardinal(c.wind_direction_10m)} · ${c.temperature_2m.toFixed(1)}°C exterior — Open-Meteo.`;
-    updateWind();
+    getEl('wind-speed').value = c.wind_speed_10m.toFixed(1);
+    getEl('wind-dir').value = Math.round(c.wind_direction_10m);
+    getEl('t-ext').value = c.temperature_2m.toFixed(1);
+    if (isFinite(c.cloud_cover)){ getEl('cloud').value = Math.round(c.cloud_cover); getEl('cloud-val').textContent = Math.round(c.cloud_cover); }
+    status.textContent = `Ahora: ${c.wind_speed_10m.toFixed(1)} m/s del ${cardinal(c.wind_direction_10m)} · ${c.temperature_2m.toFixed(1)}°C · ${Math.round(c.cloud_cover)}% de nubes.`;
+    renderDial(); updateSunState(); scheduleCompute('high');
   } catch(err){
-    status.textContent = 'No se pudo consultar el viento real de este sitio (sin conexión o servicio no disponible) — ajusta los valores manualmente.';
+    status.textContent = 'No se pudo consultar el clima real (sin conexión o servicio caído) — ajusta los valores a mano.';
   }
 }
-document.getElementById('wind-fetch-btn').addEventListener('click', fetchSiteWind);
+getEl('weather-btn').addEventListener('click', fetchWeather);
 
-document.getElementById('animar').addEventListener('change', function(){
+/* ---- entradas ---- */
+['lat','lon','tz','alt','fecha','hora','cloud'].forEach(id=>{
+  getEl(id).addEventListener('input', ()=>{ updateSunState(); scheduleCompute('low'); });
+});
+['has-roof','rho-wall','rho-floor','tau-glass'].forEach(id=>{
+  getEl(id).addEventListener('input', ()=> scheduleCompute('low'));
+});
+['wind-speed','wind-dir','t-ext','t-int','terrain'].forEach(id=>{
+  getEl(id).addEventListener('input', ()=>{ renderDial(); scheduleCompute('low'); });
+});
+getEl('animar').addEventListener('change', function(){
   if (this.checked){
     animTimer = setInterval(()=>{
-      const slider = document.getElementById('hora');
-      let v = parseFloat(slider.value) + 0.15;
-      if (v>24) v -= 24;
-      slider.value = v;
-      recomputeSun();
-    }, 90);
-  } else { clearInterval(animTimer); }
+      const s = getEl('hora');
+      let v = parseFloat(s.value)+0.1; if (v>24) v-=24;
+      s.value = v;
+      updateSunState();
+      runCompute('low');
+    }, 110);
+  } else { clearInterval(animTimer); scheduleCompute('high'); }
 });
 
 /* =========================================================
-   INICIO
+   12 · INICIO
    ========================================================= */
 (function init(){
-  const today = new Date();
-  document.getElementById('fecha').value = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  const t = new Date();
+  getEl('fecha').value = t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+  const nowH = t.getHours()+t.getMinutes()/60;
+  getEl('hora').value = nowH;
 
-  renderWallsPanel();
-  fitPlanViewBox();
-  renderPlan();
+  vertices = [
+    {x:-5, z:3, height:3, thickness:15, openings:[{pos:0.5, w:2.4, h:1.5, sill:0.9}]},
+    {x:5,  z:3, height:3, thickness:15, openings:[]},
+    {x:5,  z:-3,height:3, thickness:15, openings:[{pos:0.5, w:1.6, h:1.2, sill:0.9}]},
+    {x:-5, z:-3,height:3, thickness:15, openings:[]}
+  ];
+  closedLoop = true;
+  buildGeometry();
+  // si a la hora actual el sol ya se metió, arranca en el mediodía solar: abrir la página
+  // de noche y no ver nada no le sirve a nadie.
+  const ss0 = sunriseSunset(getNum('lat'), getNum('lon'), getNum('tz'), t.getFullYear(), t.getMonth()+1, t.getDate());
+  if (ss0.rise!=null && (nowH < ss0.rise+0.3 || nowH > ss0.set-0.3)) getEl('hora').value = ss0.noon.toFixed(2);
+
   initScene();
-  recomputeAll();
+  fitView();
+  renderDial();
+  setPlanMode('move');
+  refreshAll(true);
   resetExteriorCamera();
-  fetchSiteWind(); // trae el viento real del sitio por defecto, apenas se abre la página
+  scheduleCompute('high');
+  fetchWeather();
 })();
 </script>
 
